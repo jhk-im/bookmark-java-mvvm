@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/info_navigation_menu_item"
+        android:icon="@drawable/ic_info"
+        android:title="@string/info_title" />
+    <item
+        android:id="@+id/notice_navigation_menu_item"
+        android:icon="@drawable/ic_notice"
+        android:title="@string/notice_title" />
+    <item
+        android:id="@+id/bookmark_navigation_menu_item"
+        android:icon="@drawable/ic_bookmark"
+        android:title="@string/bookmark_title" />
+</menu>
