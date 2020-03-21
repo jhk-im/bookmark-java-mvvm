@@ -15,7 +15,7 @@ import com.jroomstudio.commentstube.R;
 import com.jroomstudio.commentstube.ViewModelHolder;
 import com.jroomstudio.commentstube.util.ActivityUtils;
 
-public class TabEditActivity extends AppCompatActivity {
+public class TabEditActivity extends AppCompatActivity implements TabEditNavigator{
 
     // private DrawerLayout mDrawerLayout;
     private TabEditViewModel mTabEditViewModel;
@@ -26,7 +26,6 @@ public class TabEditActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tabedit_act);
-
 
         // 툴바
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -83,8 +82,8 @@ public class TabEditActivity extends AppCompatActivity {
     // Floating Action Button 셋팅
     private void setupFab() {
         FloatingActionButton fab =
-                (FloatingActionButton) findViewById(R.id.fab_add_task);
-        fab.setImageResource(R.drawable.ic_add);
+                (FloatingActionButton) findViewById(R.id.fab_done);
+       // fab.setImageResource(R.drawable.ic_done);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -94,5 +93,9 @@ public class TabEditActivity extends AppCompatActivity {
     }
 
 
+    @Override
+    public void tabEditComplete() {
+
+    }
 
 }

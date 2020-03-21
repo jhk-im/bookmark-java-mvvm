@@ -3,22 +3,19 @@ package com.jroomstudio.commentstube.tabedit;
 import android.content.Context;
 
 import androidx.databinding.BaseObservable;
-import androidx.databinding.ObservableArrayList;
 import androidx.databinding.ObservableField;
 
-import com.jroomstudio.commentstube.test.TabItem;
-
-public class TabEditViewModel extends BaseObservable {
+public  class TabEditViewModel extends BaseObservable {
 
     public final ObservableField<String> tvTest = new ObservableField<>();
 
-    public final ObservableArrayList<TabItem> items = new ObservableArrayList<>();
-
-    private Context mContext;
+    private final Context mContext;
 
     private TabEditNavigator mNavigator;
 
-    public TabEditViewModel(Context context) { mContext = context.getApplicationContext(); }
+    public TabEditViewModel(Context context) {
+        mContext = context.getApplicationContext();
+    }
 
     void onActivityDestroyed(){
         mNavigator = null;

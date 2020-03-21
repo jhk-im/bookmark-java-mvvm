@@ -1,4 +1,4 @@
-package com.jroomstudio.commentstube.test;
+package com.jroomstudio.commentstube.tabedit.itemtouch;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.ItemTouchHelper;

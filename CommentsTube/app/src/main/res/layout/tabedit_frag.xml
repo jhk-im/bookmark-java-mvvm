@@ -24,7 +24,6 @@
             android:layout_height="match_parent"
             android:scrollbars="vertical"
             tools:listitem="@layout/tabedit_item"
-            app:items="@{viewmodel.items}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

@@ -1,4 +1,8 @@
-package com.jroomstudio.commentstube.test;
+package com.jroomstudio.commentstube.tabedit;
+
+import androidx.annotation.Nullable;
+
+import com.google.common.base.Strings;
 
 public class TabItem {
     private String tabName;
@@ -9,6 +13,15 @@ public class TabItem {
     }
     public String getTabName() {
         return tabName;
+    }
+
+    @Nullable
+    public String getNameForList() {
+        if (!Strings.isNullOrEmpty(tabName)) {
+            return tabName;
+        } else {
+            return null;
+        }
     }
 
     public void setTabName(String name) {
