@@ -61,8 +61,9 @@ public class TabEditFragment extends Fragment {
 
     public void setTabEditViewModel(TabEditViewModel viewModel) { mTabEditViewModel = viewModel; }
 
+    // 임시
     public void setupListAdapter(ViewGroup container){
-
+        /*
         //adapter 임시 데이터 추가
         ArrayList<TabItem> items = new ArrayList<>();
         TabItem item1 = new TabItem("SUBSCRIBE",1);
@@ -81,7 +82,7 @@ public class TabEditFragment extends Fragment {
         items.add(item6);
         items.add(item7);
         items.add(item8);
-
+        */
         //어댑터 셋팅
         mAdapter = new TabListAdapter();
         mTabEditFragBinding.rvTabList.setAdapter(mAdapter);
@@ -93,7 +94,7 @@ public class TabEditFragment extends Fragment {
         helper.attachToRecyclerView(mTabEditFragBinding.rvTabList);
 
         // Adapter 데이터 추가
-        mAdapter.setList(items);
+        //mAdapter.setList(items);
 
     }
 
@@ -136,7 +137,6 @@ public class TabEditFragment extends Fragment {
             return items.size();
         }
 
-
         @Override
         public boolean onItemMove(int form_position, int to_position) {
             //이동할 객체저장
@@ -161,11 +161,8 @@ public class TabEditFragment extends Fragment {
             notifyDataSetChanged();
         }
 
-
         class ItemViewHolder extends RecyclerView.ViewHolder {
-
             //TextView tabName;
-
             public ItemViewHolder(@NonNull View itemView) {
                 super(itemView);
             }
