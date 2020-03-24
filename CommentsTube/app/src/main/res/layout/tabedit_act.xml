@@ -31,10 +31,23 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <FrameLayout
-                android:id="@+id/content_frame"
+            <LinearLayout
+                android:id="@+id/content_linear"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <FrameLayout
+                    android:id="@+id/content_frame"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+                <FrameLayout
+                    android:id="@+id/second_frame"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fab_done"
@@ -43,7 +56,7 @@
                 android:layout_margin="@dimen/fab_margin"
                 android:src="@drawable/ic_done"
                 app:fabSize="normal"
-                app:layout_anchor="@id/content_frame"
+                app:layout_anchor="@id/content_linear"
                 app:layout_anchorGravity="bottom|right|end" />
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
     </LinearLayout>

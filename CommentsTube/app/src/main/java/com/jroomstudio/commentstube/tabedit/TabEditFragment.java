@@ -63,7 +63,6 @@ public class TabEditFragment extends Fragment {
 
     // 임시
     public void setupListAdapter(ViewGroup container){
-        /*
         //adapter 임시 데이터 추가
         ArrayList<TabItem> items = new ArrayList<>();
         TabItem item1 = new TabItem("SUBSCRIBE",1);
@@ -82,7 +81,6 @@ public class TabEditFragment extends Fragment {
         items.add(item6);
         items.add(item7);
         items.add(item8);
-        */
         //어댑터 셋팅
         mAdapter = new TabListAdapter();
         mTabEditFragBinding.rvTabList.setAdapter(mAdapter);
@@ -94,7 +92,7 @@ public class TabEditFragment extends Fragment {
         helper.attachToRecyclerView(mTabEditFragBinding.rvTabList);
 
         // Adapter 데이터 추가
-        //mAdapter.setList(items);
+        mAdapter.setList(items);
 
     }
 

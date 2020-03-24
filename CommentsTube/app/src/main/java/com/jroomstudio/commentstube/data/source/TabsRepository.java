@@ -13,6 +13,8 @@ public class TabsRepository implements TabsDataSource {
     private static TabsRepository INSTANCE = null;
     private final TabsDataSource mTabsLocalDataSource;
 
+    private final TabsDataSource mTabsRemoteDataSource;
+
     /**
      * 해당 변수에 로컬 변수가 있으므로 테스트에서 액세스할 수 있다.
      * */
@@ -25,8 +27,9 @@ public class TabsRepository implements TabsDataSource {
     boolean mCacheIsDirty = false;
 
     // 직접 인스턴스화를 방지한다.
-    public TabsRepository(@NonNull TabsDataSource tabsLocalDataSource) {
+    public TabsRepository(@NonNull TabsDataSource tabsLocalDataSource, @NonNull TabsDataSource tabsRemoteDataSource) {
         mTabsLocalDataSource = checkNotNull(tabsLocalDataSource);
+        mTabsRemoteDataSource = checkNotNull(tabsRemoteDataSource);
     }
 
     /**
@@ -34,15 +37,16 @@ public class TabsRepository implements TabsDataSource {
      * @param tabsLocalDataSource 로컬 데이터베이스
      * @return the {@link TabsRepository} instance
      * */
-    public static TabsRepository getInstance(TabsDataSource tabsLocalDataSource){
+    public static TabsRepository getInstance(TabsDataSource tabsLocalDataSource,
+                                             TabsDataSource tabsRemoteDataSource){
         if(INSTANCE == null){
-            INSTANCE = new TabsRepository(tabsLocalDataSource);
+            INSTANCE = new TabsRepository(tabsLocalDataSource,tabsRemoteDataSource);
         }
         return INSTANCE;
     }
 
     /**
-     * {@link #getInstance(TabsDataSource)}가 새 인스턴스 생성 작성하도록 강제하는데 사용한다.
+     * {@link #getInstance(TabsDataSource,TabsDataSource)}가 새 인스턴스 생성 작성하도록 강제하는데 사용한다.
      * */
     public static void destroyInstance(){ INSTANCE = null; }
 
