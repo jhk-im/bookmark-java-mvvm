@@ -4,12 +4,12 @@ import androidx.annotation.NonNull;
 
 import com.jroomstudio.commentstube.data.Tab;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public interface TabsDataSource {
 
     interface LoadTabsCallback {
-        void onTabsLoaded(ArrayList<Tab> tabs);
+        void onTabsLoaded(List<Tab> tabs);
         void onDataNotAvailable();
     }
 
@@ -19,13 +19,12 @@ public interface TabsDataSource {
     }
 
     void getTabs(@NonNull LoadTabsCallback callback);
-    void getTabs(@NonNull String tabId, @NonNull GetTabCallback callback);
+    void getTabs(@NonNull String tabName, @NonNull GetTabCallback callback);
     void saveTab(@NonNull Tab tab);
     void usedTab(@NonNull Tab tab);
-    void usedTab(@NonNull String tabId);
+    void usedTab(@NonNull String tabName);
     void disabledTab(@NonNull Tab tab);
-    void disabledTab(@NonNull String tabId);
+    void disabledTab(@NonNull String tabName);
     void refreshTabs();
-    void deleteAllTabs();
 
 }

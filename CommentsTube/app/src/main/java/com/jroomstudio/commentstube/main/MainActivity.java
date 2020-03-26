@@ -5,6 +5,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
+import androidx.databinding.Observable;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -17,22 +18,34 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
+import com.jroomstudio.commentstube.Injection;
 import com.jroomstudio.commentstube.R;
 import com.jroomstudio.commentstube.ViewModelHolder;
+import com.jroomstudio.commentstube.data.Tab;
+import com.jroomstudio.commentstube.data.source.TabsRepository;
+import com.jroomstudio.commentstube.data.source.local.AppLocalDatabase;
+import com.jroomstudio.commentstube.databinding.MainActBinding;
 import com.jroomstudio.commentstube.tabedit.TabEditActivity;
 import com.jroomstudio.commentstube.util.ActivityUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     private DrawerLayout mDrawerLayout;
 
-    // 프래그먼트 뷰모델 태그
-    public static final String MAIN_VM_TAG = "MAIN_VM_TAG";
-
+    // 뷰모델 - 데이터바인딩 - 뷰페이저 어댑터
+    private MainActViewModel mMainActViewModel;
+    private MainActBinding mMainActBinding;
     private FragmentPagerAdapter adapterViewPager;
+
+    //private Observable.OnPropertyChangedCallback mSnackbarCallback;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,12 +56,27 @@ public class MainActivity extends AppCompatActivity {
         setupToolbar();
         setupNavigationDrawer();
 
-        // 뷰페이저
-        ViewPager viewPager = (ViewPager) findViewById(R.id.view_pager);
-        adapterViewPager = new MainPagerAdapter(getSupportFragmentManager(),
-                0,MAIN_VM_TAG,this);
-        viewPager.setAdapter(adapterViewPager);
+        // 데이터 바인딩
+        View view = findViewById(R.id.drawer_layout);
+        mMainActBinding = MainActBinding.bind(view);
+        mMainActViewModel = new MainActViewModel(
+                Injection.provideTabsRepostiory(getApplicationContext()),getApplicationContext());
+        mMainActBinding.setViewmodel(mMainActViewModel);
+
+        // 뷰페이저 셋팅
+        setupViewPagerAdapter();
+
     }
+
+    private void setupViewPagerAdapter(){
+        //ViewPager viewPager = (ViewPager) findViewById(R.id.view_pager);
+        adapterViewPager = new MainPagerAdapter(getSupportFragmentManager(),
+                0,this,new ArrayList<Tab>(0),
+                Injection.provideTabsRepostiory(getApplicationContext()));
+        //viewPager.setAdapter(adapterViewPager);
+        mMainActBinding.viewPager.setAdapter(adapterViewPager);
+    }
+
 
     //툴바표시
     public void setupToolbar() {
@@ -122,29 +150,36 @@ public class MainActivity extends AppCompatActivity {
      * FragmentManager, TAG, context 등을 입력받아 각각의 프래그먼트를 구분하여 관리한다.
      * */
     public static class MainPagerAdapter extends FragmentPagerAdapter {
-        private static int NUM_ITEMS = 3;
+
+        public static int NUM_ITEMS = 3;
 
         private FragmentManager mFragmentManager;
         private Context mContext;
-        private String mTAG;
+        private MainFragViewModel mMainFragViewModel;
 
-        private MainViewModel mMainViewModel;
+        // 데이터베이스
+        private List<Tab> mTabs;
+
+        private TabsRepository mTabsReository;
 
         public MainPagerAdapter(@NonNull FragmentManager fm, int behavior,
-                                String TAG, Context context) {
+                                Context context, List<Tab> tabs, TabsRepository tabsRepository) {
             super(fm, behavior);
             this.mFragmentManager = fm;
             this.mContext = context;
-            this.mTAG = TAG;
+            this.mTabsReository = tabsRepository;
+            setList(tabs);
         }
+
 
         // 뷰페이저에 표시 될 프래그먼트의 총 갯수
         @Override
         public int getCount() {
-            return NUM_ITEMS;
-        }
+            //return NUM_ITEMS;
+            return mTabs != null ? mTabs.size() : 0;
+             }
 
-        // 현재 프래그먼트의 뷰페이저 포지션값을 반환함
+        // 현재 프래그먼트의 포지션값으로 프래그먼트 반환
         @Override
         public Fragment getItem(int position) {
             return findOrCreateFragment(position);
@@ -153,29 +188,24 @@ public class MainActivity extends AppCompatActivity {
         // 페이지와 태그로 각각의 프래그먼트를 구분하여 생성하고 그에맞는 뷰 모델과 연결한다.
         @NonNull
         private Fragment findOrCreateFragment(int page){
-            switch (mTAG){
-                case"MAIN_VM_TAG":
-                    MainFragment mainFragment =
-                            MainFragment.newInstance(page);
-                    mMainViewModel = findOrCreateViewModel(mTAG + page);
-                    mainFragment.setMainViewModel(mMainViewModel);
-                    return mainFragment;
-                default:
-                    return null;
-            }
+            MainFragment mainFragment =
+                    MainFragment.newInstance(page);
+            mMainFragViewModel = findOrCreateViewModel("TEST TAG" + page);
+            mainFragment.setMainViewModel(mMainFragViewModel);
+            return mainFragment;
         }
 
         // 메인 프래그먼트에 맞는 메인 뷰 모델을 연결
-        private MainViewModel findOrCreateViewModel(String TAG){
+        private MainFragViewModel findOrCreateViewModel(String TAG){
             @SuppressWarnings("unchecked")
-            ViewModelHolder<MainViewModel> retainedViewModel =
-                    (ViewModelHolder<MainViewModel>) mFragmentManager.
+            ViewModelHolder<MainFragViewModel> retainedViewModel =
+                    (ViewModelHolder<MainFragViewModel>) mFragmentManager.
                             findFragmentByTag(TAG);
             if(retainedViewModel != null && retainedViewModel.getViewmodel() != null) {
-                retainedViewModel.getViewmodel().tvTest.set("default 재사용");
+                 retainedViewModel.getViewmodel().tvTest.set("default 재사용");
                 return retainedViewModel.getViewmodel();
             } else {
-                MainViewModel viewModel = new MainViewModel(mContext.getApplicationContext());
+                MainFragViewModel viewModel = new MainFragViewModel(mContext.getApplicationContext());
                 ActivityUtils.addFragmentToActivity(mFragmentManager,
                         ViewModelHolder.createContainer(viewModel),TAG);
                 viewModel.tvTest.set(TAG);
@@ -190,6 +220,13 @@ public class MainActivity extends AppCompatActivity {
             return "Page " + position;
         }
 
+        private void setList(List<Tab> tabs){
+            mTabs = tabs;
+        }
+
+        public List<Tab> getTabs() {
+            return mTabs;
+        }
     }
 
 }

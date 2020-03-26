@@ -7,4 +7,6 @@
     <string name="bookmark_title">북마크</string>
     <string name="menu_filter">Filter</string>
     <string name="menu_search">Search</string>
+    <string name="not_use_tap">Not Use Tap</string>
+    <string name="use_tab">Use Tab</string>
 </resources>

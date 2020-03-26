@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -20,7 +19,7 @@ import com.jroomstudio.commentstube.util.SnackBarUtils;
 public class MainFragment extends Fragment {
 
     // 셋팅 될 프래그먼트 객체와 연결될 View Model
-    private MainViewModel mMainViewModel;
+    private MainFragViewModel mMainFragViewModel;
 
     // 스낵바 관찰
     private Observable.OnPropertyChangedCallback mSnackBarCallback;
@@ -69,7 +68,7 @@ public class MainFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mMainFragBinding = MainFragBinding.inflate(inflater,container,false);
         mMainFragBinding.setView(this);
-        mMainFragBinding.setViewmodel(mMainViewModel);
+        mMainFragBinding.setViewmodel(mMainFragViewModel);
         setHasOptionsMenu(true);
         mMainFragBinding.tvPage.setText(String.valueOf(page));
         View root = mMainFragBinding.getRoot();
@@ -84,14 +83,14 @@ public class MainFragment extends Fragment {
         setupRefreshLayout();
 
         //스낵바 테스트
-        mMainViewModel.snackBarText.set("프래그먼트 셋팅");
+        mMainFragViewModel.snackBarText.set("프래그먼트 셋팅");
     }
 
     // DESTROY
     @Override
     public void onDestroy() {
         if (mSnackBarCallback != null) {
-            mMainViewModel.snackBarText.removeOnPropertyChangedCallback(mSnackBarCallback);
+            mMainFragViewModel.snackBarText.removeOnPropertyChangedCallback(mSnackBarCallback);
         }
         super.onDestroy();
     }
@@ -100,17 +99,17 @@ public class MainFragment extends Fragment {
      * 메인 액티비티에서 호출한다.
      * 현재 뷰 페이저에 표시되는 프래그먼트와 뷰모델을 매치시킨다.
     * */
-    public void setMainViewModel(MainViewModel viewModel) { mMainViewModel = viewModel; }
+    public void setMainViewModel(MainFragViewModel viewModel) { mMainFragViewModel = viewModel; }
 
     // 스낵바 셋팅
     public void setupSnackBar() {
         mSnackBarCallback = new Observable.OnPropertyChangedCallback() {
             @Override
             public void onPropertyChanged(Observable observable, int i) {
-                SnackBarUtils.showSnackbar(getView(), mMainViewModel.getSnackBarText());
+                SnackBarUtils.showSnackbar(getView(), mMainFragViewModel.getSnackBarText());
             }
         };
-        mMainViewModel.snackBarText.addOnPropertyChangedCallback(mSnackBarCallback);
+        mMainFragViewModel.snackBarText.addOnPropertyChangedCallback(mSnackBarCallback);
     }
 
     //리프레쉬

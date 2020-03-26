@@ -3,11 +3,8 @@ package com.jroomstudio.commentstube.tabedit;
 import android.content.Context;
 
 import androidx.databinding.BaseObservable;
-import androidx.databinding.ObservableField;
 
-public  class TabEditViewModel extends BaseObservable {
-
-    public final ObservableField<String> tvTest = new ObservableField<>();
+public class TabEditViewModel extends BaseObservable {
 
     private final Context mContext;
 

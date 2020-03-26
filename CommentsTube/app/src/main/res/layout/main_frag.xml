@@ -10,7 +10,7 @@
             type="com.jroomstudio.commentstube.main.MainFragment" />
         <variable
             name="viewmodel"
-            type="com.jroomstudio.commentstube.main.MainViewModel" />
+            type="com.jroomstudio.commentstube.main.MainFragViewModel" />
     </data>
 
     <com.jroomstudio.commentstube.ScrollChildSwipeRefreshLayout

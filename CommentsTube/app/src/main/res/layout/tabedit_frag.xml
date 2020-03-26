@@ -22,7 +22,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="사용하는 Tab"/>
+            android:text="@string/use_tab"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_tab_list"

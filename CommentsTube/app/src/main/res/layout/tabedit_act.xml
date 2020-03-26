@@ -40,12 +40,28 @@
                 <FrameLayout
                     android:id="@+id/content_frame"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"/>
 
-                <FrameLayout
-                    android:id="@+id/second_frame"
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="match_parent"
+                    android:layout_weight="2"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/not_use_tap"/>
+
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/chip_group"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        app:singleSelection="true">
+                    </com.google.android.material.chip.ChipGroup>
+
+                </LinearLayout>
 
             </LinearLayout>
 

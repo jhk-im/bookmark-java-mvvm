@@ -6,7 +6,7 @@ import androidx.databinding.BaseObservable;
 import androidx.databinding.ObservableBoolean;
 import androidx.databinding.ObservableField;
 
-public class MainViewModel extends BaseObservable {
+public class MainFragViewModel extends BaseObservable {
 
     // Observable 필드는 자동으로 뷰를 업데이트 한다.
     public final ObservableBoolean dataLoading = new ObservableBoolean(false);
@@ -19,10 +19,12 @@ public class MainViewModel extends BaseObservable {
 
     private Context mContext;
 
-    public MainViewModel(Context context) { mContext = context.getApplicationContext(); }
+    public MainFragViewModel(Context context) { mContext = context.getApplicationContext(); }
 
     public String getSnackBarText() {
         return snackBarText.get();
     }
+
+
 
 }

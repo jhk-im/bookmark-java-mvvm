@@ -11,6 +11,7 @@ import com.jroomstudio.commentstube.data.Tab;
 @Database(entities = {Tab.class}, version = 1, exportSchema = false)
 public abstract class AppLocalDatabase extends RoomDatabase {
 
+    // 싱글턴
     private static AppLocalDatabase INSTANCE;
 
     public abstract TabsDao tabsDao();

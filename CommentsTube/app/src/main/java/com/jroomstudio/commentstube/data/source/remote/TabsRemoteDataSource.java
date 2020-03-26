@@ -21,15 +21,15 @@ public class TabsRemoteDataSource implements TabsDataSource {
 
     static {
         TAB_SERVICE_DATA = new LinkedHashMap<>(2);
-        addTabs("1", "NEWS", "0");
-        addTabs("2", "MUSIC", "1");
-        addTabs("3", "SPORTS", "2");
-        addTabs("4", "MOVIE", "3");
-        addTabs("5", "BEST", "4");
-        addTabs("6", "LIVE", "5");
-        addTabs("8", "SUBSCRIBE", "6");
-        addTabs("7", "GAME", "7");
-        addTabs("0", "DOCUMENTARY", "8");
+        addTabs("1", "NEWS", "DEFAULT_VIEW",true);
+        addTabs("2", "MUSIC", "DEFAULT_VIEW",true);
+        addTabs("3", "SPORTS", "DEFAULT_VIEW",true);
+        addTabs("4", "MOVIE", "DEFAULT_VIEW",true);
+        addTabs("5", "BEST", "DEFAULT_VIEW",true);
+        addTabs("6", "LIVE", "DEFAULT_VIEW",true);
+        addTabs("8", "SUBSCRIBE", "SECOND_VIEW",true);
+        addTabs("7", "GAME", "DEFAULT_VIEW",true);
+        addTabs("0", "DOCUMENTARY","DEFAULT_VIEW",true);
 
     }
 
@@ -42,8 +42,11 @@ public class TabsRemoteDataSource implements TabsDataSource {
 
     private TabsRemoteDataSource(){}
 
-    private static void addTabs(String number, String name, String id){
-        Tab newTab = new Tab(id,number,name,false);
+    private static void addTabs(String name,
+                                String id,
+                                String viewType,
+                                boolean used){
+        Tab newTab = new Tab(id,name,viewType,used);
         TAB_SERVICE_DATA.put(newTab.getId(), newTab);
     }
 
@@ -68,7 +71,7 @@ public class TabsRemoteDataSource implements TabsDataSource {
     }
 
     @Override
-    public void usedTab(@NonNull String tabId) {
+    public void usedTab(@NonNull String tabName) {
         // Not required for the remote data source because the {@link TasksRepository} handles
         // converting from a {@code taskId} to a {@link task} using its cached data.
     }
@@ -79,7 +82,7 @@ public class TabsRemoteDataSource implements TabsDataSource {
     }
 
     @Override
-    public void disabledTab(@NonNull String tabId) {
+    public void disabledTab(@NonNull String tabName) {
         // Not required for the remote data source because the {@link TasksRepository} handles
         // converting from a {@code taskId} to a {@link task} using its cached data.
     }
@@ -90,8 +93,4 @@ public class TabsRemoteDataSource implements TabsDataSource {
         // tasks from all the available data sources.
     }
 
-    @Override
-    public void deleteAllTabs() {
-
-    }
 }

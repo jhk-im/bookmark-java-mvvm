@@ -7,6 +7,10 @@ import com.jroomstudio.commentstube.data.Tab;
 import com.jroomstudio.commentstube.data.source.TabsDataSource;
 import com.jroomstudio.commentstube.util.AppExecutors;
 
+import java.util.List;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public class TabsLocalDataSource implements TabsDataSource {
 
     private static volatile TabsLocalDataSource INSTANCE;
@@ -39,7 +43,22 @@ public class TabsLocalDataSource implements TabsDataSource {
      * */
     @Override
     public void getTabs(@NonNull LoadTabsCallback callback) {
-
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                final List<Tab> tabs = mTabsDao.getAllTabs();
+                mAppExecutors.getMainThread().execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(tabs.isEmpty()){
+                            callback.onDataNotAvailable();
+                        }else{
+                            callback.onTabsLoaded(tabs);
+                        }
+                    }
+                });
+            }
+        };
     }
 
     /**
@@ -47,46 +66,76 @@ public class TabsLocalDataSource implements TabsDataSource {
      *  {@link GetTabCallback # onDataNotAvailable ()}이 시작된다
      * */
     @Override
-    public void getTabs(@NonNull String tabId, @NonNull GetTabCallback callback) {
+    public void getTabs(@NonNull String tabName, @NonNull GetTabCallback callback) {
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                final Tab tab = mTabsDao.getTabByName(tabName);
 
+                mAppExecutors.getMainThread().execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (tab != null){
+                            callback.onTabLoaded(tab);
+                        }else{
+                            callback.onDataNotAvailable();
+                        }
+                    }
+                });
+            }
+        };
+        mAppExecutors.getDiskIO().execute(runnable);
     }
 
     @Override
     public void saveTab(@NonNull Tab tab) {
-
+        checkNotNull(tab);
+        Runnable saveRunnable = new Runnable() {
+            @Override
+            public void run() {
+                mTabsDao.insertTab(tab);
+            }
+        };
+        mAppExecutors.getDiskIO().execute(saveRunnable);
     }
 
     @Override
     public void usedTab(@NonNull Tab tab) {
-
+        Runnable usedRunnable = new Runnable() {
+            @Override
+            public void run() {
+                mTabsDao.updateUsed(tab.getName(),true);
+            }
+        };
+        mAppExecutors.getDiskIO().execute(usedRunnable);
     }
 
     @Override
-    public void usedTab(@NonNull String tabId) {
-        // Not required for the local data source because the {@link TasksRepository} handles
-        // converting from a {@code taskId} to a {@link task} using its cached data.
+    public void usedTab(@NonNull String tabName) {
+        // {@link TabsRepository}가 처리하기 때문에 로컬 데이터 소스에는 필요하지 않음
+        // 캐시 된 데이터를 사용하여 {@code tabName}에서 {@link task}로 변환
     }
 
     @Override
     public void disabledTab(@NonNull Tab tab) {
-
+        Runnable disableRunnable = new Runnable() {
+            @Override
+            public void run() {
+                mTabsDao.updateUsed(tab.getName(), false);
+            }
+        };
+        mAppExecutors.getDiskIO().execute(disableRunnable);
     }
 
     @Override
     public void disabledTab(@NonNull String tabId) {
-        // Not required for the local data source because the {@link TasksRepository} handles
-        // converting from a {@code taskId} to a {@link task} using its cached data.
+        // {@link TabsRepository}가 처리하기 때문에 로컬 데이터 소스에는 필요하지 않음
+        // 캐시 된 데이터를 사용하여 {@code tabName}에서 {@link task}로 변환
     }
 
     @Override
     public void refreshTabs() {
-        // Not required because the {@link TasksRepository} handles the logic of refreshing the
-        // tasks from all the available data sources.
-    }
-
-    @Override
-    public void deleteAllTabs() {
-
+        // {@link TabsRepository}가 리프레시 로직을 처리하므로 필요하지 않음
     }
 
     @VisibleForTesting
