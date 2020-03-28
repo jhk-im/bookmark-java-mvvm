@@ -12,9 +12,8 @@ import com.jroomstudio.commentstube.data.Tab;
 import java.util.List;
 
 /**
- * Data Access Object for the tabs table
+ * Tab 테이블의 데이터 액세스 인터페이스
 * */
-
 @Dao
 public interface TabsDao {
 
@@ -53,19 +52,18 @@ public interface TabsDao {
     @Query("UPDATE tabs SET used = :used WHERE name = :tabName")
     void updateUsed(String tabName, boolean used);
 
-
-   /**
-    * 데이터베이스에 tab 아이템을 추가한다.
-    * 만약 이미 해당하는 tab 이 존재하면 replace 한다.
-    * @param tab tab 객채를 추가한다.
-    * */
-   @Insert(onConflict = OnConflictStrategy.REPLACE)
+    /**
+     * 데이터베이스에 tab 아이템을 추가한다.
+     * 만약 이미 해당하는 tab 이 존재하면 replace 한다.
+     * @param tab tab 객채를 추가한다.
+     * */
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertTab(Tab tab);
 
-   /**
-    * tab 의 정보를 update 한다.
-    * @param tab 입력된 tab 의 정보를 업데이트한다.
-    * */
+    /**
+     * tab 의 정보를 update 한다.
+     * @param tab 입력된 tab 의 정보를 업데이트한다.
+     * */
     @Update
     int updateTab(Tab tab);
 
