@@ -79,7 +79,7 @@ public final class Tab {
     @Ignore
     public Tab(@NonNull String name,
                @NonNull String viewType) {
-        this(name, UUID.randomUUID().toString(),viewType,true);
+        this(UUID.randomUUID().toString(),name,viewType,true);
     }
 
 

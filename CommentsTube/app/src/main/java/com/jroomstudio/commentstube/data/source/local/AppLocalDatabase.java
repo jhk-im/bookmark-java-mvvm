@@ -12,9 +12,6 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 import com.jroomstudio.commentstube.data.Tab;
 import com.jroomstudio.commentstube.util.AppExecutors;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 /**
  * Tab 클래스의 테이블이 포함 된 데이터 베이스
  * */
@@ -35,7 +32,7 @@ public abstract class AppLocalDatabase extends RoomDatabase {
     // synchronized 구현을 위한 Object
     private static final Object sLock = new Object();
 
-    public static AppLocalDatabase getInstance(Context context , AppExecutors executors){
+    public static AppLocalDatabase getInstance(Context context){
         /**
          * synchronized 키워드
          * 객체에 대한 동기화
@@ -55,33 +52,7 @@ public abstract class AppLocalDatabase extends RoomDatabase {
                  * 파일명을 가지는 실제 파일이 생성된다.
                  * */
                 INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
-                        AppLocalDatabase.class,"Tabs.db").
-                        addCallback(new Callback() {
-                            /**
-                             * 데이터베이스가 처음 생성될 때 호출된다.
-                             * @param db The database.
-                             */
-                            @Override
-                            public void onCreate(@NonNull SupportSQLiteDatabase db) {
-                                super.onCreate(db);
-                                Runnable addRunnable = new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        // Tab 기본정보 입력
-                                        INSTANCE.tabsDao().insertTab(new Tab("SUBSCRIBE","SUB_FRAGMENT"));
-                                        INSTANCE.tabsDao().insertTab(new Tab("BEST","DEFAULT_FRAGMENT"));
-                                        INSTANCE.tabsDao().insertTab(new Tab("GAME","DEFAULT_FRAGMENT"));
-                                        INSTANCE.tabsDao().insertTab(new Tab("MUSIC","DEFAULT_FRAGMENT"));
-                                        INSTANCE.tabsDao().insertTab(new Tab("SPORTS","DEFAULT_FRAGMENT"));
-                                        INSTANCE.tabsDao().insertTab(new Tab("MOVIE","DEFAULT_FRAGMENT"));
-                                        INSTANCE.tabsDao().insertTab(new Tab("NEWS","DEFAULT_FRAGMENT"));
-                                        INSTANCE.tabsDao().insertTab(new Tab("DOCUMENTARY","DEFAULT_FRAGMENT"));
-                                    }
-                                };
-                                executors.getDiskIO().execute(addRunnable);
-                            }
-                        }).build();
-
+                        AppLocalDatabase.class,"Tabs.db").build();
             }
             // 데이터 베이스 리턴
             return INSTANCE;

@@ -38,19 +38,19 @@ public interface TabsDao {
 
     /**
     * name 으로 선택한 tab 아이템을 가져온다.
-    * @param tabName tab 의 name.
+    * @param tabId tab 의 id.
     * @return id에 해당하는 tab 아이템
     * */
-   @Query("SELECT * FROM tabs WHERE name = :tabName")
-    Tab getTabByName(String tabName);
+   @Query("SELECT * FROM tabs WHERE entryId = :tabId")
+    Tab getTabById(String tabId);
 
     /**
      * Tab 사용 활성 상태를 업데이트한다.
-     * @param  tabName tab name
+     * @param  tabId tab id
      * @param  used tab 의 사용 활성 상태
      * */
-    @Query("UPDATE tabs SET used = :used WHERE name = :tabName")
-    void updateUsed(String tabName, boolean used);
+    @Query("UPDATE tabs SET used = :used WHERE entryId = :tabId")
+    void updateUsed(String tabId, boolean used);
 
     /**
      * 데이터베이스에 tab 아이템을 추가한다.
@@ -74,4 +74,6 @@ public interface TabsDao {
     @Query("DELETE FROM tabs WHERE entryId = :tabId")
     int deleteTabById(String tabId);
 
+    @Query("DELETE FROM tabs")
+    void deleteAllTabs();
 }

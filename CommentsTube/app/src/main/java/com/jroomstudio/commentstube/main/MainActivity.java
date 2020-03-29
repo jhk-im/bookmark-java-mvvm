@@ -15,10 +15,12 @@ import androidx.viewpager.widget.ViewPager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
@@ -39,12 +41,14 @@ public class MainActivity extends AppCompatActivity {
 
     private DrawerLayout mDrawerLayout;
 
-    // 뷰모델 - 데이터바인딩 - 뷰페이저 어댑터
+    // 메인 액티비티 뷰모델
     private MainActViewModel mMainActViewModel;
-    private MainActBinding mMainActBinding;
-    private FragmentPagerAdapter adapterViewPager;
 
-    //private Observable.OnPropertyChangedCallback mSnackbarCallback;
+    // 메인 액티비티 데이터 바인딩
+    private MainActBinding mMainActBinding;
+
+    // 메인 액티비티 뷰페이저
+    private FragmentPagerAdapter adapterViewPager;
 
 
     @Override
@@ -60,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
         View view = findViewById(R.id.drawer_layout);
         mMainActBinding = MainActBinding.bind(view);
         mMainActViewModel = new MainActViewModel(
-                Injection.provideTabsRepostiory(getApplicationContext()),getApplicationContext());
+                Injection.provideTabsRepository(getApplicationContext()),getApplicationContext());
         mMainActBinding.setViewmodel(mMainActViewModel);
 
         // 뷰페이저 셋팅
@@ -68,12 +72,18 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mMainActViewModel.start();
+    }
+
     private void setupViewPagerAdapter(){
         //ViewPager viewPager = (ViewPager) findViewById(R.id.view_pager);
+        //viewPager.setAdapter(adapterViewPager);
         adapterViewPager = new MainPagerAdapter(getSupportFragmentManager(),
                 0,this,new ArrayList<Tab>(0),
-                Injection.provideTabsRepostiory(getApplicationContext()));
-        //viewPager.setAdapter(adapterViewPager);
+                Injection.provideTabsRepository(getApplicationContext()));
         mMainActBinding.viewPager.setAdapter(adapterViewPager);
     }
 
@@ -151,11 +161,11 @@ public class MainActivity extends AppCompatActivity {
      * */
     public static class MainPagerAdapter extends FragmentPagerAdapter {
 
-        public static int NUM_ITEMS = 3;
 
         private FragmentManager mFragmentManager;
         private Context mContext;
         private MainFragViewModel mMainFragViewModel;
+        private SubViewModel mSubViewModel;
 
         // 데이터베이스
         private List<Tab> mTabs;
@@ -175,58 +185,103 @@ public class MainActivity extends AppCompatActivity {
         // 뷰페이저에 표시 될 프래그먼트의 총 갯수
         @Override
         public int getCount() {
-            //return NUM_ITEMS;
+            // return 3;
             return mTabs != null ? mTabs.size() : 0;
              }
 
         // 현재 프래그먼트의 포지션값으로 프래그먼트 반환
         @Override
         public Fragment getItem(int position) {
-            return findOrCreateFragment(position);
+            // Tab 리스트에서 각각 뷰타입을 가져옴
+            String viewType = mTabs.get(position).getViewType();
+            return findOrCreateFragment(position, viewType);
         }
 
         // 페이지와 태그로 각각의 프래그먼트를 구분하여 생성하고 그에맞는 뷰 모델과 연결한다.
         @NonNull
-        private Fragment findOrCreateFragment(int page){
-            MainFragment mainFragment =
-                    MainFragment.newInstance(page);
-            mMainFragViewModel = findOrCreateViewModel("TEST TAG" + page);
-            mainFragment.setMainViewModel(mMainFragViewModel);
-            return mainFragment;
+        private Fragment findOrCreateFragment(int position, String viewType){
+            // 뷰타입에 따라 프래그먼트와 뷰모델을 각각 셋팅
+            switch (viewType){
+                case "SUB_FRAG" :
+                    SubFragment subFragment = SubFragment.newInstance();
+                    mSubViewModel = findOrCreateSubViewModel(position);
+                    subFragment.setSubViewModel(mSubViewModel);
+                    return subFragment;
+                case "DEF_FRAG" :
+                    MainFragment mainFragment = MainFragment.newInstance();
+                    mMainFragViewModel = findOrCreateViewModel(position);
+                    mainFragment.setMainViewModel(mMainFragViewModel);
+                    return mainFragment;
+                default:
+                    return null;
+            }
         }
 
-        // 메인 프래그먼트에 맞는 메인 뷰 모델을 연결
-        private MainFragViewModel findOrCreateViewModel(String TAG){
+        // 메인 프래그먼트의 메인 뷰 모델을 연결
+        private MainFragViewModel findOrCreateViewModel(int position){
             @SuppressWarnings("unchecked")
             ViewModelHolder<MainFragViewModel> retainedViewModel =
                     (ViewModelHolder<MainFragViewModel>) mFragmentManager.
-                            findFragmentByTag(TAG);
+                            findFragmentByTag(mTabs.get(position).getId());
             if(retainedViewModel != null && retainedViewModel.getViewmodel() != null) {
-                 retainedViewModel.getViewmodel().tvTest.set("default 재사용");
                 return retainedViewModel.getViewmodel();
             } else {
                 MainFragViewModel viewModel = new MainFragViewModel(mContext.getApplicationContext());
                 ActivityUtils.addFragmentToActivity(mFragmentManager,
-                        ViewModelHolder.createContainer(viewModel),TAG);
-                viewModel.tvTest.set(TAG);
+                        ViewModelHolder.createContainer(viewModel),mTabs.get(position).getId());
+
+                // 테스트용 텍스트뷰
+                viewModel.tvTest.set(mTabs.get(position).getViewType()+"\n"
+                                     +mTabs.get(position).isUsed());
+
                 return viewModel;
             }
 
         }
 
-        // Returns the page title for the top indicator
+        // 구독 프래그먼트의 Sub 뷰 모델을 연결
+        private SubViewModel findOrCreateSubViewModel(int position){
+            @SuppressWarnings("unchecked")
+            ViewModelHolder<SubViewModel> retainedViewModel =
+                    (ViewModelHolder<SubViewModel>) mFragmentManager.
+                            findFragmentByTag(mTabs.get(position).getId());
+            if(retainedViewModel != null && retainedViewModel.getViewmodel() != null) {
+                return retainedViewModel.getViewmodel();
+            } else {
+                SubViewModel viewModel = new SubViewModel(mContext.getApplicationContext());
+                ActivityUtils.addFragmentToActivity(mFragmentManager,
+                        ViewModelHolder.createContainer(viewModel),mTabs.get(position).getId());
+
+                // 테스트용 텍스트뷰
+                viewModel.tvTest.set(mTabs.get(position).getViewType()+"\n"
+                        +mTabs.get(position).isUsed());
+
+                return viewModel;
+            }
+        }
+
+        // 뷰페이저 탭 이름 설정
         @Override
         public CharSequence getPageTitle(int position) {
-            return "Page " + position;
+            return mTabs.get(position).getName();
         }
 
+        // 입력받은 리스트를 멤버 리스트로 셋팅
         private void setList(List<Tab> tabs){
             mTabs = tabs;
+            notifyDataSetChanged();
         }
 
+        // 리스트 얻기
         public List<Tab> getTabs() {
             return mTabs;
         }
+
+        // TabsListBinding 에서 리스트의 변화를 감지하여 멤버변수 재 셋팅
+        public void replaceData(List<Tab> tabs){
+            setList(tabs);
+        }
+
     }
 
 }

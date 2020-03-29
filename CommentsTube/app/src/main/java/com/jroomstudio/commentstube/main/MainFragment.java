@@ -24,8 +24,6 @@ public class MainFragment extends Fragment {
     // 스낵바 관찰
     private Observable.OnPropertyChangedCallback mSnackBarCallback;
 
-    // 뷰페이저에 규현되는 프래그먼트들의 페이지 번호
-    private int page;
 
     /**
      * 해당 프래그먼트 xml 내부에 데이터 바인딩을 구현할 때
@@ -34,33 +32,13 @@ public class MainFragment extends Fragment {
      * */
     private MainFragBinding mMainFragBinding;
 
+    // Requires empty public constructor
     public MainFragment(){}
 
    /**
     * 프래그먼트 인스턴스를 생성하기위한 메소드
-    * -> new 키워드로 프래그먼트 인스턴스 생성
-    * -> Bundle 을 사용하여 페이지 저장
-    * Bundle 은 HashMap 형태로 값을 저장한다.
-    * pageNum 을 번들에 저장하여 프래그먼트 인스턴스를 생성한다.
     * */
-    public static MainFragment newInstance(int pageNum) {
-        MainFragment mainFragment = new MainFragment();
-        Bundle args = new Bundle();
-        args.putInt("fragmentPage", pageNum);
-        // 액티비티에서 프래그먼트로 데이터 전달
-        mainFragment.setArguments(args);
-        return mainFragment;
-    }
-
-    /**
-     * 프래그먼트가 onCreate 될때 번들에 저장한 페이지값을
-     * 프래그먼트 클래스 내부에있는 페이지 멤버변수에 저장한다.
-     * */
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        page = getArguments().getInt("fragmentPage",0);
-    }
+    public static MainFragment newInstance() { return new MainFragment(); }
 
     // 데이터바인딩으로 뷰 표시
     @Nullable
@@ -70,7 +48,7 @@ public class MainFragment extends Fragment {
         mMainFragBinding.setView(this);
         mMainFragBinding.setViewmodel(mMainFragViewModel);
         setHasOptionsMenu(true);
-        mMainFragBinding.tvPage.setText(String.valueOf(page));
+        //mMainFragBinding.tvPage.setText(String.valueOf(page));
         View root = mMainFragBinding.getRoot();
         return root;
     }
