@@ -10,6 +10,7 @@ import com.jroomstudio.commentstube.data.source.TabsDataSource;
 import com.jroomstudio.commentstube.data.source.remote.TabsRemoteDataSource;
 import com.jroomstudio.commentstube.util.AppExecutors;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -73,6 +74,30 @@ public class TabsLocalDataSource implements TabsDataSource {
     static void clearInstance() { INSTANCE = null; }
 
 
+    /**
+     * 앱 맨 처음 설치 시 Tab 의 정보들을 Default 값으로 추가한다.
+     *
+     * table 이 추가된 이후로는 실행되지 않는다.
+     **/
+    public List<Tab> firstTabItem(){
+        List<Tab> tabList = new ArrayList<>();
+        tabList.add(addTabs("SUBSCRIBE","SUB_FRAG",0));
+        tabList.add(addTabs("BEST","MAIN_FRAG",1));
+        tabList.add(addTabs("GAME","MAIN_FRAG",2));
+        tabList.add(addTabs("MUSIC","MAIN_FRAG",3));
+        tabList.add(addTabs("MOVIE","MAIN_FRAG",4));
+        tabList.add(addTabs("SPORTS","MAIN_FRAG",5));
+        tabList.add(addTabs("NEWS","MAIN_FRAG",6));
+        tabList.add(addTabs("SCIENCE","MAIN_FRAG",7));
+        tabList.add(addTabs("DOCUMENTARY","MAIN_FRAG",8));
+        return tabList;
+    }
+    public Tab addTabs(String title, String viewType,int position){
+        Tab newTab = new Tab(title,viewType,position);
+        saveTab(newTab);
+        return newTab;
+    }
+
 
     /*
      * TabsDataSource 오버라이드 메소드 구현
@@ -89,9 +114,11 @@ public class TabsLocalDataSource implements TabsDataSource {
         Runnable runnable = () -> {
             final List<Tab> tabs = mTabsDao.getAllTabs();
             mAppExecutors.getMainThread().execute(() -> {
-                // 새 테이블 이거나 비어있는 경우
                 if(tabs.isEmpty()){
-                    callback.onDataNotAvailable();
+                    // 새 테이블 이거나 비어있는 경우
+                    // 처음 앱을 설치했을 때
+                    callback.onTabsLoaded(firstTabItem());
+                    //callback.onDataNotAvailable();
                 }else{
                     callback.onTabsLoaded(tabs);
                 }
@@ -170,6 +197,24 @@ public class TabsLocalDataSource implements TabsDataSource {
     public void disableTab(@NonNull String tabId) {
          // {@link TabsRepository} 에서 처리하므로 이곳에서는 필요하지 않다.
          // {@code} tabId 로 {@link tab} 을 가져온다
+    }
+
+    /**
+     * Tab 객체를 입력받아 TabsDao 의 updateUsed 메소드에 tabId 로 접근한다.
+     * Tab 의 position 을 입력받은 position 으로 갱신한다.
+     **/
+    @Override
+    public void updatePosition(@NonNull Tab tab, int position) {
+        Runnable runnable = () -> {
+          mTabsDao.updatePosition(tab.getId(),position);
+        };
+        mAppExecutors.getDiskIO().execute(runnable);
+    }
+
+    @Override
+    public void updatePosition(@NonNull String tabId, int position) {
+        // {@link TabsRepository} 에서 처리하므로 이곳에서는 필요하지 않다.
+        // {@code} tabId 로 {@link tab} 을 가져온다
     }
 
     @Override

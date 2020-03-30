@@ -8,7 +8,6 @@ import androidx.fragment.app.Fragment;
 
 /**
  * UI가 아닌 프래그먼트 - ViewModel 을 유지하는 데 사용된다.
- *
  **/
 
 public class ViewModelHolder<VM> extends Fragment {

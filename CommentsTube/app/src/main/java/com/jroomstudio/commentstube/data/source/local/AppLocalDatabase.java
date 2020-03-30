@@ -52,7 +52,7 @@ public abstract class AppLocalDatabase extends RoomDatabase {
                  * 파일명을 가지는 실제 파일이 생성된다.
                  * */
                 INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
-                        AppLocalDatabase.class,"Tabs.db").build();
+                        AppLocalDatabase.class,"TabsData.db").build();
             }
             // 데이터 베이스 리턴
             return INSTANCE;

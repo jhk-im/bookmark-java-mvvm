@@ -6,43 +6,62 @@ import androidx.databinding.BaseObservable;
 import androidx.databinding.Bindable;
 import androidx.databinding.ObservableField;
 
-import com.jroomstudio.commentstube.tabedit.TabEditNavigator;
-import com.jroomstudio.commentstube.tabedit.TabItem;
+import com.jroomstudio.commentstube.data.Tab;
+import com.jroomstudio.commentstube.data.source.TabsDataSource;
+import com.jroomstudio.commentstube.data.source.TabsRepository;
 
-public abstract class TabsViewModel extends BaseObservable {
+public abstract class TabsViewModel extends BaseObservable
+        implements TabsDataSource.GetTabCallback {
 
-    public final ObservableField<TabItem> mTabItemObservable = new ObservableField<>();
+    public final ObservableField<Tab> mTabObservable = new ObservableField<>();
 
     private final Context mContext;
 
-    private TabEditNavigator mNavigator;
+    private final TabsRepository mTabsRepository;
 
-    public TabsViewModel(Context context) {
+    public TabsViewModel(Context context, TabsRepository repository) {
         mContext = context.getApplicationContext();
-    }
+        mTabsRepository = repository;
 
-    void onActivityDestroyed(){
-        mNavigator = null;
     }
 
     // This could be an observable, but we save a call to Task.getTitleForList() if not needed.
     @Bindable
     public String getTabNameForList() {
-        return mTabItemObservable.get().getNameForList();
+        return mTabObservable.get().getNameForList();
     }
 
-    public void setTabItem(TabItem item){
-        mTabItemObservable.set(item);
-    }
-
-    /**
-     * Called by the Data Binding library and the FAB's click listener.
-     */
-    public void tabEditComplete(){
-        if(mNavigator != null){
-            mNavigator.tabEditComplete();
+    public void setTab(Tab tab){
+        if(mTabObservable.get() != null){
+            start(mTabObservable.get().getId());
+        }else{
+            mTabObservable.set(tab);
         }
-        // 플로팅 버튼 구현
+
     }
 
+
+    @Override
+    public void onTabLoaded(Tab tab) {
+        mTabObservable.set(tab);
+        notifyChange();
+    }
+
+    @Override
+    public void onDataNotAvailable() {
+        mTabObservable.set(null);
+    }
+
+
+    public void start(String tabId) {
+        if (tabId != null) {
+            mTabsRepository.getTab(tabId, this);
+        }
+    }
+
+    public void onRefresh(){
+        if(mTabObservable.get() != null){
+            start(mTabObservable.get().getId());
+        }
+    }
 }

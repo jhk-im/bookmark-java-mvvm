@@ -56,6 +56,11 @@ public interface TabsDataSource {
     // Tab 단일 객체 중 used 가 false 면서 입력된 tabName 에 해당하는 객체에 액세스
     void disableTab(@NonNull String tabId);
 
+    // tab 포지션값 변경
+    void updatePosition(@NonNull Tab tab , int position);
+
+    void updatePosition(@NonNull String tabId, int position);
+
     // 모든 Tab 테이블에서 삭제
     void deleteAllTabs();
 

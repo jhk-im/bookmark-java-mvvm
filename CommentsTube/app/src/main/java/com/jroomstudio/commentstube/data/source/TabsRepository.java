@@ -146,11 +146,12 @@ public class TabsRepository implements TabsDataSource {
 
         // Map<String, Tab> 이 null 이 아니고 mCacheIsDirty 가 false 일때 즉시 캐시로 응답
         // 즉, remote 나 local 로 부터 데이터를 받아오는데 성공 한 후 캐시 메모리에 저장이 되어있는 상태
+        /*
         if (mCachedTabs != null && !mCacheIsDirty) {
             callback.onTabsLoaded(new ArrayList<>(mCachedTabs.values()));
             return;
         }
-
+        */
         // mCacheIsDirty 가 true 이면 TabsRemoteDataSource 로 부터 데이터를 가져온다.
         /*
         if(mCacheIsDirty){
@@ -159,25 +160,24 @@ public class TabsRepository implements TabsDataSource {
         */
 
         // mCacheIsDirty 가 false 이면 TabsLocalDataSource 로 부터 데이터를 가져온다.
-        else{
-            mLocalDataSource.getTabs(new LoadTabsCallback() {
-                @Override
-                public void onTabsLoaded(List<Tab> tabs) {
-                    // 받아온 데이터를 캐쉬 메모리인 Map<String, Tap> 에 refresh 한다.
-                    refreshCache(tabs);
-                    callback.onTabsLoaded(new ArrayList<>(mCachedTabs.values()));
-                }
-                // 로컬에서 데이터 액세스에 실패하면 Remote 로 부터 데이터를 가져온다.
-                @Override
-                public void onDataNotAvailable() {
-                    //원격 구현
-                    //getTabsFromRemoteDataSource(callback);
-                    callback.onDataNotAvailable();
-                }
-            });
-        }
-
+        mLocalDataSource.getTabs(new LoadTabsCallback() {
+            @Override
+            public void onTabsLoaded(List<Tab> tabs) {
+                // 받아온 데이터를 캐쉬 메모리인 Map<String, Tap> 에 refresh 한다.
+                refreshCache(tabs);
+                callback.onTabsLoaded(new ArrayList<>(mCachedTabs.values()));
+            }
+            // 로컬에서 데이터 액세스에 실패하면 Remote 로 부터 데이터를 가져온다.
+            @Override
+            public void onDataNotAvailable() {
+                //원격 구현
+                //getTabsFromRemoteDataSource(callback);
+                callback.onDataNotAvailable();
+            }
+        });
     }
+
+
 
     /**
      * - 로컬 데이터 저장소 에 액세스 한다
@@ -269,7 +269,7 @@ public class TabsRepository implements TabsDataSource {
         mLocalDataSource.useTab(tab);
         mRemoteDataSource.useTab(tab);
 
-        Tab usedTab = new Tab(tab.getId(),tab.getName(),tab.getViewType(),true);
+        Tab usedTab = new Tab(tab.getId(),tab.getName(),tab.getViewType(),true,tab.getPosition());
 
         // 앱 UI 를 최신 상태로 유지하기 위해 메모리 캐시 업데이트 수행
         if (mCachedTabs == null){
@@ -294,7 +294,7 @@ public class TabsRepository implements TabsDataSource {
         mLocalDataSource.disableTab(tab);
         mRemoteDataSource.disableTab(tab);
 
-        Tab disableTab = new Tab(tab.getId(),tab.getName(),tab.getViewType(),false);
+        Tab disableTab = new Tab(tab.getId(),tab.getName(),tab.getViewType(),false,tab.getPosition());
 
         // 앱 UI 를 최신 상태로 유지하기 위해 메모리 캐시 업데이트 수행
         if (mCachedTabs == null){
@@ -302,6 +302,32 @@ public class TabsRepository implements TabsDataSource {
         }
         mCachedTabs.put(tab.getId(), disableTab);
     }
+
+    /**
+     * tabId 를 입력받아 캐시 메모리에서 Tab 객체를 가져와 updatePosition(Tab,int) 을 호출한다.
+     * - test 에서 활용
+     **/
+    @Override
+    public void updatePosition(@NonNull String tabId, int position) {
+        checkNotNull(tabId);
+        checkNotNull(position);
+        updatePosition(getTabWithId(tabId),position);
+    }
+
+    @Override
+    public void updatePosition(@NonNull Tab tab, int position) {
+        checkNotNull(tab);
+        mLocalDataSource.updatePosition(tab,position);
+        mRemoteDataSource.updatePosition(tab,position);
+        Tab usedTab = new Tab(tab.getId(),tab.getName(),tab.getViewType(),tab.isUsed(),position);
+
+        // 앱 UI 를 최신 상태로 유지하기 위해 메모리 캐시 업데이트 수행
+        if (mCachedTabs == null){
+            mCachedTabs = new LinkedHashMap<>();
+        }
+        mCachedTabs.put(tab.getId(),usedTab);
+    }
+
 
     @Override
     public void deleteAllTabs() {

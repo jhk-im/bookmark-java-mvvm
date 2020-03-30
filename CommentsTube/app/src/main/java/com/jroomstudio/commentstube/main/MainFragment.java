@@ -57,11 +57,11 @@ public class MainFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        setupSnackBar();
+        //setupSnackBar();
         setupRefreshLayout();
 
         //스낵바 테스트
-        mMainFragViewModel.snackBarText.set("프래그먼트 셋팅");
+       // mMainFragViewModel.snackBarText.set("프래그먼트 셋팅");
     }
 
     // DESTROY

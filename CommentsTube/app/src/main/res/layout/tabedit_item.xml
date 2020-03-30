@@ -26,8 +26,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="2"
             android:textColor="@android:color/primary_text_light"
-            android:textSize="20sp"
-            android:text="@{viewmodel.tabNameForList}" />
+            android:textSize="20sp"/>
 
         <FrameLayout
             android:id="@+id/drag_handle"

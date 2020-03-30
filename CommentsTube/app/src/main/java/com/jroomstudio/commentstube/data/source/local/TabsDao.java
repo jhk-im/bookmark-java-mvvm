@@ -24,18 +24,6 @@ public interface TabsDao {
    @Query("SELECT * FROM tabs")
    List<Tab> getAllTabs();
 
-   /**
-    * tabs 에서 사용하는 아이템을 가져온다.
-    * */
-   @Query("SELECT * FROM tabs WHERE used = 1 ")
-   List<Tab> getUseTabs();
-
-    /**
-     * tabs 에서 사용하는 아이템을 가져온다.
-     * */
-    @Query("SELECT * FROM tabs WHERE used = 0 ")
-    List<Tab> getDisableTabs();
-
     /**
     * name 으로 선택한 tab 아이템을 가져온다.
     * @param tabId tab 의 id.
@@ -51,6 +39,16 @@ public interface TabsDao {
      * */
     @Query("UPDATE tabs SET used = :used WHERE entryId = :tabId")
     void updateUsed(String tabId, boolean used);
+
+    /**
+     * 각 탭의 포지션값 변경
+     * @param tabId tab id
+     * @param position tab 의 리스트상 포지션 (able list 와 use list 로 나뉨)
+     **/
+    @Query("UPDATE tabs SET position = :position WHERE entryId = :tabId")
+    void updatePosition(String tabId, int position);
+
+
 
     /**
      * 데이터베이스에 tab 아이템을 추가한다.

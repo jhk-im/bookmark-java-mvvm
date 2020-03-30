@@ -1,6 +1,5 @@
 package com.jroomstudio.commentstube.main;
 
-import android.util.Log;
 
 import androidx.databinding.BindingAdapter;
 import androidx.viewpager.widget.ViewPager;
@@ -19,8 +18,8 @@ public class TabsListBinding {
      * 변화가 감지되면 replaceData 로 어댑터 내부의 Tab 아이템의 변화를 업데이트한다.
      **/
     @SuppressWarnings("unchecked")
-    @BindingAdapter("app:tabItems")
-    public static void setTabItems(ViewPager viewPager, List<Tab> tabItems){
+    @BindingAdapter("app:items")
+    public static void setItems(ViewPager viewPager, List<Tab> tabItems){
         MainActivity.MainPagerAdapter mainPagerAdapter =
                 (MainActivity.MainPagerAdapter) viewPager.getAdapter();
         if(mainPagerAdapter != null){

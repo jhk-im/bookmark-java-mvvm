@@ -9,6 +9,7 @@ import androidx.room.PrimaryKey;
 
 
 import com.google.common.base.Objects;
+import com.google.common.base.Strings;
 
 import java.util.UUID;
 
@@ -69,6 +70,13 @@ public final class Tab {
     @ColumnInfo(name = "used")
     private final boolean mUsed;
 
+    /**
+     * - Tab 의 리스트 상 포지션
+     *  Tab 의 순서를 지정함
+     **/
+    @ColumnInfo(name = "position")
+    private final int mPosition;
+
 
     /**
      * Tab 객체가 처음 생성될 때 사용하는 생성자
@@ -78,8 +86,9 @@ public final class Tab {
      * */
     @Ignore
     public Tab(@NonNull String name,
-               @NonNull String viewType) {
-        this(UUID.randomUUID().toString(),name,viewType,true);
+               @NonNull String viewType,
+               @NonNull int position) {
+        this(UUID.randomUUID().toString(),name,viewType,true, position);
     }
 
 
@@ -93,11 +102,13 @@ public final class Tab {
     public Tab(@NonNull String id,
                @NonNull String name,
                @NonNull String viewType,
-               boolean used) {
+               boolean used,
+               int position) {
         this.mId = id;
         this.mName = name;
         this.mUsed = used;
         this.mViewType = viewType;
+        this.mPosition = position;
     }
 
     @NonNull
@@ -111,6 +122,16 @@ public final class Tab {
 
     public boolean isUsed() { return mUsed; }
 
+    public int getPosition() { return mPosition; }
+
+    @Nullable
+    public String getNameForList() {
+        if (!Strings.isNullOrEmpty(mName)) {
+            return mName;
+        } else {
+            return null;
+        }
+    }
 
     @Override
     public boolean equals(@Nullable Object obj) {
@@ -120,11 +141,12 @@ public final class Tab {
         return  Objects.equal(mId,tab.mId) &&
                 Objects.equal(mName,tab.mName) &&
                 Objects.equal(mViewType,tab.mViewType) &&
-                Objects.equal(mUsed,tab.mUsed);
+                Objects.equal(mUsed,tab.mUsed) &&
+                Objects.equal(mPosition,tab.mPosition);
     }
 
     @Override
-    public int hashCode() { return Objects.hashCode(mId,mName,mViewType,mUsed); }
+    public int hashCode() { return Objects.hashCode(mId,mName,mViewType,mUsed,mPosition); }
 
     @Override
     public String toString() { return "Tab whit name" + mName; }

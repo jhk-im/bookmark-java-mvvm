@@ -34,14 +34,14 @@ public class TabsRemoteDataSource implements TabsDataSource {
      **/
     private static final Map<String, Tab> TAB_SERVICE_DATA = new LinkedHashMap<>(2);
     static {
-        addTab("SUBSCRIBE","SUB_FRAGMENT");
-        addTab("BEST","DEFAULT_FRAGMENT");
-        addTab("GAME","DEFAULT_FRAGMENT");
-        addTab("MUSIC","DEFAULT_FRAGMENT");
-        addTab("MOVIE","DEFAULT_FRAGMENT");
-        addTab("SPORTS","DEFAULT_FRAGMENT");
-        addTab("NEWS","DEFAULT_FRAGMENT");
-        addTab("DOCUMENTARY","DEFAULT_FRAGMENT");
+        addTab("SUBSCRIBE","SUB_FRAGMENT",0);
+        addTab("BEST","DEFAULT_FRAGMENT",1);
+        addTab("GAME","DEFAULT_FRAGMENT",2);
+        addTab("MUSIC","DEFAULT_FRAGMENT",3);
+        addTab("MOVIE","DEFAULT_FRAGMENT",4);
+        addTab("SPORTS","DEFAULT_FRAGMENT",5);
+        addTab("NEWS","DEFAULT_FRAGMENT",6);
+        addTab("DOCUMENTARY","DEFAULT_FRAGMENT",7);
     }
 
     // 다이렉트 인스턴스 방지
@@ -63,8 +63,8 @@ public class TabsRemoteDataSource implements TabsDataSource {
     /**
      * TEST 용 Tab 객체를 생성하고 Map<String(name), Tab> 으로 추가
      **/
-    private static void addTab(String name, String viewType){
-        Tab newTab = new Tab(name,viewType);
+    private static void addTab(String name, String viewType,int position){
+        Tab newTab = new Tab(name,viewType, position);
         TAB_SERVICE_DATA.put(newTab.getName(), newTab);
     }
 
@@ -124,7 +124,7 @@ public class TabsRemoteDataSource implements TabsDataSource {
      **/
     @Override
     public void useTab(@NonNull Tab tab) {
-        Tab useTab = new Tab(tab.getId(),tab.getName(),tab.getViewType(),true);
+        Tab useTab = new Tab(tab.getId(),tab.getName(),tab.getViewType(),true,tab.getPosition());
         TAB_SERVICE_DATA.put(tab.getId(),useTab);
     }
 
@@ -139,10 +139,19 @@ public class TabsRemoteDataSource implements TabsDataSource {
      **/
     @Override
     public void disableTab(@NonNull Tab tab) {
-        Tab disableTab = new Tab(tab.getId(),tab.getName(),tab.getViewType(),false);
+        Tab disableTab = new Tab(tab.getId(),tab.getName(),tab.getViewType(),false,tab.getPosition());
         TAB_SERVICE_DATA.put(tab.getId(), disableTab);
     }
 
+    @Override
+    public void updatePosition(@NonNull Tab tab, int position) {
+        //
+    }
+
+    @Override
+    public void updatePosition(@NonNull String tabId, int position) {
+        //
+    }
 
     @Override
     public void deleteAllTabs() {
