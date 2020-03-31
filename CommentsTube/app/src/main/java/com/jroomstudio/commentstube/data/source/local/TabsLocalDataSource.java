@@ -1,13 +1,11 @@
 package com.jroomstudio.commentstube.data.source.local;
 
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import com.jroomstudio.commentstube.data.Tab;
 import com.jroomstudio.commentstube.data.source.TabsDataSource;
-import com.jroomstudio.commentstube.data.source.remote.TabsRemoteDataSource;
 import com.jroomstudio.commentstube.util.AppExecutors;
 
 import java.util.ArrayList;
@@ -223,6 +221,11 @@ public class TabsLocalDataSource implements TabsDataSource {
             mTabsDao.deleteAllTabs();
         };
         mAppExecutors.getDiskIO().execute(runnable);
+    }
+
+    @Override
+    public void refreshTabs() {
+        // {@link TabsRepository} 에서 로직을 처리하므로 필요하지 않다.
     }
 
 }

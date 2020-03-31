@@ -53,6 +53,8 @@ public class TabEditViewModel extends BaseObservable {
             // 비활성상태로 변경
             mTabsRepository.disableTab(tab);
         }
+        // 업데이트 한번 해야됨을 알림
+        mTabsRepository.refreshTabs();
     }
 
     // 담당 프래그먼트가 onResume 될때 호출
@@ -70,7 +72,6 @@ public class TabEditViewModel extends BaseObservable {
                 List<Tab> disableTabsToShow = new ArrayList<Tab>();
                 // 사용 활성상태인 탭만 리스트에 추가
                 for(Tab tab : tabs){
-                    Log.e("onLoad",tab.getId()+"|"+tab.getName()+"|"+tab.getPosition()+"|"+tab.isUsed());
                     if(tab.isUsed()){
                         useTabsToShow.add(tab);
                     }else{
@@ -90,7 +91,9 @@ public class TabEditViewModel extends BaseObservable {
             public void onDataNotAvailable() {
                 /**
                  * Tab 객체 정보를 받아오는데 실패했을 때
+                 * 에러 알림 처리해야함
                  **/
+
             }
         });
 

@@ -64,4 +64,7 @@ public interface TabsDataSource {
     // 모든 Tab 테이블에서 삭제
     void deleteAllTabs();
 
+    // 탭 데이터를 refresh 한다.
+    void refreshTabs();
+
 }

@@ -93,7 +93,7 @@ public class FakeTabsRemoteDataSource implements TabsDataSource {
      **/
     @Override
     public void useTab(@NonNull Tab tab) {
-        Tab useTab = new Tab(tab.getId(),tab.getName(),tab.getViewType(),true);
+        Tab useTab = new Tab(tab.getId(),tab.getName(),tab.getViewType(),true,tab.getPosition());
         TABS_SERVICE_DATA.put(tab.getId(), useTab);
 }
 
@@ -102,18 +102,36 @@ public class FakeTabsRemoteDataSource implements TabsDataSource {
         //원격 데이터 소스에는 필요하지 않음
     }
 
+
     /**
      * 입력받은 객체의 used 를 false 로 update 한다.
      **/
     @Override
     public void disableTab(@NonNull Tab tab) {
-        Tab disableTab = new Tab(tab.getId(),tab.getName(),tab.getViewType(),false);
+        Tab disableTab = new Tab(tab.getId(),tab.getName(),tab.getViewType(),false,tab.getPosition());
         TABS_SERVICE_DATA.put(tab.getId(), disableTab);
     }
 
+    @Override
+    public void updatePosition(@NonNull String tabId, int position) {
+        //원격 데이터 소스에는 필요하지 않음
+    }
+    /**
+     * 입력받은 객체의 position 값을 update 한다.
+     **/
+    @Override
+    public void updatePosition(@NonNull Tab tab, int position) {
+        Tab updateTab = new Tab(tab.getId(),tab.getName(),tab.getViewType(),tab.isUsed(),position);
+        TABS_SERVICE_DATA.put(tab.getId(), updateTab);
+    }
 
     @Override
     public void deleteAllTabs() {
+        TABS_SERVICE_DATA.clear();
+    }
+
+    @Override
+    public void refreshTabs() {
 
     }
 

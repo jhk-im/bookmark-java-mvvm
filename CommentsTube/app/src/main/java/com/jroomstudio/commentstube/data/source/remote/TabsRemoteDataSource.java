@@ -32,16 +32,17 @@ public class TabsRemoteDataSource implements TabsDataSource {
      * key - String name
      * value - tab
      **/
-    private static final Map<String, Tab> TAB_SERVICE_DATA = new LinkedHashMap<>(2);
+    private static final Map<String, Tab> TAB_SERVICE_DATA = new LinkedHashMap<>();
     static {
-        addTab("SUBSCRIBE","SUB_FRAGMENT",0);
-        addTab("BEST","DEFAULT_FRAGMENT",1);
-        addTab("GAME","DEFAULT_FRAGMENT",2);
-        addTab("MUSIC","DEFAULT_FRAGMENT",3);
-        addTab("MOVIE","DEFAULT_FRAGMENT",4);
-        addTab("SPORTS","DEFAULT_FRAGMENT",5);
-        addTab("NEWS","DEFAULT_FRAGMENT",6);
-        addTab("DOCUMENTARY","DEFAULT_FRAGMENT",7);
+        addTab("SUBSCRIBE","SUB_FRAG",0);
+        addTab("BEST","MAIN_FRAG",1);
+        addTab("GAME","MAIN_FRAGMENT",2);
+        addTab("MUSIC","MAIN_FRAGMENT",3);
+        addTab("MOVIE","MAIN_FRAGMENT",4);
+        addTab("SPORTS","MAIN_FRAGMENT",5);
+        addTab("NEWS","MAIN_FRAGMENT",6);
+        addTab("SCIENCE","MAIN_FRAG",7);
+        addTab("DOCUMENTARY","MAIN_FRAGMENT",8);
     }
 
     // 다이렉트 인스턴스 방지
@@ -85,7 +86,6 @@ public class TabsRemoteDataSource implements TabsDataSource {
         handler.postDelayed(() -> {
             callback.onTabsLoaded(Lists.newArrayList(TAB_SERVICE_DATA.values()));
         }, SERVICE_LATENCY_IN_MILLIS);
-
     }
 
     /**
@@ -143,19 +143,31 @@ public class TabsRemoteDataSource implements TabsDataSource {
         TAB_SERVICE_DATA.put(tab.getId(), disableTab);
     }
 
+    /**
+     * 입력받은 탭 객체를 Map<String, Tab> 캐시 메모리에서 id로 찾아
+     * 입력받은 position 값으로 position 값을 갱신한다.
+     **/
     @Override
     public void updatePosition(@NonNull Tab tab, int position) {
-        //
+        Tab newTab = new Tab(tab.getId(),tab.getName(),tab.getViewType(),tab.isUsed(),position);
+        TAB_SERVICE_DATA.put(tab.getId(), newTab);
     }
 
     @Override
     public void updatePosition(@NonNull String tabId, int position) {
-        //
+        // {@link TabsRepository} 에서 처리하므로 이곳에서는 필요하지 않다.
+        // {@code} tabId 로 {@link tab} 을 가져온다
     }
 
     @Override
     public void deleteAllTabs() {
         TAB_SERVICE_DATA.clear();
+    }
+
+    @Override
+    public void refreshTabs() {
+        // {@link TabsRepository} 에서 처리하므로 이곳에서는 필요하지 않다.
+        // {@code} tabId 로 {@link tab} 을 가져온다
     }
 
 }

@@ -40,8 +40,6 @@ public class MainActViewModel extends BaseObservable {
     // 뷰페이저에 추가되는 tab 아이템 리스트
     public final ObservableList<Tab> items = new ObservableArrayList<>();
 
-
-
     /**
      * 해당 뷰모델과 연결될 액티비티,프래그먼트 의 Context
      *
