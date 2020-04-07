@@ -83,7 +83,8 @@ public final class Bookmark {
      * @param position - category 내부에서의 리스트 순서
      **/
     @Ignore // -> 저장하지 않고 싶은 필드
-    public Bookmark(@NonNull String title, @NonNull String url,
+    public
+    Bookmark(@NonNull String title, @NonNull String url,
                     @NonNull String action, @NonNull String category, int position){
         this(UUID.randomUUID().toString(),title,url,action,category,position);
     }

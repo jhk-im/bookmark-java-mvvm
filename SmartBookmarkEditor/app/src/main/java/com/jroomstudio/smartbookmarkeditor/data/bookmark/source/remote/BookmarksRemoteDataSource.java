@@ -31,7 +31,7 @@ public class BookmarksRemoteDataSource implements BookmarksDataSource {
     /**
      * - test 로 생성된 Tab 객체를 캐시 메모리에 저장
      * key - String name
-     * value - tab
+     * value - Bookmark
      **/
     private static final Map<String, Bookmark> BOOKMARK_SERVICE_DATA = new LinkedHashMap<>();
 
@@ -60,7 +60,7 @@ public class BookmarksRemoteDataSource implements BookmarksDataSource {
         // {@link BookmarksRepository} 에서 처리하므로 이곳에서는 필요하지 않다.
     }
 
-    // bookmark 리스트를 찾아 반환
+    // bookmark 리스트를 찾아 callback
     @Override
     public void getBookmarks(@NonNull LoadBookmarksCallback callback) {
         // 실행을 지연시켜 네트워크를 시뮬레이션 한다.
@@ -72,7 +72,7 @@ public class BookmarksRemoteDataSource implements BookmarksDataSource {
         }, SERVICE_LATENCY_IN_MILLIS);
     }
 
-    // bookmark 객체 찾아 반환
+    // bookmark 객체 찾아 callback
     @Override
     public void getBookmark(@NonNull String id, @NonNull GetBookmarkCallback callback) {
         final Bookmark bookmark = BOOKMARK_SERVICE_DATA.get(id);
@@ -102,6 +102,11 @@ public class BookmarksRemoteDataSource implements BookmarksDataSource {
     @Override
     public void deleteAllInCategory(@NonNull String category) {
         // 입력된 카테고리의 아이템 모두삭제
+        for(Bookmark bookmark : Lists.newArrayList(BOOKMARK_SERVICE_DATA.values())){
+            if(bookmark.getCategory().equals(category)){
+                BOOKMARK_SERVICE_DATA.remove(bookmark.getId());
+            }
+        }
     }
 
 

@@ -109,8 +109,7 @@ public class BookmarksLocalDataSource implements BookmarksDataSource {
                 if(bookmark != null){
                     // id 에 해당하는 아이템이 있는경우
                     callback.onBookmarkLoaded(bookmark);
-                }
-                else{
+                } else{
                     // 아이템이 없다면
                     callback.onDataNotAvailable();
                 }
@@ -149,6 +148,8 @@ public class BookmarksLocalDataSource implements BookmarksDataSource {
     @Override
     public void deleteAllInCategory(@NonNull String category) {
         //입력된 카테고리의 아이템 모두 삭제
+        Runnable runnable = () -> mBookmarksDAO.deleteAllInCategory(category);
+        mAppExecutors.getDiskIO().execute(runnable);
     }
 
 

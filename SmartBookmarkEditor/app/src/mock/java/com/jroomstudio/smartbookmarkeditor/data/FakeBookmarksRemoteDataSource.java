@@ -61,27 +61,32 @@ public class FakeBookmarksRemoteDataSource implements BookmarksDataSource {
         // {@link BookmarksRepository} 에서 처리하므로 이곳에서는 필요하지 않다.
     }
 
+    // 리스트 callback
     @Override
     public void getBookmarks(@NonNull LoadBookmarksCallback callback) {
         callback.onBookmarksLoaded(Lists.newArrayList(BOOKMARKS_SERVICE_DATA.values()));
     }
 
+    // 객체 콜백
     @Override
     public void getBookmark(@NonNull String id, @NonNull GetBookmarkCallback callback) {
         Bookmark bookmark = BOOKMARKS_SERVICE_DATA.get(id);
         callback.onBookmarkLoaded(bookmark);
     }
 
+    // 객체 저장
     @Override
     public void saveBookmark(@NonNull Bookmark bookmark) {
         BOOKMARKS_SERVICE_DATA.put(bookmark.getId(),bookmark);
     }
 
+    // 리스트삭제
     @Override
     public void deleteAllBookmark() {
         BOOKMARKS_SERVICE_DATA.clear();
     }
 
+    // id 로 객체 삭제
     @Override
     public void deleteBookmark(@NonNull String id) {
         BOOKMARKS_SERVICE_DATA.remove(id);
@@ -90,8 +95,14 @@ public class FakeBookmarksRemoteDataSource implements BookmarksDataSource {
     @Override
     public void deleteAllInCategory(@NonNull String category) {
         // 입력된 카테고리 아이템 모두 삭제
+        for(Bookmark bookmark : Lists.newArrayList(BOOKMARKS_SERVICE_DATA.values())){
+            if(bookmark.getCategory().equals(category)){
+                BOOKMARKS_SERVICE_DATA.remove(bookmark.getId());
+            }
+        }
     }
 
+    // 입력받은 객체 포지션값 업데이트
     @Override
     public void updatePosition(@NonNull Bookmark bookmark, int position) {
         Bookmark updateBookmark = new Bookmark(bookmark.getId(),bookmark.getTitle(),

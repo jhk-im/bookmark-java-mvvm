@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Category 데이터에 액세스하기 위한 진입점
 **/
-public interface CategorysDataSource {
+public interface CategoriesDataSource {
 
     /**
      * categories 데이터 베이스에서 category 리스트 전체를 가져올 때 callback 한다.
@@ -39,5 +39,24 @@ public interface CategorysDataSource {
 
     // Categories 에서 리스트 가져오기
     void getCategories(@NonNull LoadCategoriesCallback callback);
+
+    // categories 에서 입력된 id로 category 객체 가져오기
+    void getCategory(@NonNull String id,@NonNull GetCategoryCallback callback);
+
+    // Category 객체를 데이터베이스에 저장
+    void saveCategory(@NonNull Category category);
+
+    // 모든 카테고리 제거
+    void deleteAllCategories();
+
+    // 입력된 id 의 category 찾아서 제거
+    void deleteCategory(@NonNull String id);
+
+    // 입력된 카테고리 객체의 포지션값 변경
+    void updatePosition(@NonNull Category category, int position);
+
+    // 입력된 카테고리 id인 객체의 포지션값 변경
+    void updatePosition(@NonNull String id, int position);
+
 
 }

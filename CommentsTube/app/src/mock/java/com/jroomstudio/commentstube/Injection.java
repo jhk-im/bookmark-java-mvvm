@@ -24,8 +24,7 @@ public class Injection {
         AppLocalDatabase database = AppLocalDatabase.getInstance(context);
         return TabsRepository.getInstance(
                 TabsLocalDataSource.getInstance(new AppExecutors(),database.tabsDao()),
-                FakeTabsRemoteDataSource.getInstance()
-        );
+                FakeTabsRemoteDataSource.getInstance());
     }
 
 }
