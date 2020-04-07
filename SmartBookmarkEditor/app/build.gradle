@@ -1,0 +1,163 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+
+
+    defaultConfig {
+        applicationId "com.jroomstudio.smartbookmarkeditor"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    /**
+     * 안드로이드 프로가드
+     * - 디컴파일시 코드노출 방지
+     * - 불필요한 메서드 제거하여 멀티덱스 방지
+     * - debug, release 2가지의 빌드 버전
+     **/
+    buildTypes {
+
+        debug {
+            /**
+             * - 불필요한 코드 및 리소스 축소 -> apk 용랑 줄임
+             * - 빌드시간이 오래걸리기 때문에 release 에서 사용 권장
+             **/
+            minifyEnabled false
+            // 프로가드 사용유무
+            useProguard true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            testProguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguardTest-rules.pro'
+        }
+        release {
+            minifyEnabled true
+            useProguard true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    /**
+     *  One Source Multi Application
+     *  대표적인 사용목적
+     *  - 빌드 형태에 따른 앱 분리 (개발/운영, 무료/유료)
+     *  - 여러개의 앱을 하나의 소스로 만드는 경우
+     *  - 여러 flavor 를 선언하면서, 각각의 플레이버가 어떤 그룹에 속하는지 추가적으로 지정할 수 있다.
+     **/
+    flavorDimensions "default"
+
+    /**
+     * - 제품 버전별로 설정값을 다르게 할 수 있다.
+     * - 버전을 나눠서 빌드하기 때문에 테스트시 용이하다.
+     * - gradle defaultConfig 의 모든속성을 지원하기 때문에 버전 코드 및 이름도 다르게 지정할 수 있다.
+     * - 패키지명.mock 버전과 일반버전으로 나뉨
+     **/
+
+    productFlavors {
+        mock {
+            dimension "default"
+            // 어플리케이션 id 의 접미사
+            // 패키지명.applicationSuffix 으로 패키지명이 변경되어 2개의 앱을 생성할 수 있다.
+            applicationIdSuffix = ".mock"
+        }
+        prod {
+            dimension "default"
+        }
+    }
+
+    // 빌드타입이 release 일 경우 productFlavors 의 mock 은 표시하지 않는다.
+    android.variantFilter { variant ->
+        if (variant.buildType.name == 'release'
+                && variant.getFlavors().get(0).name == 'mock') {
+            variant.setIgnore(true)
+        }
+    }
+
+    // 모든 단위의 테스트 결과를 항상 표시한다.
+    testOptions.unitTests.all {
+        testLogging {
+            events 'passed', 'skipped', 'failed', 'standardOut', 'standardError'
+        }
+    }
+
+    // DataBinding 사용하기 위함
+    dataBinding {
+        enabled = true
+    }
+    compileOptions {
+        sourceCompatibility = 1.8
+        targetCompatibility = 1.8
+    }
+
+}
+
+dependencies {
+    //implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    //App dependencies
+    // appcompat 라이브러리 : 이전 버전에서 발전된 UI를 지원하지 않을 경우 Appcompat 라이브러리에 포함된 UI를 사용한다.
+    // https://developer.android.com/topic/libraries/support-library/features?hl=ko
+    implementation "androidx.appcompat:appcompat:$appCompatVersion"
+
+    // Material design : 플랫폼 및 기기 전반의 시각적 요소, 움직임 및 상호작용 디자인을 위한 포괄적인 가이드이다.
+    // https://developer.android.com/guide/topics/ui/look-and-feel?hl=ko
+    implementation "com.google.android.material:material:$materialVersion"
+
+    // 곡선 테두리와 그림자 음영이 있는 형태의 레이아웃
+    // https://developer.android.com/guide/topics/ui/layout/cardview?hl=ko
+    implementation "androidx.cardview:cardview:$cardVersion"
+
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    implementation "androidx.recyclerview:recyclerview:$recyclerViewVersion"
+
+    // API 의도를 annotation 으로 명시해 결함탐지
+    // https://developer.android.com/studio/write/annotations?hl=ko
+    implementation "androidx.annotation:annotation:$androidXAnnotations"
+
+    // 이전 버전의 플랫폼 또는 유틸리티의 API 를 사용하기 위한 정적 라이브러리
+    implementation "androidx.legacy:legacy-support-v4:$androidXLegacySupport"
+
+    // 자바 클린코드 작성을 위한 구조를 지원하는 라이브러리
+    // https://krksap.tistory.com/1187
+    implementation "com.google.guava:guava:$rootProject.guavaVersion"
+
+    // 안드로이드 로컬 데이터베이스 구현
+    // https://developer.android.com/jetpack/androidx/releases/room?hl=ko
+    implementation "androidx.room:room-runtime:$roomVersion"
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    annotationProcessor "androidx.room:room-compiler:$roomVersion"
+
+    // Local unit test
+    testImplementation "junit:junit:$rootProject.ext.junitVersion"
+    testImplementation "org.mockito:mockito-all:$rootProject.ext.mockitoVersion"
+    testImplementation "org.hamcrest:hamcrest-all:$rootProject.ext.hamcrestVersion"
+
+    // Android unit tests
+    androidTestImplementation "junit:junit:$rootProject.ext.junitVersion"
+    androidTestImplementation "org.mockito:mockito-core:$rootProject.ext.mockitoVersion"
+    androidTestImplementation "com.google.dexmaker:dexmaker:$dexMaker"
+    androidTestImplementation "com.google.dexmaker:dexmaker-mockito:$dexMaker"
+
+    // UI Test
+    implementation "androidx.test.espresso:espresso-idling-resource:$espressoVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$espressoVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-contrib:$espressoVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-intents:$espressoVersion"
+    androidTestImplementation "androidx.test.espresso.idling:idling-concurrent:$espressoVersion"
+    androidTestImplementation "androidx.room:room-testing:$roomVersion"
+
+    // 안드로이드 테스트 지원 라이브러리의 runner, rules
+    androidTestImplementation "androidx.test:runner:$androidXTestVersion"
+    androidTestImplementation "androidx.test:rules:$androidXTestVersion"
+
+
+    // 기본 APK 와 테스트 APK 간의 충돌해결
+    androidTestImplementation "androidx.annotation:annotation:$androidXAnnotations"
+    androidTestImplementation "androidx.legacy:legacy-support-v4:$androidXLegacySupport"
+    androidTestImplementation "androidx.recyclerview:recyclerview:$recyclerViewVersion"
+    androidTestImplementation "androidx.appcompat:appcompat:$appCompatVersion"
+    androidTestImplementation "com.google.android.material:material:$materialVersion"
+}

@@ -74,4 +74,6 @@ public interface TabsDao {
 
     @Query("DELETE FROM tabs")
     void deleteAllTabs();
+
+
 }
