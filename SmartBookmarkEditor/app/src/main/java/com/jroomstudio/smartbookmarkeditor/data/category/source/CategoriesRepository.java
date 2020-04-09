@@ -164,22 +164,28 @@ public class CategoriesRepository implements CategoriesDataSource {
             callback.onCategoriesLoaded(new ArrayList<>(mCachedCategories.values()));
             return;
         }
-        // LocalDataSource 로 부터 데이터를 가져온다.
-        mLocalDataSource.getCategories(new LoadCategoriesCallback() {
-            @Override
-            public void onCategoriesLoaded(List<Category> categories) {
-                // 로드성공
-                // 받아온 데이터는 캐쉬메모리에 refresh
-                refreshCache(categories);
-                callback.onCategoriesLoaded(new ArrayList<>(mCachedCategories.values()));
-            }
 
-            @Override
-            public void onDataNotAvailable() {
-                // 데이터가 없을 때
-                // 회원의 경우 원격구현
-            }
-        });
+        // mCacheDirty 가 true 이면 데이터가 변경되어 refresh 해야하는 상황
+        if(mCacheDirty) {
+            getCategoriesFromRemoteDataSource(callback);
+        }else{
+            // LocalDataSource 로 부터 데이터를 가져온다.
+            mLocalDataSource.getCategories(new LoadCategoriesCallback() {
+                @Override
+                public void onCategoriesLoaded(List<Category> categories) {
+                    // 로드성공
+                    // 받아온 데이터는 캐쉬메모리에 refresh
+                    refreshCache(categories);
+                    callback.onCategoriesLoaded(new ArrayList<>(mCachedCategories.values()));
+                }
+
+                @Override
+                public void onDataNotAvailable() {
+                    // 로컬이 비어있을때 원격에서 확인한다.
+                    getCategoriesFromRemoteDataSource(callback);
+                }
+            });
+        }
     }
 
 
@@ -222,9 +228,26 @@ public class CategoriesRepository implements CategoriesDataSource {
             // 데이터가 없을 때
             @Override
             public void onDataNotAvailable() {
-                // 회원일 경우 원격구현
+                // 원격에서 찾는다.
+                mRemoteDataSource.getCategory(id, new GetCategoryCallback() {
+                    @Override
+                    public void onCategoryLoaded(Category category) {
+                        // 로드성공
+                        // 캐시메모리 업데이트
+                        if(mCachedCategories == null){
+                            mCachedCategories = new LinkedHashMap<>();
+                        }
+                        // 캐시메모리에도 추가
+                        mCachedCategories.put(category.getId(),category);
+                        callback.onCategoryLoaded(category);
+                    }
+
+                    @Override
+                    public void onDataNotAvailable() { onDataNotAvailable(); }
+                });
             }
         });
+
     }
 
     // 로컬과 원격 데이터베이스에 모두 Category 를 각각 저장한다.

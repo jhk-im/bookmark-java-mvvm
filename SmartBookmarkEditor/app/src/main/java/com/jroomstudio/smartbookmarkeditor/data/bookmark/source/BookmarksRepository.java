@@ -40,7 +40,7 @@ public class BookmarksRepository implements BookmarksDataSource {
     /**
      * 이 변수에 패키지 로컬 visibility(가시성)이 있으므로 테스트에서 액세스할 수 있다.
      **/
-    public Map<String, Bookmark> mCachedBookmarks;
+    Map<String, Bookmark> mCachedBookmarks;
 
     /**
      * 다음에 데이터를 요청할 때 강제로 업데이트 하도록 캐시를 유효하지 않은 것으로 표시
@@ -95,8 +95,8 @@ public class BookmarksRepository implements BookmarksDataSource {
     }
 
     /**
-     * - Bookmark 의 id 를 입력하여 캐시 메모리 에서 Bookmark 객체를 찾아 반환한다.
-     * - Test 시 사용된다.
+     * - 캐시메모리에서 Bookmark 의 id 를 입력하여 Bookmark 객체를 찾아 반환한다.
+     * - Test 에서 사용된다.
      *
      * 캐시메모리
      * - Map<String, Bookmark>
@@ -119,7 +119,7 @@ public class BookmarksRepository implements BookmarksDataSource {
         }
     }
 
-    // 로컬에 문제가 있는경우 원격에서 해야할때
+    // 로컬이 비어있는 경우 원격에서 확인
     private void getBookmarksFromRemoteDataSource(@NonNull final LoadBookmarksCallback callback){
         mRemoteDataSource.getBookmarks(new LoadBookmarksCallback() {
             @Override
@@ -139,6 +139,7 @@ public class BookmarksRepository implements BookmarksDataSource {
      */
 
     // Bookmark 의 데이터베이스가 변경되면 캐시메모리를 refresh 해야하기 때문에 true 로 변경
+    // viewModel 에서 호출
     @Override
     public void refreshBookmarks() { mCacheDirty = true; }
 
@@ -160,24 +161,27 @@ public class BookmarksRepository implements BookmarksDataSource {
             callback.onBookmarksLoaded(new ArrayList<>(mCachedBookmarks.values()));
             return;
         }
-        // LocalDataSource 로 부터 데이터를 가져온다.
-        mLocalDataSource.getBookmarks(new LoadBookmarksCallback() {
-            @Override
-            public void onBookmarksLoaded(List<Bookmark> bookmarks) {
-                // 로드성공
-                // 받아온 데이터는 캐쉬메모리에 refresh
-                refreshCache(bookmarks);
-                callback.onBookmarksLoaded(new ArrayList<>(mCachedBookmarks.values()));
-            }
 
-            @Override
-            public void onDataNotAvailable() {
-                // 데이터가 없을 때
-                // 회원의 경우 원격구현
-                getBookmarksFromRemoteDataSource(callback);
-            }
-        });
-
+        // mCacheDirty 가 true 이면 데이터가 변경되어 refresh 해야하는 상황
+        if(mCacheDirty) {
+            getBookmarksFromRemoteDataSource(callback);
+        }else{
+            // LocalDataSource 로 부터 데이터를 가져온다.
+            mLocalDataSource.getBookmarks(new LoadBookmarksCallback() {
+                @Override
+                public void onBookmarksLoaded(List<Bookmark> bookmarks) {
+                    // 로드성공
+                    // 받아온 데이터는 캐쉬메모리에 refresh
+                    refreshCache(bookmarks);
+                    callback.onBookmarksLoaded(new ArrayList<>(mCachedBookmarks.values()));
+                }
+                @Override
+                public void onDataNotAvailable() {
+                    // 로컬이 비어있을때 원격에서 확인한다.
+                    getBookmarksFromRemoteDataSource(callback);
+                }
+            });
+        }
 
     }
 
@@ -220,7 +224,7 @@ public class BookmarksRepository implements BookmarksDataSource {
             // 데이터가 없을 때
             @Override
             public void onDataNotAvailable() {
-                // 회원일 경우 원격구현
+                // 원격에서 찾는다
                 mRemoteDataSource.getBookmark(id, new GetBookmarkCallback() {
                     @Override
                     public void onBookmarkLoaded(Bookmark bookmark) {

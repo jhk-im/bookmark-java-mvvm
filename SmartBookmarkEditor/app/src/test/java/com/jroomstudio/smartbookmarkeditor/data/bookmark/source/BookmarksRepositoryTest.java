@@ -1,10 +1,8 @@
-package com.jroomstudio.smartbookmarkeditor.data.source;
+package com.jroomstudio.smartbookmarkeditor.data.bookmark.source;
 
 
 import com.google.common.collect.Lists;
 import com.jroomstudio.smartbookmarkeditor.data.bookmark.Bookmark;
-import com.jroomstudio.smartbookmarkeditor.data.bookmark.source.BookmarksDataSource;
-import com.jroomstudio.smartbookmarkeditor.data.bookmark.source.BookmarksRepository;
 
 import org.junit.After;
 import org.junit.Before;
@@ -109,10 +107,13 @@ public class BookmarksRepositoryTest {
         //        -> onDataNotAvailable() 메소드가 리턴되면 원격 데이터를 조회함
         //4. 원격데이터베이스의 getBookmarks() 에 loadArgumentCaptor 를 입력하여 작업요청
         //5. 이번에는 getValue() 에서 onBookmarksLoaded() 에 임의의 객체리스트를 담아서 콜백
-        //6. 최상위 클래스에 getBookmarks() 재요청
+        //6. 최상위 클래스에 getBookmarks() 에 LoadBookmarksCallback.class 입력
         towBookmarksLoadCallsToRepository(loadBookmarksCallback);
 
-        // 7. 원격 데이터베이스에 getBookmarks 요청
+        // 7. verify() 로 원격 데이터소스가 조회되었는지 확인
+        // any() (import static org.mockito.Matchers.any)
+        // -> 입력된 object null 확인
+        // -> LoadBookmarksCallback 호출되는지 확인?
         verify(mRemoteDataSource).
                 getBookmarks(any(BookmarksDataSource.LoadBookmarksCallback.class));
     }
@@ -120,57 +121,81 @@ public class BookmarksRepositoryTest {
     // 로컬 데이터베이스 getBookmarks() test
     @Test
     public void getBookmarks_requestAllBookmarksFromLocalDataSource(){
-        // 로컬 데이터베이스에 bookmark 리스트 요청
+        // 데이터베이스에 bookmark 리스트 요청
         mBookmarksRepository.getBookmarks(loadBookmarksCallback);
-        // 로컬 데이터베이스 소스에서 데이터가 로드된다.
+        // verify() -> 로컬 데이터베이스 소스에서 데이터가 로드되는지 확인
+        // any() -> LoadBookmarksCallback 호출되는지 확인
         verify(mLocalDataSource).getBookmarks(any(BookmarksDataSource.LoadBookmarksCallback.class));
     }
 
     // 로컬 데이터베이스 saveBookmark() text
     @Test
     public void saveBookmark_savesBookmarkToServiceAPI() {
-        //
+        //임의의 Bookmark 객체 생성
         Bookmark bookmark = new Bookmark(TITLE1,"https://www.youtube.com/",
                 "WEB_VIEW","Best",0);
-        //
+        //최상위 클래스에 saveBookmark 로 객체 저장
         mBookmarksRepository.saveBookmark(bookmark);
 
+        // 원격 소스 -> 데이터 로드되는지 확인 후 saveBookmark() 생성객체 입력
         verify(mRemoteDataSource).saveBookmark(bookmark);
+        // 로컬소스  -> 데이터 로드되는지 확인 후 saveBookmarkI) 생성객체 입력
         verify(mLocalDataSource).saveBookmark(bookmark);
+
+        // junit assertThat()
+        // mCachedBookmarks Map 에 size 1 인지 확인한다.
+        // 추가되었으면 문제없이 test 완료
         assertThat(mBookmarksRepository.mCachedBookmarks.size(), is(1));
     }
 
     // 로컬 데이터베이스 updatePosition(Bookmark,position) test
     @Test
     public void updatePosition_ServiceAPIUpdatesCache(){
+        // 객체생성
         Bookmark bookmark = new Bookmark(TITLE1,"https://www.youtube.com/",
                 "WEB_VIEW","Best",0);
+        // 저장
         mBookmarksRepository.saveBookmark(bookmark);
 
-        mBookmarksRepository.updatePosition(bookmark,bookmark.getPosition());
-        verify(mRemoteDataSource).updatePosition(bookmark,bookmark.getPosition());
-        verify(mLocalDataSource).updatePosition(bookmark,bookmark.getPosition());
-        assertThat(mBookmarksRepository.mCachedBookmarks.size(), is(1));
+        // 포지션값 변경
+        mBookmarksRepository.updatePosition(bookmark,1);
+        // 원격 소스 데이터로드 확인
+        verify(mRemoteDataSource).updatePosition(bookmark,1);
+        // 로컬 소스 데이터로드 확인
+        verify(mLocalDataSource).updatePosition(bookmark,1);
+        // junit assertThat()
+        // mCachedBookmarks 에 추가된 bookmark 의 position 값이 업데이트 되었는지 확인
+        assertThat(mBookmarksRepository.mCachedBookmarks.get(bookmark.getId()).getPosition(), is(1));
     }
 
     // 로컬 데이터베이스 updatePosition(id,position) test
     @Test
     public void updatePositionId_ServiceAPIUpdatesCache(){
+        // 객체생성
         Bookmark bookmark = new Bookmark(TITLE1,"https://www.youtube.com/",
                 "WEB_VIEW","Best",0);
+        // 저장
         mBookmarksRepository.saveBookmark(bookmark);
 
-        mBookmarksRepository.updatePosition(bookmark.getId(),bookmark.getPosition());
-        verify(mRemoteDataSource).updatePosition(bookmark,bookmark.getPosition());
-        verify(mLocalDataSource).updatePosition(bookmark,bookmark.getPosition());
-        assertThat(mBookmarksRepository.mCachedBookmarks.size(), is(1));
+        // id 로 변경
+        mBookmarksRepository.updatePosition(bookmark.getId(),1);
+        // 원격 데이터로드 확인
+        verify(mRemoteDataSource).updatePosition(bookmark,1);
+        // 로컬 데이터로드 확인
+        verify(mLocalDataSource).updatePosition(bookmark,1);
+        assertThat(mBookmarksRepository.mCachedBookmarks.get(bookmark.getId()).getPosition(), is(1));
     }
 
     // 로컬 데이터베이스 getBookmark() test
     @Test
     public void getBookmark_requestSingleBookmarkFromLocal(){
+        // getBookmark() 실행
         mBookmarksRepository.getBookmark(TITLE1,getBookmarkCallback);
 
+        // verify() -> 조회확인
+        // eq()  import static org.mockito.Matchers.eq;
+        // -> 주어진 값과 같은 객체 인수
+        // any() -> callback 되는지 확인
         verify(mLocalDataSource).getBookmark(eq(TITLE1),
                 any(BookmarksDataSource.GetBookmarkCallback.class));
     }
@@ -178,6 +203,7 @@ public class BookmarksRepositoryTest {
     // 로컬 데이터베이스 deleteAllBookmarks() test
     @Test
     public void deleteAllBookmarks_ToServiceAPIUpdatesCache() {
+        // 객체생성
         Bookmark bookmark1 = new Bookmark(TITLE1,"https://www.youtube.com/",
                 "WEB_VIEW","Best",0);
         mBookmarksRepository.saveBookmark(bookmark1);
@@ -188,24 +214,36 @@ public class BookmarksRepositoryTest {
                 "WEB_VIEW","Best",0);
         mBookmarksRepository.saveBookmark(bookmark3);
 
+        // deleteAllBookmark() 실행
         mBookmarksRepository.deleteAllBookmark();
+        // 데이터 조회확인 후 메소드 실행
         verify(mRemoteDataSource).deleteAllBookmark();
         verify(mLocalDataSource).deleteAllBookmark();
+        // junit assertThat()
+        // mCachedBookmarks Map 에 size 0 인지 확인한다.
+        // 모두 삭제되었으면 문제없이 test 완료
         assertThat(mBookmarksRepository.mCachedBookmarks.size(), is(0));
     }
 
     // 로컬 데이터베이스 deleteBookmark(id)
     @Test
     public void deleteBookmark_ToServiceAPIFromCache() {
+        // 객채생성
         Bookmark bookmark1 = new Bookmark(TITLE1,"https://www.youtube.com/",
                 "WEB_VIEW","Best",0);
+        // 저장
         mBookmarksRepository.saveBookmark(bookmark1);
+        // 저장된 객체 존재하는지 확인
         assertThat(mBookmarksRepository.mCachedBookmarks.containsKey(bookmark1.getId()), is(true));
 
+        // id로 아이디 삭제하기
         mBookmarksRepository.deleteBookmark(bookmark1.getId());
 
+        // 로컬 조회되는지 확인 -> delete 진행
         verify(mRemoteDataSource).deleteBookmark(bookmark1.getId());
+        // 원격 조회되는지 확인 -> delete 진행
         verify(mLocalDataSource).deleteBookmark(bookmark1.getId());
+        // 삭제된 객체 삭제되었는지 확인
         assertThat(mBookmarksRepository.mCachedBookmarks.containsKey(bookmark1.getId()), is(false));
     }
 
@@ -219,13 +257,18 @@ public class BookmarksRepositoryTest {
                 "WEB_VIEW","Best",1);
         mBookmarksRepository.saveBookmark(bookmark2);
         Bookmark bookmark3 = new Bookmark(TITLE3,"https://www.daum.com/",
-                "WEB_VIEW","Best",2);
+                "WEB_VIEW","Community",2);
         mBookmarksRepository.saveBookmark(bookmark3);
 
+        // 카테고리가 best 인 객체 전부 삭제
         mBookmarksRepository.deleteAllInCategory("Best");
+
+        // 원격 데이터소스 로드 확인
         verify(mRemoteDataSource).deleteAllInCategory("Best");
+        // 로컬 데이터소스 로드 확인
         verify(mLocalDataSource).deleteAllInCategory("Best");
-        assertThat(mBookmarksRepository.mCachedBookmarks.size(), is(0));
+        // Best 카테고리 삭제후 Community 카테고리인 TITLE3 만 남는지 확인
+        assertThat(mBookmarksRepository.mCachedBookmarks.size(), is(1));
     }
 
 
@@ -233,18 +276,31 @@ public class BookmarksRepositoryTest {
     // 로컬 데이터베이스 DirtyCache test
     @Test
     public void getBookmarksWithDirtyCache_RetrievedFromRemote() {
+        // DirtyCached 가 false 인 경우
+        // refreshBookmarks() -> 캐시메모리 refresh 가 완료된 경우
         mBookmarksRepository.refreshBookmarks();
+        // getBookmarks() 요청
         mBookmarksRepository.getBookmarks(loadBookmarksCallback);
 
+        //DirtyCached 가 false 이면 우선적으로 원격을 살펴본다.
+        //임시로 만든 BOOKMARKS 리스트를 로드 콜백에 실어 보낸다.
         setBookmarksAvailable(mRemoteDataSource, BOOKMARKS);
 
+        // 로컬이 아닌 원격 데이터에서 소스가 반환되는지 확인
+        // never() (org.mockito.Mockito.never)
+        // -> 호출된적 없음을 확인한다.
         verify(mLocalDataSource, never()).getBookmarks(loadBookmarksCallback);
+        // 로드 콜백에 임시로 만든 리스트가 전달되었는지 확인
         verify(loadBookmarksCallback).onBookmarksLoaded(BOOKMARKS);
     }
 
-    //
+    /**
+     * 원격
+     **/
     private void setBookmarksAvailable(BookmarksDataSource dataSource, List<Bookmark> bookmarks){
+        // 데이터소스 로드 되는지 확인
         verify(dataSource).getBookmarks(loadArgumentCaptor.capture());
+        // 캡처에 onBookmarksLoaded 실행하고 임의의 리스트 실어보냄
         loadArgumentCaptor.getValue().onBookmarksLoaded(bookmarks);
     }
 
@@ -276,7 +332,7 @@ public class BookmarksRepositoryTest {
         // 데이터가 있을때 인자값에 넣어 전달하는 콜백인 onBookmarksLoaded() 메소드 리턴
        loadArgumentCaptor.getValue().onBookmarksLoaded(BOOKMARKS);
 
-       // 6. 다시한번 최상위 클래스의 getBookmarks 의 콜백 입력
+       // 6. 다시한번 최상위 클래스의 getBookmarks 에 LoadBookmarksCallback 클래스 입력
        mBookmarksRepository.getBookmarks(callback); // 두번째 api call
 
     }

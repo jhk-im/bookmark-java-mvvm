@@ -26,11 +26,29 @@ public class CategoriesRemoteDataSource implements CategoriesDataSource {
     private static final int SERVICE_LATENCY_IN_MILLIS = 2000;
 
     /**
+     * 회원 / 비회원 구분
+     * true 경우에만 원격 데이터베이스에 데이터를 요청한다.
+     **/
+    boolean mLoginUser = false;
+
+    /**
      * - test 로 생성된 Tab 객체를 캐시 메모리에 저장
      * key - String name
      * value - Category
      **/
-    private static final Map<String, Category> CATEGORY_SERVICE_DATA = new LinkedHashMap<>();
+    private static final Map<String, Category> CATEGORY_SERVICE_DATA;
+
+    // Test 용 데이터
+    private static void addCategory(String title, int position){
+        Category category = new Category(title,position);
+        CATEGORY_SERVICE_DATA.put(category.getId(), category);
+    }
+    static {
+        CATEGORY_SERVICE_DATA = new LinkedHashMap<>();
+        addCategory("Bookmark",0);
+        addCategory("Community",1);
+        addCategory("Sports",2);
+    }
 
     // 다이렉트 인스턴스 방지
     private CategoriesRemoteDataSource(){}

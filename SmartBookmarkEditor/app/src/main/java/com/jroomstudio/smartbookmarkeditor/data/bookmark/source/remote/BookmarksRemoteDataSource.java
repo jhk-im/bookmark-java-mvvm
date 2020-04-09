@@ -29,11 +29,35 @@ public class BookmarksRemoteDataSource implements BookmarksDataSource {
     private static final int SERVICE_LATENCY_IN_MILLIS = 2000;
 
     /**
+     * 회원 / 비회원 구분
+     * true 경우에만 원격 데이터베이스에 데이터를 요청한다.
+     **/
+    boolean mLoginUser = false;
+
+
+    /**
      * - test 로 생성된 Tab 객체를 캐시 메모리에 저장
      * key - String name
      * value - Bookmark
      **/
-    private static final Map<String, Bookmark> BOOKMARK_SERVICE_DATA = new LinkedHashMap<>();
+    private static final Map<String, Bookmark> BOOKMARK_SERVICE_DATA;
+
+
+    // Test 용 데이터
+    private static void addBookmark(String title, String url,String action,
+                                    String category, int position){
+        Bookmark bookmark = new Bookmark(title,url,action,category,position);
+        BOOKMARK_SERVICE_DATA.put(bookmark.getId(),bookmark);
+    }
+    static {
+        BOOKMARK_SERVICE_DATA = new LinkedHashMap<>(2);
+        addBookmark("Naver","https://www.naver.com/","APP","Bookmark",0);
+        addBookmark("Youtube","https://www.youtube.com/","APP","Bookmark",1);
+        addBookmark("Daum","https://www.daum.net/","APP","Bookmark",2);
+        addBookmark("뽐뿌","http://www.ppomppu.co.kr/","WEB_VIEW","Community",0);
+        addBookmark("보배드림","https://www.bobaedream.co.kr/","WEB_VIEW","Community",1);
+    }
+
 
     // 다이렉트 인스턴스 방지
     private BookmarksRemoteDataSource() {}
