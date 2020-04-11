@@ -45,6 +45,11 @@ public final class Category {
     @ColumnInfo(name = "position")
     private final int mPosition;
 
+    /**
+     * - category 가 현재 선택된 카테고리인지 구분
+     **/
+    @ColumnInfo(name = "selected")
+    private final boolean mSelected;
 
     /**
      * 새로운 카테고리 생성 시 사용
@@ -52,18 +57,20 @@ public final class Category {
      * @param position - category 내부에서의 리스트 순서
      **/
     @Ignore // -> 저장하지 않고 싶은 필드
-    public Category(@NonNull String title,int position){
-        this(UUID.randomUUID().toString(),title,position);
+    public Category(@NonNull String title,int position,boolean selected){
+        this(UUID.randomUUID().toString(),title,position,selected);
     }
+
 
     /**
      * - 생성자
      * - 객체가 새로 만들어지거나 정보를 가져와 셋팅할 때 사용함
      **/
-    public Category(@NonNull String id, @NonNull String title, int position) {
+    public Category(@NonNull String id, @NonNull String title, int position, boolean selected) {
         this.mId = id;
         this.mTitle = title;
         this.mPosition = position;
+        this.mSelected = selected;
     }
 
     @NonNull
@@ -73,6 +80,13 @@ public final class Category {
     public String getTitle() { return mTitle; }
 
     public int getPosition() { return mPosition; }
+
+    public boolean isSelected() { return mSelected; }
+
+
+    public boolean isEmpty(){
+        return Strings.isNullOrEmpty(mTitle);
+    }
 
     public String getTitleForList() {
         if (!Strings.isNullOrEmpty(mTitle)){
@@ -97,6 +111,6 @@ public final class Category {
 
     @NonNull
     @Override
-    public String toString() { return "Bookmark with title "+ mTitle; }
+    public String toString() { return mTitle+"|"+mPosition+"\n"; }
 
 }

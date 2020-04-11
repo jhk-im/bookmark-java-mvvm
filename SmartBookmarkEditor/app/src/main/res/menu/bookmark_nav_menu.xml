@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/home_navigation_menu_item"
+        android:icon="@drawable/ic_black_home"
+        android:title="@string/home_title" />
+    <item
+        android:id="@+id/note_navigation_menu_item"
+        android:icon="@drawable/ic_black_note"
+        android:title="@string/note_title" />
+    <item
+        android:id="@+id/info_navigation_menu_item"
+        android:icon="@drawable/ic_black_info"
+        android:title="@string/info_title" />
+    <item
+        android:id="@+id/theme_switch"
+        android:icon="@drawable/ic_dark_theme_black"
+        android:title="@string/dark_theme_title"
+        app:actionLayout="@layout/main_nav_switch"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/notice_switch"
+        android:icon="@drawable/ic_black_notice"
+        android:title="@string/push_notice_title"
+        app:actionLayout="@layout/main_nav_switch"
+        app:showAsAction="always" />
+
+</menu>

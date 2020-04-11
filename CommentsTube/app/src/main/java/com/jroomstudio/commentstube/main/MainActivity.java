@@ -115,26 +115,23 @@ public class MainActivity extends AppCompatActivity {
     }
     //네비게이션 드로어 뷰 내부에 표시될 리스트
     public void setupDrawerContent(NavigationView navigationView){
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()){
-                    case R.id.info_navigation_menu_item:
-                        Toast.makeText(MainActivity.this, "info", Toast.LENGTH_SHORT).show();
-                        break;
-                    case R.id.notice_navigation_menu_item:
-                        Toast.makeText(MainActivity.this, "notice", Toast.LENGTH_SHORT).show();
-                        break;
-                    case R.id.bookmark_navigation_menu_item:
-                        Toast.makeText(MainActivity.this, "bookmark", Toast.LENGTH_SHORT).show();
-                        break;
-                    default:
-                        break;
-                }
-                item.setCheckable(true);
-                mDrawerLayout.closeDrawers();
-                return true;
+        navigationView.setNavigationItemSelectedListener(item -> {
+            switch (item.getItemId()){
+                case R.id.info_navigation_menu_item:
+                    Toast.makeText(MainActivity.this, "info", Toast.LENGTH_SHORT).show();
+                    break;
+                case R.id.notice_navigation_menu_item:
+                    Toast.makeText(MainActivity.this, "notice", Toast.LENGTH_SHORT).show();
+                    break;
+                case R.id.bookmark_navigation_menu_item:
+                    Toast.makeText(MainActivity.this, "bookmark", Toast.LENGTH_SHORT).show();
+                    break;
+                default:
+                    break;
             }
+            item.setCheckable(true);
+            mDrawerLayout.closeDrawers();
+            return true;
         });
     }
     //왼쪽 상단 홈버튼 생성
@@ -284,10 +281,8 @@ public class MainActivity extends AppCompatActivity {
                 // 테스트용 텍스트뷰
                 viewModel.tvTest.set(mTabs.get(position).getViewType()+"\n"
                                      +mTabs.get(position).isUsed());
-
                 return viewModel;
             }
-
         }
         private SubViewModel findOrCreateSubViewModel(int position){
             @SuppressWarnings("unchecked")

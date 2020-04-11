@@ -30,9 +30,9 @@ public class CategoriesRepositoryTest {
     private final static String TITLE3 = "Study";
 
     private static List<Category> CATEGORIES =
-            Lists.newArrayList(new Category("Best",0),
-                    new Category("Community",1),
-                    new Category("Study",2));
+            Lists.newArrayList(new Category("Best",0,true),
+                    new Category("Community",1,false),
+                    new Category("Study",2,false));
 
     private CategoriesRepository mCategoriesRepository;
 
@@ -110,7 +110,7 @@ public class CategoriesRepositoryTest {
     @Test
     public void saveCategory_savesCategoryToServiceAPI(){
         // 객체생성후 저장
-        Category category = new Category(TITLE1,0);
+        Category category = new Category(TITLE1,0,true);
         mCategoriesRepository.saveCategory(category);
         // 원격 소스 -> 데이터 로드되는지 확인
         verify(mRemoteDataSource).saveCategory(category);
@@ -127,7 +127,7 @@ public class CategoriesRepositoryTest {
     @Test
     public void updatePosition_ServiceAPIUpdatesCache(){
         // 객체생성후 저장
-        Category category = new Category(TITLE1,0);
+        Category category = new Category(TITLE1,0,true);
         mCategoriesRepository.saveCategory(category);
 
         // 포지션값 변경
@@ -145,7 +145,7 @@ public class CategoriesRepositoryTest {
     @Test
     public void updatePositionId_ServiceAPIUpdatesCache(){
         // 객체생성후 저장
-        Category category = new Category(TITLE1,0);
+        Category category = new Category(TITLE1,0,true);
         mCategoriesRepository.saveCategory(category);
 
         // id 로 변경
@@ -176,11 +176,11 @@ public class CategoriesRepositoryTest {
     @Test
     public void deleteAllCategories_ToServiceAPIUpdatesCache() {
         // 객체생성후 저장
-        Category category1 = new Category(TITLE1,0);
+        Category category1 = new Category(TITLE1,0,true);
         mCategoriesRepository.saveCategory(category1);
-        Category category2 = new Category(TITLE2,1);
+        Category category2 = new Category(TITLE2,1,false);
         mCategoriesRepository.saveCategory(category2);
-        Category category3 = new Category(TITLE3,2);
+        Category category3 = new Category(TITLE3,2,false);
         mCategoriesRepository.saveCategory(category3);
 
         // deleteAllBookmark() 실행
@@ -199,7 +199,7 @@ public class CategoriesRepositoryTest {
     @Test
     public void deleteCategoryId_ToServiceAPIUpdatesCache() {
         // 객체생성후 저장
-        Category category1 = new Category(TITLE1,0);
+        Category category1 = new Category(TITLE1,0,true);
         mCategoriesRepository.saveCategory(category1);
         // 저장된 객체 존재하는지 확인
         assertThat(mCategoriesRepository.mCachedCategories.containsKey(category1.getId()), is(true));

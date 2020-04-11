@@ -296,7 +296,8 @@ public class CategoriesRepository implements CategoriesDataSource {
         // 로컬, 원격
         mLocalDataSource.updatePosition(category,position);
         mRemoteDataSource.updatePosition(category,position);
-        Category updateCategory = new Category(category.getId(),category.getTitle(),position);
+        Category updateCategory =
+                new Category(category.getId(),category.getTitle(),position,category.isSelected());
 
         // 캐시메모리 업데이트
         if (mCachedCategories == null){
@@ -314,5 +315,28 @@ public class CategoriesRepository implements CategoriesDataSource {
         checkNotNull(id);
         checkNotNull(position);
         updatePosition(getCategoryWithId(id),position);
+    }
+
+    // 로컬, 원격에서 입력된 Category 의 selected true 로 변경
+    @Override
+    public void selectedCategory(@NonNull Category category, boolean selected) {
+        checkNotNull(category);
+        mLocalDataSource.selectedCategory(category,selected);
+        mRemoteDataSource.selectedCategory(category,selected);
+
+        Category selectedCategory =
+                new Category(category.getId(),category.getTitle(),category.getPosition(),selected);
+
+        if(mCachedCategories == null){
+            mCachedCategories = new LinkedHashMap<>();
+        }
+        mCachedCategories.put(category.getId(),selectedCategory);
+    }
+
+    // 입력된 id로 category 객체 찾아서 selected true 로 변경
+    @Override
+    public void selectedCategory(@NonNull String id,boolean selected) {
+        checkNotNull(id);
+        selectedCategory(getCategoryWithId(id),selected);
     }
 }

@@ -58,5 +58,11 @@ public interface CategoriesDataSource {
     // 입력된 카테고리 id인 객체의 포지션값 변경
     void updatePosition(@NonNull String id, int position);
 
+    // 입력된 카테고리 객체의 selected 여부 변경
+    void selectedCategory(@NonNull Category category, boolean selected);
+
+    // 입력된 카테고리 id의 객체를 찾아 selected 여부 변경
+    void selectedCategory(@NonNull String id, boolean selected);
+
 
 }

@@ -59,6 +59,13 @@ public interface CategoriesDAO {
     void updatePosition(String id, int position);
 
     /**
+     * 입련된 id 를 입력된 selected 로 boolean 변경
+     * @param id 변경할 category id
+     * @param selected category 의 선택 여부
+     **/
+    @Query("UPDATE categories SET selected = :selected WHERE id = :id")
+    void updateSelected(String id, boolean selected);
+    /**
      * 입력된 id를 가지고있는 category 를 삭제한다.
      * @param id 삭제할 category 의 id
      **/

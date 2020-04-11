@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">북마크 SE</string>
+    <string name="navigation_view_header_title">북마크 SE</string>
+    <string name="info_title">정보</string>
+    <string name="notice_title">알림</string>
+    <string name="bookmark_title">북마크</string>
+    <string name="note_title">노트</string>
+    <string name="home_title">Home</string>
+    <string name="push_notice_title">푸시알림</string>
+    <string name="dark_theme_title">다크테마</string>
+    <string name="menu_add">추가하기</string>
 </resources>

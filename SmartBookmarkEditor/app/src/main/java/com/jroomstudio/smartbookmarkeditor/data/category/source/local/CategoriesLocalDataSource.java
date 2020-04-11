@@ -157,4 +157,17 @@ public class CategoriesLocalDataSource implements CategoriesDataSource {
         // {@link CategoriesRepository} 에서 처리하므로 이곳에서는 필요하지 않다.
     }
 
+    //  객체 selected 여부 변경
+    @Override
+    public void selectedCategory(@NonNull Category category, boolean selected) {
+        Runnable runnable = () -> {
+          mCategoriesDAO.updateSelected(category.getId(), selected);
+        };
+    }
+
+    @Override
+    public void selectedCategory(@NonNull String id, boolean selected) {
+        // {@link CategoriesRepository} 에서 처리하므로 이곳에서는 필요하지 않다.
+    }
+
 }

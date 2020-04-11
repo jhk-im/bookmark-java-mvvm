@@ -147,5 +147,5 @@ public final class Bookmark {
 
     @NonNull
     @Override
-    public String toString() { return "Bookmark with title "+ mTitle; }
+    public String toString() { return mTitle+"|"+mPosition+"|"+mCategory+"\n"; }
 }

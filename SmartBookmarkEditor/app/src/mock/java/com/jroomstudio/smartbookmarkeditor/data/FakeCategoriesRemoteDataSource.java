@@ -97,7 +97,8 @@ public class FakeCategoriesRemoteDataSource implements CategoriesDataSource {
     // 입력받은 객체 포지션값 업데이트
     @Override
     public void updatePosition(@NonNull Category category, int position) {
-        Category updateCategory = new Category(category.getId(),category.getTitle(),position);
+        Category updateCategory =
+                new Category(category.getId(),category.getTitle(),position,category.isSelected());
         CATEGORY_SERVICE_DATA.put(category.getId(),updateCategory);
     }
 
@@ -105,4 +106,17 @@ public class FakeCategoriesRemoteDataSource implements CategoriesDataSource {
     public void updatePosition(@NonNull String id, int position) {
         // {@link CategoriesRepository} 에서 처리하므로 이곳에서는 필요하지 않다.
     }
+
+    @Override
+    public void selectedCategory(@NonNull Category category, boolean selected) {
+        Category updateCategory =
+                new Category(category.getId(),category.getTitle(),category.getPosition(),selected);
+        CATEGORY_SERVICE_DATA.put(category.getId(),updateCategory);
+    }
+
+    @Override
+    public void selectedCategory(@NonNull String id, boolean selected) {
+        // {@link CategoriesRepository} 에서 처리하므로 이곳에서는 필요하지 않다.
+    }
+
 }
