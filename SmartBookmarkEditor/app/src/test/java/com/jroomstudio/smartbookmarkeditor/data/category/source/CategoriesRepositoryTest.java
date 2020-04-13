@@ -37,7 +37,7 @@ public class CategoriesRepositoryTest {
     private CategoriesRepository mCategoriesRepository;
 
     /**
-     * 주석
+     * 주석설명
      * Mock (org.mockito.Mock)
      * -> Mock 객체를 만드는데 사용된다.
      * Captor (org.mockito.Captor)
@@ -141,6 +141,7 @@ public class CategoriesRepositoryTest {
         assertThat(mCategoriesRepository.mCachedCategories.get(category.getId()).getPosition(), is(1));
     }
 
+
     // 로컬 updatePosition(Category,position) test
     @Test
     public void updatePositionId_ServiceAPIUpdatesCache(){
@@ -158,6 +159,61 @@ public class CategoriesRepositoryTest {
         // mCachedBookmarks 에 추가된 bookmark 의 position 값이 업데이트 되었는지 확인
         assertThat(mCategoriesRepository.mCachedCategories.get(category.getId()).getPosition(), is(1));
     }
+
+    // 로컬 selectedCategory(id,boolean selected) test
+    @Test
+    public void selectedCategoryId_ServiceAPIUpdateCache() {
+        // 객체 생성 후 저장
+        Category category = new Category(TITLE1,0,true);
+        mCategoriesRepository.saveCategory(category);
+
+        // selected false 로 변경
+        mCategoriesRepository.selectedCategory(category.getId(),false);
+        // 원격 소스 데이터로드 확인
+        verify(mRemoteDataSource).selectedCategory(category,false);
+        // 로컬 소스 데이터로드 확인
+        verify(mLocalDataSource).selectedCategory(category,false);
+        // false 로 변경되었는지 확인
+        assertThat(mCategoriesRepository.mCachedCategories.get(category.getId()).isSelected(), is(false));
+
+        // selected true 로 변경
+        mCategoriesRepository.selectedCategory(category.getId(),true);
+        // 원격 소스 데이터로드 확인
+        verify(mRemoteDataSource).selectedCategory(category,true);
+        // 로컬 소스 데이터로드 확인
+        verify(mLocalDataSource).selectedCategory(category,true);
+        // true 로 변경되었는지 확인
+        assertThat(mCategoriesRepository.mCachedCategories.get(category.getId()).isSelected(), is(true));
+
+    }
+
+    // 로컬 selectedCategory(category,boolean selected) test
+    @Test
+    public void selectedCategory_ServiceAPIUpdateCache() {
+        // 객체 생성 후 저장
+        Category category = new Category(TITLE1,0,true);
+        mCategoriesRepository.saveCategory(category);
+
+        // selected false 로 변경
+        mCategoriesRepository.selectedCategory(category,false);
+        // 원격 소스 데이터로드 확인
+        verify(mRemoteDataSource).selectedCategory(category,false);
+        // 로컬 소스 데이터로드 확인
+        verify(mLocalDataSource).selectedCategory(category,false);
+        // false 로 변경되었는지 확인
+        assertThat(mCategoriesRepository.mCachedCategories.get(category.getId()).isSelected(), is(false));
+
+        // selected true 로 변경
+        mCategoriesRepository.selectedCategory(category,true);
+        // 원격 소스 데이터로드 확인
+        verify(mRemoteDataSource).selectedCategory(category,true);
+        // 로컬 소스 데이터로드 확인
+        verify(mLocalDataSource).selectedCategory(category,true);
+        // true 로 변경되었는지 확인
+        assertThat(mCategoriesRepository.mCachedCategories.get(category.getId()).isSelected(), is(true));
+
+    }
+
 
     // f로컬 getCategory() test
     @Test

@@ -1,12 +1,10 @@
 package com.jroomstudio.smartbookmarkeditor;
 
-
 import android.content.Context;
-
 import androidx.annotation.NonNull;
 
-import com.jroomstudio.smartbookmarkeditor.data.FakeBookmarksRemoteDataSource;
 import com.jroomstudio.smartbookmarkeditor.data.FakeCategoriesRemoteDataSource;
+import com.jroomstudio.smartbookmarkeditor.data.FakeBookmarksRemoteDataSource;
 import com.jroomstudio.smartbookmarkeditor.data.bookmark.source.BookmarksRepository;
 import com.jroomstudio.smartbookmarkeditor.data.bookmark.source.local.BookmarksLocalDataSource;
 import com.jroomstudio.smartbookmarkeditor.data.bookmark.source.local.BookmarksLocalDatabase;

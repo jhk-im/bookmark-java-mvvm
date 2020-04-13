@@ -56,6 +56,24 @@ public class MainViewModel extends BaseObservable {
     // 카테고리
     private CategoriesRepository mCategoriesRepository;
 
+    // 액티비티 아이템 네비게이터
+    private ItemNavigator mNavigator;
+
+    // 네비게이터 셋팅
+    void setNavigator(ItemNavigator navigator) { mNavigator = navigator; }
+
+    // 네비게이터 null 셋팅
+    void onActivityDestroyed() {
+        // Clear references to avoid potential memory leaks.
+        mNavigator = null;
+    }
+    // 네비게이터 메소드 실행
+    public void addNewItem(){
+        if(mNavigator != null){
+            mNavigator.addNewItems(categoryItems);
+        }
+    }
+
     /**
      * Main Activity ViewModel 생성자
      * @param bookmarksRepository - 북마크 로컬, 원격 데이터 액세스
@@ -121,7 +139,5 @@ public class MainViewModel extends BaseObservable {
         });
     }
 
-    void onActivityDestroyed() {
-        // Clear references to avoid potential memory leaks.
-    }
+
 }

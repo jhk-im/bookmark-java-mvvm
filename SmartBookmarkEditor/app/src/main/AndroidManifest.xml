@@ -10,7 +10,10 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".notice.NoticeActivity"></activity>
+        <activity
+            android:name=".popup.PopupAddItemActivity"
+            android:theme="@android:style/Theme.Dialog" />
+
         <activity android:name=".note.NoteActivity" />
         <activity android:name=".info.InfoActivity" />
         <activity

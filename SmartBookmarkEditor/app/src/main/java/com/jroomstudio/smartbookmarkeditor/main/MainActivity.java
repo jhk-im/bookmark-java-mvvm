@@ -1,5 +1,6 @@
 package com.jroomstudio.smartbookmarkeditor.main;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.Switch;
@@ -16,9 +17,15 @@ import com.google.android.material.navigation.NavigationView;
 import com.jroomstudio.smartbookmarkeditor.Injection;
 import com.jroomstudio.smartbookmarkeditor.R;
 import com.jroomstudio.smartbookmarkeditor.ViewModelHolder;
+import com.jroomstudio.smartbookmarkeditor.data.category.Category;
+import com.jroomstudio.smartbookmarkeditor.popup.PopupAddItemActivity;
 import com.jroomstudio.smartbookmarkeditor.util.ActivityUtils;
 
-public class MainActivity extends AppCompatActivity {
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+public class MainActivity extends AppCompatActivity implements ItemNavigator {
 
     private DrawerLayout mDrawerLayout;
 
@@ -49,6 +56,8 @@ public class MainActivity extends AppCompatActivity {
         MainFragment mainFragment = findOrCreateViewFragment();
         // 프래그먼트의 뷰모델 생성 및 재활용
         mViewModel = findOrCreateViewModel();
+        // 네비게이터 셋팅
+        mViewModel.setNavigator(this);
         // 프래그먼트와 뷰모델 연결
         mainFragment.setMainViewModel(mViewModel);
 
@@ -172,9 +181,40 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        //mViewModel.on
+        // 뷰모델의 ItemNavigator null 셋팅
+        mViewModel.onActivityDestroyed();
         super.onDestroy();
     }
 
+    // 아이템 추가 팝업이동
+    @Override
+    public void addNewItems(List<Category> categories) {
+        Intent intent = new Intent(this, PopupAddItemActivity.class);
+        // 카테고리가 있으면
+        if(categories != null){
+            ArrayList<String> title = new ArrayList<String>();
+            for(Category category : sortToCategories(categories)){
+                title.add(category.getTitle());
+            }
+            // 인텐트로 타이틀 전달
+            intent.putStringArrayListExtra(PopupAddItemActivity.CATEGORY_LIST, title);
+        }else{
+            // 비어있는 리스트 전달
+            intent.putStringArrayListExtra(PopupAddItemActivity.CATEGORY_LIST, new ArrayList<String>());
+        }
+        startActivityForResult(intent,PopupAddItemActivity.REQUEST_CODE);
+    }
 
+    // addNewItems 에서 입력받은 카테고리 리스트를 position 값에 맞게 순서 정렬
+    public List<Category> sortToCategories(List<Category> categories){
+        Collections.sort(categories, (o1, o2) -> {
+            if(o1.getPosition() < o2.getPosition()){
+                return -1;
+            } else if (o1.getPosition() > o2.getPosition()){
+                return 1;
+            }
+            return 0;
+        });
+        return categories;
+    }
 }

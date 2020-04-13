@@ -7,7 +7,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -94,11 +93,13 @@ public class MainFragment extends Fragment {
         inflater.inflate(R.menu.bookmark_frag_menu, menu);
     }
 
+    // 옵션메뉴 셀렉터
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
             case R.id.menu_add:
-                Toast.makeText(getContext().getApplicationContext(), "add", Toast.LENGTH_SHORT).show();
+                // 아이템 추가버튼 클릭
+                mMainViewModel.addNewItem();
                 break;
         }
         return true;

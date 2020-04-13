@@ -9,4 +9,11 @@
     <string name="push_notice_title">푸시알림</string>
     <string name="dark_theme_title">다크테마</string>
     <string name="menu_add">추가하기</string>
+    <string name="popup_add_item_ok">확인</string>
+    <string name="popup_add_item_cancel">취소</string>
+    <string name="popup_add_item_title">아이템 추가</string>
+    <string name="popup_add_item_et_title">제목</string>
+    <string name="popup_add_item_et_url">주소</string>
+    <string name="popup_add_item_category">카테고리</string>
+    <string name="https">https://</string>
 </resources>

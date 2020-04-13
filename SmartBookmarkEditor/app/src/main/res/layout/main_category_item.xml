@@ -19,7 +19,7 @@
             android:id="@+id/button_category"
             android:layout_width="match_parent"
             android:layout_height="30dp"
-            android:background="@drawable/category_selector"
+            android:background="@drawable/category_touch_feedback"
             android:text="title"
             android:textColor="#ffffff"/>
 
