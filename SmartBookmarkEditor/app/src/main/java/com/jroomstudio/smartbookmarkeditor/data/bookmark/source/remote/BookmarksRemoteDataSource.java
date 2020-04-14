@@ -40,8 +40,7 @@ public class BookmarksRemoteDataSource implements BookmarksDataSource {
      * key - String name
      * value - Bookmark
      **/
-    private static final Map<String, Bookmark> BOOKMARK_SERVICE_DATA;
-
+    private static final Map<String, Bookmark> BOOKMARK_SERVICE_DATA = new LinkedHashMap<>();
 
     // Test 용 데이터
     private static void addBookmark(String title, String url,String action,
@@ -49,6 +48,7 @@ public class BookmarksRemoteDataSource implements BookmarksDataSource {
         Bookmark bookmark = new Bookmark(title,url,action,category,position);
         BOOKMARK_SERVICE_DATA.put(bookmark.getId(),bookmark);
     }
+    /*
     static {
         BOOKMARK_SERVICE_DATA = new LinkedHashMap<>(2);
         addBookmark("Naver","https://www.naver.com/","APP","Bookmark",0);
@@ -57,7 +57,7 @@ public class BookmarksRemoteDataSource implements BookmarksDataSource {
         addBookmark("뽐뿌","http://www.ppomppu.co.kr/","WEB_VIEW","Community",0);
         addBookmark("보배드림","https://www.bobaedream.co.kr/","WEB_VIEW","Community",1);
     }
-
+    */
 
     // 다이렉트 인스턴스 방지
     private BookmarksRemoteDataSource() {}

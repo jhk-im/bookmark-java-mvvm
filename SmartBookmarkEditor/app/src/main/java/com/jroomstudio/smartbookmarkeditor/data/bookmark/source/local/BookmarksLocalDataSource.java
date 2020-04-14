@@ -72,7 +72,6 @@ public class BookmarksLocalDataSource implements BookmarksDataSource {
     static void clearInstance() { INSTANCE = null; }
 
 
-
     /*
      * BookmarksDataSource 오버라이드 메소드 구현
      */

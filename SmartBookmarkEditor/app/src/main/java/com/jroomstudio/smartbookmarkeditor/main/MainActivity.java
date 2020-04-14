@@ -18,11 +18,10 @@ import com.jroomstudio.smartbookmarkeditor.Injection;
 import com.jroomstudio.smartbookmarkeditor.R;
 import com.jroomstudio.smartbookmarkeditor.ViewModelHolder;
 import com.jroomstudio.smartbookmarkeditor.data.category.Category;
-import com.jroomstudio.smartbookmarkeditor.popup.PopupAddItemActivity;
+import com.jroomstudio.smartbookmarkeditor.popup.AddItemPopupActivity;
 import com.jroomstudio.smartbookmarkeditor.util.ActivityUtils;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements ItemNavigator {
@@ -189,32 +188,17 @@ public class MainActivity extends AppCompatActivity implements ItemNavigator {
     // 아이템 추가 팝업이동
     @Override
     public void addNewItems(List<Category> categories) {
-        Intent intent = new Intent(this, PopupAddItemActivity.class);
+        Intent intent = new Intent(this, AddItemPopupActivity.class);
         // 카테고리가 있으면
+        ArrayList<String> title = new ArrayList<String>();
         if(categories != null){
-            ArrayList<String> title = new ArrayList<String>();
-            for(Category category : sortToCategories(categories)){
+            for(Category category : categories){
                 title.add(category.getTitle());
             }
-            // 인텐트로 타이틀 전달
-            intent.putStringArrayListExtra(PopupAddItemActivity.CATEGORY_LIST, title);
-        }else{
-            // 비어있는 리스트 전달
-            intent.putStringArrayListExtra(PopupAddItemActivity.CATEGORY_LIST, new ArrayList<String>());
         }
-        startActivityForResult(intent,PopupAddItemActivity.REQUEST_CODE);
+        // 인텐트로 타이틀 전달
+        intent.putStringArrayListExtra(AddItemPopupActivity.CATEGORY_LIST, title);
+        startActivityForResult(intent,AddItemPopupActivity.REQUEST_CODE);
     }
 
-    // addNewItems 에서 입력받은 카테고리 리스트를 position 값에 맞게 순서 정렬
-    public List<Category> sortToCategories(List<Category> categories){
-        Collections.sort(categories, (o1, o2) -> {
-            if(o1.getPosition() < o2.getPosition()){
-                return -1;
-            } else if (o1.getPosition() > o2.getPosition()){
-                return 1;
-            }
-            return 0;
-        });
-        return categories;
-    }
 }

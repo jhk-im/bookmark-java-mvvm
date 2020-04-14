@@ -8,6 +8,7 @@ import com.jroomstudio.smartbookmarkeditor.data.category.Category;
 import com.jroomstudio.smartbookmarkeditor.data.category.source.CategoriesDataSource;
 import com.jroomstudio.smartbookmarkeditor.util.AppExecutors;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -71,6 +72,24 @@ public class CategoriesLocalDataSource implements CategoriesDataSource {
     @VisibleForTesting
     static void clearInstance() { INSTANCE = null; }
 
+    // 기본 지울수없는 카테고리 생성
+    public List<Category> defaultCategory(){
+        List<Category> categories = new ArrayList<>();
+        Category category = new Category("Bookmark",0,true);
+        Category category1 = new Category("Best",1,false);
+        categories.add(category);
+        categories.add(category1);
+        Runnable runnable = () -> {
+            mCategoriesDAO.insertCategory(category);
+        };
+        mAppExecutors.getDiskIO().execute(runnable);
+        Runnable run = () -> {
+            mCategoriesDAO.insertCategory(category1);
+        };
+        mAppExecutors.getDiskIO().execute(run);
+        return categories;
+    }
+
     /*
      * CategoriesDataSource 오버라이드 메소드 구현
      */
@@ -87,8 +106,9 @@ public class CategoriesLocalDataSource implements CategoriesDataSource {
             final List<Category> categories = mCategoriesDAO.getAllCategories();
             mAppExecutors.getMainThread().execute(() -> {
                 if(categories.isEmpty()){
-                    // 새 테이블이거나 비어있는경우
-                    callback.onDataNotAvailable();
+                    // 새 테이블이거나 비어있는경우 기본 카테고리 생성 후 콜백 전송
+                    callback.onCategoriesLoaded(defaultCategory());
+                    // callback.onDataNotAvailable();
                 }else{
                     // 데이터 로드에 성공하여 리스트를 담아 콜백
                     callback.onCategoriesLoaded(categories);

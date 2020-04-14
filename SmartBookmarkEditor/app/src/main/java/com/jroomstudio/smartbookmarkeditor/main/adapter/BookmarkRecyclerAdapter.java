@@ -1,13 +1,14 @@
 package com.jroomstudio.smartbookmarkeditor.main.adapter;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.jroomstudio.smartbookmarkeditor.R;
 import com.jroomstudio.smartbookmarkeditor.data.bookmark.Bookmark;
 import com.jroomstudio.smartbookmarkeditor.data.bookmark.source.BookmarksRepository;
 import com.jroomstudio.smartbookmarkeditor.databinding.MainBookmarkItemBinding;
@@ -76,14 +77,17 @@ public class BookmarkRecyclerAdapter
     }
 
     // 각 아이템 text 및 이미지 셋팅
+    // onBind 랑 뷰홀더에서 데이터바인딩 사용하면 꼬임
     public class ItemViewHolder extends RecyclerView.ViewHolder {
-        public ItemViewHolder(@NonNull View itemView) { super(itemView); }
+        TextView bookmarkTitle, bookmarkUrl;
+        public ItemViewHolder(@NonNull View itemView) {
+            super(itemView);
+            bookmarkTitle = itemView.findViewById(R.id.tv_bookmark_title);
+            bookmarkUrl = itemView.findViewById(R.id.tv_bookmark_url);
+        }
         public void onBind(Bookmark bookmark) {
-            mBookmarkItemBinding.tvBookmarkTitle.setText(bookmark.getTitle());
-            mBookmarkItemBinding.tvBookmarkUrl.setText(bookmark.getUrl());
-            mBookmarkItemBinding.clBookmark.setOnClickListener(v ->
-                    Log.e("bookmark",bookmark.getTitle()+bookmark.getCategory())
-            );
+            bookmarkTitle.setText(bookmark.getTitle());
+            bookmarkUrl.setText(bookmark.getUrl());
         }
     }
 }

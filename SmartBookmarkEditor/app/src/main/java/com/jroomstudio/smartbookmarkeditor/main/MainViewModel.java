@@ -16,6 +16,7 @@ import com.jroomstudio.smartbookmarkeditor.data.category.source.CategoriesDataSo
 import com.jroomstudio.smartbookmarkeditor.data.category.source.CategoriesRepository;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -33,14 +34,13 @@ public class MainViewModel extends BaseObservable {
      * main_act.xml 의 데이터 바인딩 뷰모델로 지정이 되어있기 때문에
      * Observable 로 선언한 변수를 main_act.xml 에서 연결 할 수 있다.
      **/
-    // test 용
-    public final ObservableField<String> testCategories = new ObservableField<>();
-    public final ObservableField<String> testBookmarks = new ObservableField<>();
 
     // 북마크 리스트 옵저버블 변수
     public final ObservableList<Bookmark> bookmarkItems = new ObservableArrayList<>();
     // 카테고리 리스트 옵저버블 변수
     public final ObservableList<Category> categoryItems = new ObservableArrayList<>();
+    // 선택된 카테고리 옵저버블 변수
+    public final ObservableField<Category> currentCategory = new ObservableField<>();
 
     /**
      * - 해당 뷰모델과 연결될 액티비티,프래그먼트 의 Context
@@ -67,7 +67,8 @@ public class MainViewModel extends BaseObservable {
         // Clear references to avoid potential memory leaks.
         mNavigator = null;
     }
-    // 네비게이터 메소드 실행
+    // 액티비티 네비게이터 메소드 실행
+    // -> 새로운 아이템 추가하는 팝업이 실행된다.
     public void addNewItem(){
         if(mNavigator != null){
             mNavigator.addNewItems(categoryItems);
@@ -98,46 +99,80 @@ public class MainViewModel extends BaseObservable {
             mCategoriesRepository.refreshCategories();
             mBookmarksRepository.refreshBookmarks();
         }
-        // 북마크
-        mBookmarksRepository.getBookmarks(new BookmarksDataSource.LoadBookmarksCallback() {
-            @Override
-            public void onBookmarksLoaded(List<Bookmark> bookmarks) {
-                List<Bookmark> bookmarksToShow = new ArrayList<Bookmark>();
-                for(Bookmark bookmark : bookmarks){
-                    bookmarksToShow.add(bookmark);
-                }
-                bookmarkItems.clear();
-                bookmarkItems.addAll(bookmarksToShow);
-                notifyPropertyChanged(BR._all);
-
-
-                // test tv 에 표시
-                //testBookmarks.set(bookmarks.toString());
-            }
-
-            @Override
-            public void onDataNotAvailable() { testBookmarks.set("Bookmarks - load failed"); }
-        });
         // 카테고리
         mCategoriesRepository.getCategories(new CategoriesDataSource.LoadCategoriesCallback() {
             @Override
             public void onCategoriesLoaded(List<Category> categories) {
                 List<Category> categoriesToShow = new ArrayList<Category>();
                 for(Category category : categories){
+                    // 카테고리 리스트 추가
                     categoriesToShow.add(category);
+                    // selected 가 true 객체를 selected 옵저버블 변수에 저장
+                    if(category.isSelected()){
+                        currentCategory.set(category);
+                    }
                 }
                 categoryItems.clear();
-                categoryItems.addAll(categoriesToShow);
+                // 옵저버블 리스트에 추가
+                // 카테고리 position 순서대로 정렬
+                categoryItems.addAll(sortToCategories(categoriesToShow));
                 notifyPropertyChanged(BR._all);
 
-                // test tv 에 표시
-                //testCategories.set(categoriesToShow.toString());
+            }
+
+
+            @Override
+            public void onDataNotAvailable() { onDataNotAvailable(); }
+        });
+
+        // 북마크
+        mBookmarksRepository.getBookmarks(new BookmarksDataSource.LoadBookmarksCallback() {
+            @Override
+            public void onBookmarksLoaded(List<Bookmark> bookmarks) {
+                List<Bookmark> bookmarksToShow = new ArrayList<Bookmark>();
+                for(Bookmark bookmark : bookmarks){
+                    // 현재 선택된 카테고리의 북마크만 리스트에 추가
+                    if(bookmark.getCategory().equals(currentCategory.get().getTitle())){
+                        bookmarksToShow.add(bookmark);
+                    }
+                }
+                bookmarkItems.clear();
+                // 옵저버블 리스트에 추가
+                // 북마크 포지션대로 정렬
+                bookmarkItems.addAll(sortToBookmarks(bookmarksToShow));
+                notifyPropertyChanged(BR._all);
+
             }
 
             @Override
-            public void onDataNotAvailable() { testBookmarks.set("Categories - load failed"); }
+            public void onDataNotAvailable() { onDataNotAvailable(); }
         });
     }
 
+    // 북마크 리스트를 position 값에 맞게 순서정렬
+    public List<Bookmark> sortToBookmarks(List<Bookmark> bookmarks){
+        Collections.sort(bookmarks, (o1, o2) -> {
+            if(o1.getPosition() < o2.getPosition()){
+                return -1;
+            } else if (o1.getPosition() > o2.getPosition()){
+                return 1;
+            }
+            return 0;
+        });
+        return bookmarks;
+    }
+
+    //카테고리 리스트를 position 값에 맞게 순서 정렬
+    public List<Category> sortToCategories(List<Category> categories){
+        Collections.sort(categories, (o1, o2) -> {
+            if(o1.getPosition() < o2.getPosition()){
+                return -1;
+            } else if (o1.getPosition() > o2.getPosition()){
+                return 1;
+            }
+            return 0;
+        });
+        return categories;
+    }
 
 }

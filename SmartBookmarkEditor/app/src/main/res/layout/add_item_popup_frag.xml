@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <layout
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+        <import type="android.view.View" />
         <variable
             name="viewmodel"
-            type="com.jroomstudio.smartbookmarkeditor.popup.PopupAddItemActViewModel" />
+            type="com.jroomstudio.smartbookmarkeditor.popup.AddItemPopupViewModel" />
     </data>
 
     <LinearLayout
         android:id="@+id/popup_add_item_layout"
         android:background="#eeeeee"
         android:orientation="vertical"
-        android:layout_width="300dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <!-- 타이틀 -->
@@ -46,6 +46,7 @@
                 android:layout_height="wrap_content">
 
                 <RadioButton
+                    android:checked="@={viewmodel.isCategory}"
                     android:id="@+id/rb_category"
                     android:layout_weight="1"
                     android:layout_width="wrap_content"
@@ -72,7 +73,6 @@
 
         <!-- 북마크 컨테이너 -->
         <LinearLayout
-            android:visibility="gone"
             android:id="@+id/content_linear_bookmark"
             android:orientation="vertical"
             android:layout_width="match_parent"
@@ -100,8 +100,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:ems="10"
-                    android:inputType="text" />
+                    android:ems="8"
+                    android:maxLength="10"
+                    android:inputType="text"
+                    android:text="@={viewmodel.bookmarkTitle}"
+                    />
             </LinearLayout>
 
             <!-- url 입력 -->
@@ -127,8 +130,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:ems="10"
-                    android:text="@string/https"
                     android:inputType="textUri"
+                    android:text="@={viewmodel.bookmarkUrl}"
                     />
             </LinearLayout>
 
@@ -142,6 +145,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:textSize="20sp"
                     android:gravity="center"
                     android:textStyle="bold"
@@ -149,18 +153,16 @@
 
                 <Spinner
                     android:id="@+id/spinner_category"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     />
-
-
             </LinearLayout>
 
         </LinearLayout>
 
         <!-- 카테고리 컨테이너 -->
         <LinearLayout
-            android:visibility="gone"
             android:id="@+id/content_linear_category"
             android:orientation="vertical"
             android:layout_width="match_parent"
@@ -186,10 +188,12 @@
 
                 <EditText
                     android:id="@+id/et_category_title"
+                    android:text="@={viewmodel.categoryTitle}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:ems="10"
+                    android:ems="8"
+                    android:maxLength="10"
                     android:inputType="textPersonName" />
             </LinearLayout>
 
@@ -211,7 +215,8 @@
                 android:gravity="center"
                 android:layout_weight="1"
                 android:layout_width="match_parent"
-                android:layout_height="50dp" />
+                android:layout_height="50dp"
+                android:onClick="@{()->viewmodel.okButtonOnClick()}"/>
             <Button
                 android:id="@+id/btn_aip_cancel"
                 android:text="@string/popup_add_item_cancel"
@@ -221,12 +226,10 @@
                 android:gravity="center"
                 android:layout_weight="1"
                 android:layout_width="match_parent"
-                android:layout_height="50dp" />
-
-
+                android:layout_height="50dp"
+                android:onClick="@{()->viewmodel.cancelButtonOnClick()}"/>
         </LinearLayout>
 
     </LinearLayout>
 
 </layout>
-

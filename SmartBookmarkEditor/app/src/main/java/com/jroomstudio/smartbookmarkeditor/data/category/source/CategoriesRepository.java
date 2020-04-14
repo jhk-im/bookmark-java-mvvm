@@ -182,7 +182,7 @@ public class CategoriesRepository implements CategoriesDataSource {
                 @Override
                 public void onDataNotAvailable() {
                     // 로컬이 비어있을때 원격에서 확인한다.
-                    getCategoriesFromRemoteDataSource(callback);
+                    // getCategoriesFromRemoteDataSource(callback);
                 }
             });
         }

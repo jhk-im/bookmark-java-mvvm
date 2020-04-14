@@ -3,7 +3,6 @@
     <!-- Base application theme. --><style name="AppTheme" parent="Base.AppTheme" />
 
     <style name="AppTheme.OverlapSystemBar" parent="Base.AppTheme" />
-
     <!-- Base application theme. -->
     <style name="Base.AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
@@ -12,6 +11,19 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <!-- popup theme -->
+    <style name="AppTheme.Popup" parent="Base.PopupTheme" />
+    <style name="Base.PopupTheme" parent="Theme.AppCompat.DayNight.Dialog">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorPrimary</item>
+        <!-- 타이틀 바 제거 -->
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+    </style>
+
+    <!-- toolbar -->
     <style name="Toolbar" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
 </resources>

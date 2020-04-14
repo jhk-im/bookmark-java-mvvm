@@ -36,19 +36,21 @@ public class CategoriesRemoteDataSource implements CategoriesDataSource {
      * key - String name
      * value - Category
      **/
-    private static final Map<String, Category> CATEGORY_SERVICE_DATA;
+    private static final Map<String, Category> CATEGORY_SERVICE_DATA = new LinkedHashMap<>();
 
     // Test 용 데이터
     private static void addCategory(String title, int position, boolean selected){
         Category category = new Category(title,position,selected);
         CATEGORY_SERVICE_DATA.put(category.getId(), category);
     }
+    /*
     static {
         CATEGORY_SERVICE_DATA = new LinkedHashMap<>();
-        addCategory("Bookmark",0,true);
+        addCategory("즐겨찾기",0,true);
         addCategory("Community",1,false);
         addCategory("Sports",2,false);
     }
+    */
 
     // 다이렉트 인스턴스 방지
     private CategoriesRemoteDataSource(){}

@@ -11,9 +11,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".popup.PopupAddItemActivity"
-            android:theme="@android:style/Theme.Dialog" />
-
+            android:name=".popup.AddItemPopupActivity"
+            android:theme="@style/AppTheme.Popup"/>
         <activity android:name=".note.NoteActivity" />
         <activity android:name=".info.InfoActivity" />
         <activity

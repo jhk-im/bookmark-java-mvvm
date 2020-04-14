@@ -111,6 +111,7 @@ public final class Category {
 
     @NonNull
     @Override
-    public String toString() { return mTitle+"|"+mPosition+"\n"; }
+    public String toString() {
+        return mTitle+"\n"+ mPosition+"\n" + mSelected+"\n" ; }
 
 }

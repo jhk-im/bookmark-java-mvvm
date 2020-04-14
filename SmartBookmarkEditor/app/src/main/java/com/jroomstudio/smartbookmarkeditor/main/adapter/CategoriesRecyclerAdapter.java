@@ -5,10 +5,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.jroomstudio.smartbookmarkeditor.R;
 import com.jroomstudio.smartbookmarkeditor.data.category.Category;
 import com.jroomstudio.smartbookmarkeditor.data.category.source.CategoriesRepository;
 import com.jroomstudio.smartbookmarkeditor.databinding.MainCategoryItemBinding;
@@ -22,9 +24,6 @@ public class CategoriesRecyclerAdapter
 
     // 카테고리 리스트 멤버변수
     private List<Category> mCategories;
-
-    private Category mSelectCategory = null;
-    private View selectView = null;
 
     // 카테고리 원격과 로컬 데이터 소스 액세스
     private CategoriesRepository mCategoriesRepository;
@@ -44,12 +43,14 @@ public class CategoriesRecyclerAdapter
         setCategories(categories);
         mCategoriesRepository = categoriesRepository;
         mMainFragBinding = mainFragBinding;
+        Log.e("adapter","생성자");
     }
 
     // 각 아이템의 view 추가
     @NonNull
     @Override
     public ItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        Log.e("adapter","onCreateViewHolder");
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         mCategoryItemBinding = MainCategoryItemBinding.inflate(inflater,parent,false);
         View view = mCategoryItemBinding.getRoot();
@@ -59,6 +60,7 @@ public class CategoriesRecyclerAdapter
     // 포지션 입력하여 아이템 구분하여 값 지정 (text, img 등)
     @Override
     public void onBindViewHolder(@NonNull ItemViewHolder holder, int position) {
+        Log.e("adapter","onBindViewHolder");
         holder.onBind(mCategories.get(position));
     }
 
@@ -73,37 +75,23 @@ public class CategoriesRecyclerAdapter
     }
 
     // 옵저버블에서 변화감지 후 리스트 갱신
-    public void replaceCategories(List<Category> categories){ setCategories(categories); }
+    public void replaceCategories(List<Category> categories){
+        setCategories(categories);
+    }
 
     // 각 아이템의 text  title 값 지정
+    // onBind 랑 뷰홀더에서 데이터바인딩 사용하면 꼬임
     public class ItemViewHolder extends RecyclerView.ViewHolder {
+        Button btnCategory;
         public ItemViewHolder(@NonNull View itemView) {
             super(itemView);
+            btnCategory = itemView.findViewById(R.id.button_category);
         }
         @SuppressLint("ResourceAsColor")
         public void onBind(Category category){
-            mCategoryItemBinding.buttonCategory.setText(category.getTitle());
-            //itemView.findViewById(R.id.button_category).setSelected(category.isSelected());
-            // 카테고리 처음 추가시
-            /*
-            if(category.isSelected()) {
-                if (selectView == null) {
-                    selectView = itemView;
-                } else {
-                    selectView.findViewById(R.id.button_category).setSelected(false);
-                    mCategoriesRepository.selectedCategory(category,false);
-                    selectView = itemView;
-                }
-            }
-            */
-            mCategoryItemBinding.buttonCategory.setSelected(category.isSelected());
-            mCategoryItemBinding.buttonCategory.setOnClickListener(v -> {
-                Log.e("touch",category.getTitle());
-                Log.e("touch",""+category.isSelected());
-                if(!category.isSelected()){
-                  //  mCategoriesRepository.selectedCategory(category,true);
-                }
-            });
+            //Log.e("adapter","onBind");
+            btnCategory.setText(category.getTitle());
+            btnCategory.setSelected(category.isSelected());
         }
     }
 
