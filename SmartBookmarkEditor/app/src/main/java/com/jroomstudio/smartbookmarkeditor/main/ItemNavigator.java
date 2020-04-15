@@ -11,4 +11,6 @@ public interface ItemNavigator {
 
     void addNewItems(List<Category> categories);
 
+    void setToolbarTitle(String title);
+
 }

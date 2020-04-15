@@ -41,18 +41,14 @@ public class AddItemPopupFragment extends Fragment {
         mViewModel = checkNotNull(viewModel);
     }
 
-    // 프래그먼트가 onResume 일때 뷰모델의 start() 메소드 실행
-    @Override
-    public void onResume() {
-        super.onResume();
-        mViewModel.start();
-    }
 
     // 카테고리리스트
     private ArrayList<String> mCategoryList = new ArrayList<>();
+    private int mCategoryCount;
     // set 스피너 어댑터
-    public void setSpinnerList(ArrayList<String> categoryList){
+    public void setSpinnerList(ArrayList<String> categoryList, int categoryCount){
         mCategoryList = categoryList;
+        mCategoryCount = categoryCount;
     }
 
     // 뷰연결
@@ -105,8 +101,6 @@ public class AddItemPopupFragment extends Fragment {
         mDataBinding.etCategoryTitle.setText("");
         mDataBinding.etBookmarkTitle.setText("");
         mDataBinding.etBookmarkUrl.setText(R.string.https);
-        // 스피너 아이템은 항상 1번으로
-        mDataBinding.spinnerCategory.setSelection(0);
     }
 
     // 스피너 셀렉트 리스너
@@ -119,10 +113,16 @@ public class AddItemPopupFragment extends Fragment {
         // 스피너 어댑터 셋팅
         mDataBinding.spinnerCategory.setAdapter(spinnerAdapter);
 
+
         // 카테고리의 아이템 리스트를 뷰모델에 저장
         // categories 변수는 뷰모델에서 관찰중
         mDataBinding.getViewmodel().categories.clear();
         mDataBinding.getViewmodel().categories.addAll(mCategoryList);
+
+        // 선택된 카테고리를 북마크 생성 팝업의 스피너리스트에서 선택한다.
+        mDataBinding.spinnerCategory.setSelection(mCategoryCount);
+        mDataBinding.getViewmodel().bookmarkCategory.set(
+                mDataBinding.spinnerCategory.getSelectedItem().toString());
 
         mDataBinding.spinnerCategory.
                 setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {

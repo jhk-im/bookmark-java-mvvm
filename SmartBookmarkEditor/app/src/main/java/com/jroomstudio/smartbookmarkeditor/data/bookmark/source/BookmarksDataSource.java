@@ -44,6 +44,9 @@ public interface BookmarksDataSource {
     // Bookmark 의 리스트를 데이터베이스에서 가져온다
     void getBookmarks(@NonNull LoadBookmarksCallback callback);
 
+    // 입력된 카테고리의 Bookmark 리스트를 데이터베이스에서 가져온다.
+    void getBookmarks(@NonNull String category, @NonNull LoadBookmarksCallback callback);
+
     // Bookmark 객체를 데이터베이스에서 가져온다
     void getBookmark(@NonNull String id, @NonNull GetBookmarkCallback callback);
 

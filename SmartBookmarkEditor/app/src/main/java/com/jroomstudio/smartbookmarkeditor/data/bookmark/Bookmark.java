@@ -9,7 +9,6 @@ import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import com.google.common.base.Objects;
-import com.google.common.base.Strings;
 
 import java.util.UUID;
 
@@ -73,6 +72,12 @@ public final class Bookmark {
     @ColumnInfo(name = "position")
     private final int mPosition;
 
+    /**
+     * - bookmark 의 파비콘 url
+     **/
+    @NonNull
+    @ColumnInfo(name = "faviconUrl")
+    private final String mFaviconUrl;
 
     /**
      * 새로운 북마크를 생성할 때 사용함
@@ -81,12 +86,14 @@ public final class Bookmark {
      * @param action - bookmark 실행액션
      * @param category - bookmark 가 속한 카테고리
      * @param position - category 내부에서의 리스트 순서
+     * @param faviconUrl - bookmark 파비콘 url
      **/
     @Ignore // -> 저장하지 않고 싶은 필드
     public
     Bookmark(@NonNull String title, @NonNull String url,
-                    @NonNull String action, @NonNull String category, int position){
-        this(UUID.randomUUID().toString(),title,url,action,category,position);
+                    @NonNull String action, @NonNull String category,
+             int position, @NonNull String faviconUrl){
+        this(UUID.randomUUID().toString(),title,url,action,category,position,faviconUrl);
     }
 
     /**
@@ -95,13 +102,14 @@ public final class Bookmark {
      **/
     public Bookmark(@NonNull String id, @NonNull String title,
                     @NonNull String url, @NonNull String action,
-                    @NonNull String category, int position) {
+                    @NonNull String category, int position, @NonNull String faviconUrl) {
         this.mId = id;
         this.mTitle = title;
         this.mUrl = url;
         this.mAction = action;
         this.mCategory = category;
         this.mPosition = position;
+        this.mFaviconUrl = faviconUrl;
     }
 
     @NonNull
@@ -121,13 +129,9 @@ public final class Bookmark {
 
     public int getPosition() { return mPosition; }
 
-    public String getTitleForList() {
-        if (!Strings.isNullOrEmpty(mTitle)){
-            return mTitle;
-        } else {
-            return null;
-        }
-    }
+    @NonNull
+    public String getFaviconUrl() { return mFaviconUrl; }
+
 
     @Override
     public boolean equals(@Nullable Object obj) {
@@ -139,13 +143,16 @@ public final class Bookmark {
                 Objects.equal(mUrl,bookmark.mUrl) &&
                 Objects.equal(mAction,bookmark.mAction) &&
                 Objects.equal(mCategory,bookmark.mCategory) &&
-                Objects.equal(mPosition,bookmark.mPosition);
+                Objects.equal(mPosition,bookmark.mPosition) &&
+                Objects.equal(mFaviconUrl,bookmark.mFaviconUrl);
     }
 
     @Override
-    public int hashCode() { return Objects.hashCode(mId,mTitle,mUrl,mAction,mCategory,mPosition); }
+    public int hashCode() {
+        return Objects.hashCode(mId,mTitle,mUrl,mAction,mCategory,mPosition,mFaviconUrl);
+    }
 
     @NonNull
     @Override
-    public String toString() { return mTitle+"|"+mPosition+"|"+mCategory+"\n"; }
+    public String toString() { return mTitle+"\n"+mPosition+"\n"+mCategory+"\n"+mFaviconUrl; }
 }

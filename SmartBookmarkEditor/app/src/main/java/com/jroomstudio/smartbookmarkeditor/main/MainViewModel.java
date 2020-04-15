@@ -6,8 +6,8 @@ import androidx.databinding.BaseObservable;
 import androidx.databinding.ObservableArrayList;
 import androidx.databinding.ObservableField;
 import androidx.databinding.ObservableList;
-import androidx.databinding.library.baseAdapters.BR;
 
+import com.jroomstudio.smartbookmarkeditor.BR;
 import com.jroomstudio.smartbookmarkeditor.data.bookmark.Bookmark;
 import com.jroomstudio.smartbookmarkeditor.data.bookmark.source.BookmarksDataSource;
 import com.jroomstudio.smartbookmarkeditor.data.bookmark.source.BookmarksRepository;
@@ -15,9 +15,9 @@ import com.jroomstudio.smartbookmarkeditor.data.category.Category;
 import com.jroomstudio.smartbookmarkeditor.data.category.source.CategoriesDataSource;
 import com.jroomstudio.smartbookmarkeditor.data.category.source.CategoriesRepository;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * - 메인 액티비티에서 사용할 데이터를 노출한다.
@@ -89,64 +89,82 @@ public class MainViewModel extends BaseObservable {
     }
 
     public void start(){
-        loadDatabase(false);
+        loadCategories();
     }
 
-    // 데이터베이스 정보 받아오기
-    private void loadDatabase(boolean forceUpdate)
+    // 아이템 클릭시 실행
+    public void changeSelectCategory(Category category){
+        // 현재 카테고리 isSelected false 로 변경
+        mCategoriesRepository.
+                selectedCategory(Objects.requireNonNull(currentCategory.get()),false);
+        // 전달받은 카테고리 isSelected true 로 변경
+        mCategoriesRepository.selectedCategory(category,true);
+        // 업데이트
+        loadCategories();
+    }
+
+    /**
+     * 데이터베이스에서 카테고리 정보 받아오기
+     * -> 프래그먼트가 시작될 때 실행된다.
+     *  -> 카테고리를 먼저 받아온다.
+     *   -> 카테고리 중 선택된 카테고리를 찾아 저장한다.
+     *    -> 선택된 카테고리에 해당하는 북마크를 로드한다.
+     **/
+    private void loadCategories()
     {
+        /*
         if(forceUpdate){
             mCategoriesRepository.refreshCategories();
             mBookmarksRepository.refreshBookmarks();
         }
+        */
         // 카테고리
         mCategoriesRepository.getCategories(new CategoriesDataSource.LoadCategoriesCallback() {
             @Override
             public void onCategoriesLoaded(List<Category> categories) {
-                List<Category> categoriesToShow = new ArrayList<Category>();
                 for(Category category : categories){
-                    // 카테고리 리스트 추가
-                    categoriesToShow.add(category);
-                    // selected 가 true 객체를 selected 옵저버블 변수에 저장
                     if(category.isSelected()){
+                        // 액티비티 액션바 타이틀을 현재 선택된 카테고리로 업데이트
+                        mNavigator.setToolbarTitle(category.getTitle());
                         currentCategory.set(category);
                     }
                 }
-                categoryItems.clear();
                 // 옵저버블 리스트에 추가
                 // 카테고리 position 순서대로 정렬
-                categoryItems.addAll(sortToCategories(categoriesToShow));
+                categoryItems.clear();
+                categoryItems.addAll(sortToCategories(categories));
                 notifyPropertyChanged(BR._all);
-
+                // 북마크 가져오기
+                loadBookmarks();
             }
-
-
             @Override
-            public void onDataNotAvailable() { onDataNotAvailable(); }
+            public void onDataNotAvailable() {
+                     //onDataNotAvailable();
+            }
         });
+    }
 
-        // 북마크
-        mBookmarksRepository.getBookmarks(new BookmarksDataSource.LoadBookmarksCallback() {
-            @Override
-            public void onBookmarksLoaded(List<Bookmark> bookmarks) {
-                List<Bookmark> bookmarksToShow = new ArrayList<Bookmark>();
-                for(Bookmark bookmark : bookmarks){
-                    // 현재 선택된 카테고리의 북마크만 리스트에 추가
-                    if(bookmark.getCategory().equals(currentCategory.get().getTitle())){
-                        bookmarksToShow.add(bookmark);
+    // 데이터베이스에서 북마크 로드
+    private void loadBookmarks(){
+        // 현재 선택된 카테고리 북마크 가져오기
+        mBookmarksRepository.getBookmarks(Objects.requireNonNull(currentCategory.get().getTitle()),
+                new BookmarksDataSource.LoadBookmarksCallback() {
+                    @Override
+                    public void onBookmarksLoaded(List<Bookmark> bookmarks) {
+                        // 옵저버블 리스트에 추가
+                        // 북마크 포지션대로 정렬
+                        bookmarkItems.clear();
+                        bookmarkItems.addAll(sortToBookmarks(bookmarks));
+                        notifyPropertyChanged(BR._all);
                     }
-                }
-                bookmarkItems.clear();
-                // 옵저버블 리스트에 추가
-                // 북마크 포지션대로 정렬
-                bookmarkItems.addAll(sortToBookmarks(bookmarksToShow));
-                notifyPropertyChanged(BR._all);
 
-            }
-
-            @Override
-            public void onDataNotAvailable() { onDataNotAvailable(); }
-        });
+                    @Override
+                    public void onDataNotAvailable() {
+                        // 해당 카테고리의 북마크가 없으면 리스트 비우기
+                        bookmarkItems.clear();
+                        //onDataNotAvailable();
+                    }
+                });
     }
 
     // 북마크 리스트를 position 값에 맞게 순서정렬

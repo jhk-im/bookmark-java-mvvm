@@ -1,7 +1,6 @@
 package com.jroomstudio.smartbookmarkeditor.main.adapter;
 
 import android.annotation.SuppressLint;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +13,7 @@ import com.jroomstudio.smartbookmarkeditor.R;
 import com.jroomstudio.smartbookmarkeditor.data.category.Category;
 import com.jroomstudio.smartbookmarkeditor.data.category.source.CategoriesRepository;
 import com.jroomstudio.smartbookmarkeditor.databinding.MainCategoryItemBinding;
-import com.jroomstudio.smartbookmarkeditor.databinding.MainFragBinding;
+import com.jroomstudio.smartbookmarkeditor.main.MainViewModel;
 
 import java.util.List;
 
@@ -28,8 +27,8 @@ public class CategoriesRecyclerAdapter
     // 카테고리 원격과 로컬 데이터 소스 액세스
     private CategoriesRepository mCategoriesRepository;
 
-    // 메인 프래그먼트 데이터 바인딩
-    private MainFragBinding mMainFragBinding;
+    // 메인프래그먼트 뷰모델
+    private MainViewModel mMainViewModel;
 
     // 카테고리 아이템 데이터 바인딩
     private MainCategoryItemBinding mCategoryItemBinding;
@@ -39,18 +38,16 @@ public class CategoriesRecyclerAdapter
      **/
     public CategoriesRecyclerAdapter(List<Category> categories,
                                      CategoriesRepository categoriesRepository,
-                                     MainFragBinding mainFragBinding){
+                                     MainViewModel mainViewModel){
         setCategories(categories);
         mCategoriesRepository = categoriesRepository;
-        mMainFragBinding = mainFragBinding;
-        Log.e("adapter","생성자");
+        mMainViewModel = mainViewModel;
     }
 
     // 각 아이템의 view 추가
     @NonNull
     @Override
     public ItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        Log.e("adapter","onCreateViewHolder");
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         mCategoryItemBinding = MainCategoryItemBinding.inflate(inflater,parent,false);
         View view = mCategoryItemBinding.getRoot();
@@ -60,7 +57,6 @@ public class CategoriesRecyclerAdapter
     // 포지션 입력하여 아이템 구분하여 값 지정 (text, img 등)
     @Override
     public void onBindViewHolder(@NonNull ItemViewHolder holder, int position) {
-        Log.e("adapter","onBindViewHolder");
         holder.onBind(mCategories.get(position));
     }
 
@@ -89,9 +85,13 @@ public class CategoriesRecyclerAdapter
         }
         @SuppressLint("ResourceAsColor")
         public void onBind(Category category){
-            //Log.e("adapter","onBind");
             btnCategory.setText(category.getTitle());
             btnCategory.setSelected(category.isSelected());
+            // 클릭이벤트
+            btnCategory.setOnClickListener(v -> {
+                // 현재 카테고리 isSelected 변경하도록 카테고리 객체 넘김
+                mMainViewModel.changeSelectCategory(category);
+            });
         }
     }
 

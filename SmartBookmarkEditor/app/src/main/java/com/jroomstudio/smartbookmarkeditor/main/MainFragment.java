@@ -117,7 +117,7 @@ public class MainFragment extends Fragment {
         mBookmarkAdapter = new BookmarkRecyclerAdapter(
                 new ArrayList<>(0),
                 Injection.provideBookmarksRepository(getContext().getApplicationContext()),
-                mMainFragBinding
+                mMainViewModel
         );
         // 리사이클러뷰 레이아웃 매니져
         mMainFragBinding.rvBookmarks.setLayoutManager(
@@ -131,7 +131,7 @@ public class MainFragment extends Fragment {
         mCategoryAdapter = new CategoriesRecyclerAdapter(
                 new ArrayList<>(0),
                 Injection.provideCategoriesRepository(getContext().getApplicationContext()),
-                mMainFragBinding
+                mMainViewModel
         );
         // 리사이클러뷰 레이아웃 메니저
         mMainFragBinding.rvCategories.setLayoutManager(

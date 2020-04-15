@@ -67,6 +67,11 @@ public class FakeBookmarksRemoteDataSource implements BookmarksDataSource {
         callback.onBookmarksLoaded(Lists.newArrayList(BOOKMARKS_SERVICE_DATA.values()));
     }
 
+    @Override
+    public void getBookmarks(@NonNull String category,@NonNull LoadBookmarksCallback callback) {
+        //
+    }
+
     // 객체 콜백
     @Override
     public void getBookmark(@NonNull String id, @NonNull GetBookmarkCallback callback) {
@@ -107,7 +112,7 @@ public class FakeBookmarksRemoteDataSource implements BookmarksDataSource {
     public void updatePosition(@NonNull Bookmark bookmark, int position) {
         Bookmark updateBookmark = new Bookmark(bookmark.getId(),bookmark.getTitle(),
                 bookmark.getTitle(),bookmark.getAction(),
-                bookmark.getCategory(),position);
+                bookmark.getCategory(),position,bookmark.getFaviconUrl());
         BOOKMARKS_SERVICE_DATA.put(bookmark.getId(),updateBookmark);
     }
 

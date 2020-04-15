@@ -11,11 +11,5 @@ public class BookmarkItemViewModel extends BookmarkViewModel {
         super(context, bookmarksRepository);
     }
 
-    /**
-     * 아이템 클릭하면 데이터 바인딩 라이브러리 호출
-     **/
-    public void BookmarkClicked() {
-       // ... 구현
-    }
 
 }

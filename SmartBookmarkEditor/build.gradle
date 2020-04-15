@@ -46,6 +46,13 @@ ext {
     recyclerViewVersion = '1.1.0'
     appCompatVersion = '1.1.0'
 
+    retrofit2Version = '2.5.0'
+    gsonVersion = '2.8.5'
+    okHttp3Version = '3.12.0'
+    okHttp3LoggingVersion = '3.8.1'
+    jsoupVersion = '1.11.3'
+    glideVersion = '4.9.0'
+
     guavaVersion = '27.0.1-android'
     junitVersion = '4.13'
     mockitoVersion = '1.10.19'

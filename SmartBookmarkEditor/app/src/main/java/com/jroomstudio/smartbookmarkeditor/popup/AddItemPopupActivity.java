@@ -21,8 +21,12 @@ public class AddItemPopupActivity extends AppCompatActivity implements PopupAddI
     // 인텐트로 전달받은 카테고리 리스트 key 값
     public static final String CATEGORY_LIST = "CATEGORY_LIST";
 
+    public static final String SELECT_CATEGORY = "SELECT_CATEGORY";
+
     // 카테고리 리스트
     private ArrayList<String> mTitleList = new ArrayList<>();
+    // 선택된 카테고리
+    private int mSelectCategory;
 
     // 뷰모델 생성 태그
     public static final String POP_ADD_ITEM_TAG = "POP_ADD_ITEM_TAG";
@@ -41,11 +45,13 @@ public class AddItemPopupActivity extends AppCompatActivity implements PopupAddI
 
         // 인텐트로 전달받은 카테고리 리스트
         mTitleList = getIntent().getStringArrayListExtra(CATEGORY_LIST);
+        mSelectCategory = getIntent().getIntExtra(SELECT_CATEGORY,0);
+
 
         // Popup 창 프래그먼트와 뷰모델 연결
         AddItemPopupFragment addItemPopupFragment = findOrCreateViewFragment();
         // 프래그먼트의 스니퍼에 리스트 전달
-        addItemPopupFragment.setSpinnerList(mTitleList);
+        addItemPopupFragment.setSpinnerList(mTitleList,mSelectCategory);
         // 프래그먼트 뷰모델 생성
         mViewModel = findOrCreateViewModel();
         // 네비게이터 연결

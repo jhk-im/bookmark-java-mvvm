@@ -44,8 +44,8 @@ public class BookmarksRemoteDataSource implements BookmarksDataSource {
 
     // Test 용 데이터
     private static void addBookmark(String title, String url,String action,
-                                    String category, int position){
-        Bookmark bookmark = new Bookmark(title,url,action,category,position);
+                                    String category, int position,String faviconUrl){
+        Bookmark bookmark = new Bookmark(title,url,action,category,position,faviconUrl);
         BOOKMARK_SERVICE_DATA.put(bookmark.getId(),bookmark);
     }
     /*
@@ -96,6 +96,12 @@ public class BookmarksRemoteDataSource implements BookmarksDataSource {
         }, SERVICE_LATENCY_IN_MILLIS);
     }
 
+    // 북마크 리스트를 카테고리로 찾아서 콜백
+    @Override
+    public void getBookmarks(@NonNull String category, @NonNull LoadBookmarksCallback callback) {
+        //
+    }
+
     // bookmark 객체 찾아 callback
     @Override
     public void getBookmark(@NonNull String id, @NonNull GetBookmarkCallback callback) {
@@ -141,7 +147,8 @@ public class BookmarksRemoteDataSource implements BookmarksDataSource {
     @Override
     public void updatePosition(@NonNull Bookmark bookmark, int position) {
         Bookmark newBookmark = new Bookmark(bookmark.getId(),bookmark.getTitle(),
-                bookmark.getUrl(),bookmark.getAction(),bookmark.getCategory(),position);
+                bookmark.getUrl(),bookmark.getAction(),bookmark.getCategory(),
+                position,bookmark.getFaviconUrl());
         BOOKMARK_SERVICE_DATA.put(bookmark.getId(), newBookmark);
     }
 

@@ -1,18 +1,21 @@
 package com.jroomstudio.smartbookmarkeditor.main.adapter;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.jroomstudio.smartbookmarkeditor.R;
 import com.jroomstudio.smartbookmarkeditor.data.bookmark.Bookmark;
 import com.jroomstudio.smartbookmarkeditor.data.bookmark.source.BookmarksRepository;
 import com.jroomstudio.smartbookmarkeditor.databinding.MainBookmarkItemBinding;
-import com.jroomstudio.smartbookmarkeditor.databinding.MainFragBinding;
+import com.jroomstudio.smartbookmarkeditor.main.MainViewModel;
 
 import java.util.List;
 
@@ -23,11 +26,10 @@ public class BookmarkRecyclerAdapter
     private List<Bookmark> mBookmarks;
 
     // 북마크 원격과 로컬 데이터소스 액세스
-
     private BookmarksRepository mBookmarksRepository;
 
-    // 메인 프래그먼트 데이터 바인딩
-    private MainFragBinding mMainFragBinding;
+    // 메인프래그먼트 뷰모델
+    private MainViewModel mMainViewModel;
 
     // 북마크 아이템 데이터 바인딩
     private MainBookmarkItemBinding mBookmarkItemBinding;
@@ -37,10 +39,10 @@ public class BookmarkRecyclerAdapter
      **/
     public BookmarkRecyclerAdapter(List<Bookmark> bookmarks,
                                    BookmarksRepository bookmarksRepository,
-                                   MainFragBinding mainFragBinding){
+                                   MainViewModel mainViewModel){
         setBookmarks(bookmarks);
         mBookmarksRepository = bookmarksRepository;
-        mMainFragBinding = mainFragBinding;
+        mMainViewModel = mainViewModel;
     }
 
     // 각 아이템의 view 추가
@@ -80,14 +82,31 @@ public class BookmarkRecyclerAdapter
     // onBind 랑 뷰홀더에서 데이터바인딩 사용하면 꼬임
     public class ItemViewHolder extends RecyclerView.ViewHolder {
         TextView bookmarkTitle, bookmarkUrl;
+        ImageView bookmarkFavicon;
         public ItemViewHolder(@NonNull View itemView) {
             super(itemView);
             bookmarkTitle = itemView.findViewById(R.id.tv_bookmark_title);
             bookmarkUrl = itemView.findViewById(R.id.tv_bookmark_url);
+            bookmarkFavicon = itemView.findViewById(R.id.iv_url_image);
         }
+
         public void onBind(Bookmark bookmark) {
+            // 북마크 제목
             bookmarkTitle.setText(bookmark.getTitle());
+            // url 주소
             bookmarkUrl.setText(bookmark.getUrl());
+            // 파비콘 셋팅
+            // 로드 실패하면 기본 로고 이미지 셋팅
+            // 로드 성공하면 파비콘을 셋팅
+            Glide.with(itemView)
+                    .load(bookmark.getFaviconUrl())
+                    .error(R.drawable.logo)
+                    .into(bookmarkFavicon);
+            // error()  실패했을 때 이미지 지정할 수 있음
+            // 임시 test 용
+            itemView.setOnClickListener(v -> Log.e("bookmark",
+                    bookmark.getTitle()+"\n"+ bookmark.getCategory()+"\n"+ bookmark.getPosition())
+            );
         }
     }
 }

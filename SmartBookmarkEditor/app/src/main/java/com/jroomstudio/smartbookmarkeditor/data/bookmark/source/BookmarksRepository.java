@@ -153,36 +153,64 @@ public class BookmarksRepository implements BookmarksDataSource {
     @Override
     public void getBookmarks(@NonNull LoadBookmarksCallback callback) {
         checkNotNull(callback);
-
         // Map<String, Bookmark> 이 null 이 아니고 mCacheDirty 가 false 일때는 캐시메모리로 즉시 응답
         // 즉, remote 나 local 로 부터 데이터를 받아오는데 성공 한 후
         // 캐시 메모리의 강제 업데이트가 필요 없는 경우는 캐시메모리로 응답한다.
+        /*
         if (mCachedBookmarks != null && !mCacheDirty) {
             callback.onBookmarksLoaded(new ArrayList<>(mCachedBookmarks.values()));
             return;
         }
-
+        */
         // mCacheDirty 가 true 이면 데이터가 변경되어 refresh 해야하는 상황
+        /*
         if(mCacheDirty) {
             getBookmarksFromRemoteDataSource(callback);
         }else{
-            // LocalDataSource 로 부터 데이터를 가져온다.
-            mLocalDataSource.getBookmarks(new LoadBookmarksCallback() {
-                @Override
-                public void onBookmarksLoaded(List<Bookmark> bookmarks) {
-                    // 로드성공
-                    // 받아온 데이터는 캐쉬메모리에 refresh
-                    refreshCache(bookmarks);
-                    callback.onBookmarksLoaded(new ArrayList<>(mCachedBookmarks.values()));
-                }
-                @Override
-                public void onDataNotAvailable() {
-                    // 로컬이 비어있을때 원격에서 확인한다.
-                    getBookmarksFromRemoteDataSource(callback);
-                }
-            });
         }
+        */
+        // LocalDataSource 로 부터 데이터를 가져온다.
+        mLocalDataSource.getBookmarks(new LoadBookmarksCallback() {
+            @Override
+            public void onBookmarksLoaded(List<Bookmark> bookmarks) {
+                // 로드성공
+                // 받아온 데이터는 캐쉬메모리에 refresh
+                refreshCache(bookmarks);
+                callback.onBookmarksLoaded(new ArrayList<>(mCachedBookmarks.values()));
+                //callback.onBookmarksLoaded(bookmarks);
+            }
+            @Override
+            public void onDataNotAvailable() {
+                // 로컬이 비어있을때 원격에서 확인한다.
+                // getBookmarksFromRemoteDataSource(callback);
+            }
+        });
 
+    }
+    /**
+     * - 저장소 테이블에서 입력된 카테고리안의 Bookmark 객체의 정보를 가져온다.
+     * - 캐시, 로컬 데이터소스(SQLite) 또는 원격 데이터 소스 중 먼저 사용 가능한 작업을 가져온다.
+     *
+     * {@link LoadBookmarksCallback#onDataNotAvailable()}
+     * 모든 데이터 소스가 데이터를 가져오지 못하면 실행된다.
+     **/
+    @Override
+    public void getBookmarks(@NonNull String category, @NonNull LoadBookmarksCallback callback) {
+        checkNotNull(callback);
+        checkNotNull(category);
+        // LocalDataSource 로 부터 데이터를 가져온다.
+        mLocalDataSource.getBookmarks(category,new LoadBookmarksCallback() {
+            @Override
+            public void onBookmarksLoaded(List<Bookmark> bookmarks) {
+                // 로드 성공하면 로드 콜백에 리스트를 보낸다.
+                callback.onBookmarksLoaded(bookmarks);
+            }
+            @Override
+            public void onDataNotAvailable() {
+                // 해당 카테고리에 아이템 없다고 알린다.
+                callback.onDataNotAvailable();
+            }
+        });
     }
 
     /**
@@ -200,8 +228,8 @@ public class BookmarksRepository implements BookmarksDataSource {
 
         // 캐시메모리에서 찾기
         Bookmark cachedBookmark = getBookmarkWithId(id);
-
         // 캐시에서 해당 Bookmark 를 찾았을 경우 즉시응답
+
         if(cachedBookmark != null){
             callback.onBookmarkLoaded(cachedBookmark);
             return;
@@ -224,6 +252,7 @@ public class BookmarksRepository implements BookmarksDataSource {
             // 데이터가 없을 때
             @Override
             public void onDataNotAvailable() {
+                /*
                 // 원격에서 찾는다
                 mRemoteDataSource.getBookmark(id, new GetBookmarkCallback() {
                     @Override
@@ -243,6 +272,8 @@ public class BookmarksRepository implements BookmarksDataSource {
                         onDataNotAvailable();
                     }
                 });
+                */
+                callback.onDataNotAvailable();
             }
         });
 
@@ -254,7 +285,7 @@ public class BookmarksRepository implements BookmarksDataSource {
         checkNotNull(bookmark);
         // 로컬, 원격
         mLocalDataSource.saveBookmark(bookmark);
-        mRemoteDataSource.saveBookmark(bookmark);
+        //mRemoteDataSource.saveBookmark(bookmark);
 
         // 캐시메모리 업데이트
         if (mCachedBookmarks == null){
@@ -268,7 +299,7 @@ public class BookmarksRepository implements BookmarksDataSource {
     public void deleteAllBookmark() {
         // 로컬, 원격
         mLocalDataSource.deleteAllBookmark();
-        mRemoteDataSource.deleteAllBookmark();
+        //mRemoteDataSource.deleteAllBookmark();
 
         // 캐시메모리 업데이트
         if (mCachedBookmarks == null){
@@ -282,7 +313,7 @@ public class BookmarksRepository implements BookmarksDataSource {
     public void deleteBookmark(@NonNull String id) {
         // 로컬 , 원격
         mLocalDataSource.deleteBookmark(checkNotNull(id));
-        mRemoteDataSource.deleteBookmark(checkNotNull(id));
+        //mRemoteDataSource.deleteBookmark(checkNotNull(id));
         // 캐시메모리
         mCachedBookmarks.remove(id);
     }
@@ -291,7 +322,7 @@ public class BookmarksRepository implements BookmarksDataSource {
     public void deleteAllInCategory(@NonNull String category) {
         // 입력된 카테고리의 아이템 모두 삭제
         mLocalDataSource.deleteAllInCategory(checkNotNull(category));
-        mRemoteDataSource.deleteAllInCategory(checkNotNull(category));
+        //mRemoteDataSource.deleteAllInCategory(checkNotNull(category));
 
         for(Bookmark bookmark : new ArrayList<>(mCachedBookmarks.values())){
             if(bookmark.getCategory().equals(category)){
@@ -308,9 +339,11 @@ public class BookmarksRepository implements BookmarksDataSource {
         checkNotNull(position);
         // 로컬, 원격
         mLocalDataSource.updatePosition(bookmark,position);
-        mRemoteDataSource.updatePosition(bookmark,position);
-        Bookmark updateBookmark = new Bookmark(bookmark.getId(),bookmark.getTitle(),
-                bookmark.getUrl(),bookmark.getAction(),bookmark.getCategory(),position);
+        //mRemoteDataSource.updatePosition(bookmark,position);
+        Bookmark updateBookmark =
+                new Bookmark(bookmark.getId(),bookmark.getTitle(), bookmark.getUrl(),
+                        bookmark.getAction(),bookmark.getCategory(),position,
+                        bookmark.getFaviconUrl());
 
         // 캐시메모리 업데이트
         if (mCachedBookmarks == null){

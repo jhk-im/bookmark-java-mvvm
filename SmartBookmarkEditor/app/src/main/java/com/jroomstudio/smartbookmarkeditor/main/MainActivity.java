@@ -40,6 +40,8 @@ public class MainActivity extends AppCompatActivity implements ItemNavigator {
     // 네비게이션 스위치
     private Switch mThemeSwitch, mNoticeSwitch;
 
+    private int mSelectCategoryCount;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,7 +61,6 @@ public class MainActivity extends AppCompatActivity implements ItemNavigator {
         mViewModel.setNavigator(this);
         // 프래그먼트와 뷰모델 연결
         mainFragment.setMainViewModel(mViewModel);
-
 
     }
 
@@ -113,9 +114,15 @@ public class MainActivity extends AppCompatActivity implements ItemNavigator {
         setSupportActionBar(toolbar);
         ActionBar ab = getSupportActionBar();
         ab.setHomeAsUpIndicator(R.drawable.ic_menu);
-        ab.setTitle(R.string.bookmark_title);
         ab.setDisplayHomeAsUpEnabled(true);
     }
+    // 툴바 타이틀 변경하기
+    @Override
+    public void setToolbarTitle(String title) {
+        ActionBar ab = getSupportActionBar();
+        ab.setTitle(title);
+    }
+
 
     // 옵션메뉴 Item 셀렉트
     @Override
@@ -189,16 +196,22 @@ public class MainActivity extends AppCompatActivity implements ItemNavigator {
     @Override
     public void addNewItems(List<Category> categories) {
         Intent intent = new Intent(this, AddItemPopupActivity.class);
-        // 카테고리가 있으면
+        // 카테고리가 있으면 카테고리 리스트를 보낸다.
+        // 현재 선택되어있는 카테고리도 보낸다.
         ArrayList<String> title = new ArrayList<String>();
         if(categories != null){
             for(Category category : categories){
                 title.add(category.getTitle());
+                if(category.isSelected()){
+                    mSelectCategoryCount = categories.indexOf(category);
+                }
             }
         }
-        // 인텐트로 타이틀 전달
+        // 인텐트로 타이틀 리스트 전달
         intent.putStringArrayListExtra(AddItemPopupActivity.CATEGORY_LIST, title);
+        intent.putExtra(AddItemPopupActivity.SELECT_CATEGORY,mSelectCategoryCount);
         startActivityForResult(intent,AddItemPopupActivity.REQUEST_CODE);
     }
+
 
 }

@@ -24,6 +24,13 @@ public interface BookmarksDAO {
     List<Bookmark> getAllBookmarks();
 
     /**
+     * bookmarks 테이블에서 입력된 카테고리의 모든 아이템을 가져온다.
+     * @return all bookmarks in category
+     **/
+    @Query("SELECT * FROM bookmarks WHERE category = :category")
+    List<Bookmark> getAllBookmarks(String category);
+
+    /**
      * id로 찾은 bookmark 아이템을 가져온다.
      * @param id - bookmark 프라이머리키
      * @return id 와 일치하는 bookmark 아이템

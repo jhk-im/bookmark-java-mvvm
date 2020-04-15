@@ -99,6 +99,24 @@ public class BookmarksLocalDataSource implements BookmarksDataSource {
         mAppExecutors.getDiskIO().execute(runnable);
     }
 
+    // 입력된 카테고리의 북마크 리스트 가져오기
+    @Override
+    public void getBookmarks(@NonNull String category, @NonNull LoadBookmarksCallback callback) {
+        Runnable runnable = () -> {
+            final List<Bookmark> bookmarks = mBookmarksDAO.getAllBookmarks(category);
+            mAppExecutors.getMainThread().execute(() -> {
+                if(bookmarks.isEmpty()){
+                    // 새 테이블이거나 비어있는경우
+                    callback.onDataNotAvailable();
+                }else{
+                    // 데이터 로드에 성공하여 리스트를 담아 콜백
+                    callback.onBookmarksLoaded(bookmarks);
+                }
+            });
+        };
+        mAppExecutors.getDiskIO().execute(runnable);
+    }
+
     // bookmark 객체 가져오기
     @Override
     public void getBookmark(@NonNull String id, @NonNull GetBookmarkCallback callback) {

@@ -156,36 +156,38 @@ public class CategoriesRepository implements CategoriesDataSource {
     @Override
     public void getCategories(@NonNull LoadCategoriesCallback callback) {
         checkNotNull(callback);
-
         // Map<String, Bookmark> 이 null 이 아니고 mCacheDirty 가 false 일때는 캐시메모리로 즉시 응답
         // 즉, remote 나 local 로 부터 데이터를 받아오는데 성공 한 후
         // 캐시 메모리의 강제 업데이트가 필요 없는 경우는 캐시메모리로 응답한다.
+        /*
         if (mCachedCategories != null && !mCacheDirty) {
             callback.onCategoriesLoaded(new ArrayList<>(mCachedCategories.values()));
             return;
         }
-
+        */
         // mCacheDirty 가 true 이면 데이터가 변경되어 refresh 해야하는 상황
+        /*
         if(mCacheDirty) {
             getCategoriesFromRemoteDataSource(callback);
         }else{
-            // LocalDataSource 로 부터 데이터를 가져온다.
-            mLocalDataSource.getCategories(new LoadCategoriesCallback() {
-                @Override
-                public void onCategoriesLoaded(List<Category> categories) {
-                    // 로드성공
-                    // 받아온 데이터는 캐쉬메모리에 refresh
-                    refreshCache(categories);
-                    callback.onCategoriesLoaded(new ArrayList<>(mCachedCategories.values()));
-                }
-
-                @Override
-                public void onDataNotAvailable() {
-                    // 로컬이 비어있을때 원격에서 확인한다.
-                    // getCategoriesFromRemoteDataSource(callback);
-                }
-            });
         }
+        */
+        // LocalDataSource 로 부터 데이터를 가져온다.
+        mLocalDataSource.getCategories(new LoadCategoriesCallback() {
+            @Override
+            public void onCategoriesLoaded(List<Category> categories) {
+                // 로드성공
+                // 받아온 데이터는 캐쉬메모리에 refresh
+                refreshCache(categories);
+                callback.onCategoriesLoaded(new ArrayList<>(mCachedCategories.values()));
+                //callback.onCategoriesLoaded(categories);
+            }
+            @Override
+            public void onDataNotAvailable() {
+                // 로컬이 비어있을때 원격에서 확인한다.
+                // getCategoriesFromRemoteDataSource(callback);
+            }
+        });
     }
 
 
@@ -206,6 +208,7 @@ public class CategoriesRepository implements CategoriesDataSource {
         Category cachedCategory = getCategoryWithId(id);
 
         // 캐시에서 해당 id의 Category 가 있을 경우 즉시응답
+
         if(cachedCategory != null){
             callback.onCategoryLoaded(cachedCategory);
             return;
@@ -228,6 +231,8 @@ public class CategoriesRepository implements CategoriesDataSource {
             // 데이터가 없을 때
             @Override
             public void onDataNotAvailable() {
+                callback.onDataNotAvailable();
+                /*
                 // 원격에서 찾는다.
                 mRemoteDataSource.getCategory(id, new GetCategoryCallback() {
                     @Override
@@ -245,9 +250,9 @@ public class CategoriesRepository implements CategoriesDataSource {
                     @Override
                     public void onDataNotAvailable() { onDataNotAvailable(); }
                 });
+                */
             }
         });
-
     }
 
     // 로컬과 원격 데이터베이스에 모두 Category 를 각각 저장한다.
@@ -256,7 +261,7 @@ public class CategoriesRepository implements CategoriesDataSource {
         checkNotNull(category);
         // 로컬, 원격
         mLocalDataSource.saveCategory(category);
-        mRemoteDataSource.saveCategory(category);
+        //mRemoteDataSource.saveCategory(category);
 
         // 캐시메모리 업데이트
         if (mCachedCategories == null){
@@ -270,7 +275,7 @@ public class CategoriesRepository implements CategoriesDataSource {
     public void deleteAllCategories() {
         // 로컬, 원격
         mLocalDataSource.deleteAllCategories();
-        mRemoteDataSource.deleteAllCategories();
+        //mRemoteDataSource.deleteAllCategories();
 
         // 캐시메모리 업데이트
         if (mCachedCategories == null){
@@ -284,7 +289,7 @@ public class CategoriesRepository implements CategoriesDataSource {
     public void deleteCategory(@NonNull String id) {
         // 로컬, 원격
         mLocalDataSource.deleteCategory(checkNotNull(id));
-        mRemoteDataSource.deleteCategory(checkNotNull(id));
+        //mRemoteDataSource.deleteCategory(checkNotNull(id));
         // 캐시메모리
         mCachedCategories.remove(id);
     }
@@ -295,7 +300,7 @@ public class CategoriesRepository implements CategoriesDataSource {
         checkNotNull(position);
         // 로컬, 원격
         mLocalDataSource.updatePosition(category,position);
-        mRemoteDataSource.updatePosition(category,position);
+        //mRemoteDataSource.updatePosition(category,position);
         Category updateCategory =
                 new Category(category.getId(),category.getTitle(),position,category.isSelected());
 
@@ -317,12 +322,12 @@ public class CategoriesRepository implements CategoriesDataSource {
         updatePosition(getCategoryWithId(id),position);
     }
 
-    // 로컬, 원격에서 입력된 Category 의 selected true 로 변경
+    // 로컬, 원격에서 입력된 Category 의 selected(true/false) 로 변경
     @Override
     public void selectedCategory(@NonNull Category category, boolean selected) {
         checkNotNull(category);
         mLocalDataSource.selectedCategory(category,selected);
-        mRemoteDataSource.selectedCategory(category,selected);
+        //mRemoteDataSource.selectedCategory(category,selected);
 
         Category selectedCategory =
                 new Category(category.getId(),category.getTitle(),category.getPosition(),selected);

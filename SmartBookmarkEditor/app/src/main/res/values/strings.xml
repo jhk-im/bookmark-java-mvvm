@@ -16,4 +16,5 @@
     <string name="popup_add_item_et_url">주소</string>
     <string name="popup_add_item_category">카테고리</string>
     <string name="https">https://</string>
+    <string name="http">http://</string>
 </resources>

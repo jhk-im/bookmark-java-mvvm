@@ -46,7 +46,15 @@
                 android:layout_height="wrap_content">
 
                 <RadioButton
-                    android:checked="@={viewmodel.isCategory}"
+                    android:checked="@={viewmodel.isSelectBookmark}"
+                    android:id="@+id/rb_bookmarks"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:text="@string/bookmark_title" />
+
+                <RadioButton
                     android:id="@+id/rb_category"
                     android:layout_weight="1"
                     android:layout_width="wrap_content"
@@ -54,13 +62,6 @@
                     android:textColor="@color/colorPrimaryDark"
                     android:text="@string/popup_add_item_category" />
 
-                <RadioButton
-                    android:id="@+id/rb_bookmarks"
-                    android:layout_weight="1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/colorPrimaryDark"
-                    android:text="@string/bookmark_title" />
             </RadioGroup>
 
         </LinearLayout>

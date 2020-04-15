@@ -183,6 +183,7 @@ public class CategoriesLocalDataSource implements CategoriesDataSource {
         Runnable runnable = () -> {
           mCategoriesDAO.updateSelected(category.getId(), selected);
         };
+        mAppExecutors.getDiskIO().execute(runnable);
     }
 
     @Override
