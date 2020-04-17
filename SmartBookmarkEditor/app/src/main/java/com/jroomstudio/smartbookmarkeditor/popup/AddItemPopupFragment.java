@@ -22,7 +22,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class AddItemPopupFragment extends Fragment {
 
 
-    public static final String ARGUMENT_EDIT_TASK_ID = "EDIT_TASK_ID";
+    //public static final String ARGUMENT_EDIT_TASK_ID = "EDIT_TASK_ID";
 
     // 뷰모델
     private AddItemPopupViewModel mViewModel;
@@ -54,7 +54,8 @@ public class AddItemPopupFragment extends Fragment {
     // 뷰연결
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.add_item_popup_frag,container,false);
         if(mDataBinding == null) {
             mDataBinding = AddItemPopupFragBinding.bind(root);

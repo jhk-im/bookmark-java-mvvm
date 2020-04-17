@@ -17,8 +17,9 @@ import com.google.android.material.navigation.NavigationView;
 import com.jroomstudio.smartbookmarkeditor.Injection;
 import com.jroomstudio.smartbookmarkeditor.R;
 import com.jroomstudio.smartbookmarkeditor.ViewModelHolder;
+import com.jroomstudio.smartbookmarkeditor.data.bookmark.Bookmark;
 import com.jroomstudio.smartbookmarkeditor.data.category.Category;
-import com.jroomstudio.smartbookmarkeditor.popup.AddItemPopupActivity;
+import com.jroomstudio.smartbookmarkeditor.popup.EditAddItemPopupActivity;
 import com.jroomstudio.smartbookmarkeditor.util.ActivityUtils;
 
 import java.util.ArrayList;
@@ -40,7 +41,10 @@ public class MainActivity extends AppCompatActivity implements ItemNavigator {
     // 네비게이션 스위치
     private Switch mThemeSwitch, mNoticeSwitch;
 
+    // 아이템추가 -> 스피너리스트로 전달할 카테고리 리스트 카운트
     private int mSelectCategoryCount;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -192,10 +196,10 @@ public class MainActivity extends AppCompatActivity implements ItemNavigator {
         super.onDestroy();
     }
 
-    // 아이템 추가 팝업이동
+    // 아이템 추가 팝업 띄우기 - 툴바 + 버튼
     @Override
     public void addNewItems(List<Category> categories) {
-        Intent intent = new Intent(this, AddItemPopupActivity.class);
+        Intent intent = new Intent(this, EditAddItemPopupActivity.class);
         // 카테고리가 있으면 카테고리 리스트를 보낸다.
         // 현재 선택되어있는 카테고리도 보낸다.
         ArrayList<String> title = new ArrayList<String>();
@@ -208,10 +212,42 @@ public class MainActivity extends AppCompatActivity implements ItemNavigator {
             }
         }
         // 인텐트로 타이틀 리스트 전달
-        intent.putStringArrayListExtra(AddItemPopupActivity.CATEGORY_LIST, title);
-        intent.putExtra(AddItemPopupActivity.SELECT_CATEGORY,mSelectCategoryCount);
-        startActivityForResult(intent,AddItemPopupActivity.REQUEST_CODE);
+        //intent.putExtra(EditAddItemPopupActivity.INTENT_TYPE,EditAddItemPopupActivity.ADD_ITEM);
+        intent.setType(EditAddItemPopupActivity.ADD_ITEM);
+        intent.putStringArrayListExtra(EditAddItemPopupActivity.CATEGORY_LIST, title);
+        intent.putExtra(EditAddItemPopupActivity.SELECT_CATEGORY,mSelectCategoryCount);
+        //startActivityForResult(intent, EditAddItemPopupActivity.REQUEST_CODE);
+        startActivity(intent);
     }
 
+    // 선택한 카테고리 편집 팝업 띄우기
+    @Override
+    public void editSelectCategory(Category category) {
+        Intent intent = new Intent(this, EditAddItemPopupActivity.class);
+        // 편집할 카테고리 데이터 전달
+        //intent.putExtra(EditAddItemPopupActivity.INTENT_TYPE,EditAddItemPopupActivity.EDIT_CATEGORY);
+        intent.setType(EditAddItemPopupActivity.EDIT_CATEGORY);
+        intent.putExtra(EditAddItemPopupActivity.ID,category.getId());
+        intent.putExtra(EditAddItemPopupActivity.TITLE,category.getTitle());
+        intent.putExtra(EditAddItemPopupActivity.POSITION,category.getPosition());
+        intent.putExtra(EditAddItemPopupActivity.SELECTED,category.isSelected());
+        //startActivityForResult(intent, EditAddItemPopupActivity.REQUEST_CODE);
+        startActivity(intent);
+    }
+    // 선택한 북마크 편집팝업 띄우기
+    @Override
+    public void editSelectBookmark(Bookmark bookmark) {
+        Intent intent = new Intent(this, EditAddItemPopupActivity.class);
+        // 편집할 북마크 데이터 전달
+        //intent.putExtra(EditAddItemPopupActivity.INTENT_TYPE,EditAddItemPopupActivity.EDIT_BOOKMARK);
+        intent.setType(EditAddItemPopupActivity.EDIT_BOOKMARK);
+        intent.putExtra(EditAddItemPopupActivity.ID,bookmark.getId());
+        intent.putExtra(EditAddItemPopupActivity.TITLE,bookmark.getTitle());
+        intent.putExtra(EditAddItemPopupActivity.POSITION,bookmark.getPosition());
+        intent.putExtra(EditAddItemPopupActivity.URL,bookmark.getUrl());
+        intent.putExtra(EditAddItemPopupActivity.BOOKMARK_ACTION,bookmark.getAction());
+        intent.putExtra(EditAddItemPopupActivity.FAVICON_URL,bookmark.getFaviconUrl());
+        startActivity(intent);
+    }
 
 }

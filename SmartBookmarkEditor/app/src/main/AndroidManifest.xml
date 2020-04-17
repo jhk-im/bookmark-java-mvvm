@@ -12,7 +12,7 @@
         android:theme="@style/AppTheme">
 
         <activity
-            android:name=".popup.AddItemPopupActivity"
+            android:name=".popup.EditAddItemPopupActivity"
             android:theme="@style/AppTheme.Popup" />
         <activity android:name=".note.NoteActivity" />
         <activity android:name=".info.InfoActivity" />

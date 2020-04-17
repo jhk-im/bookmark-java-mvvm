@@ -87,10 +87,17 @@ public class CategoriesRecyclerAdapter
         public void onBind(Category category){
             btnCategory.setText(category.getTitle());
             btnCategory.setSelected(category.isSelected());
-            // 클릭이벤트
+            // 클릭이벤트 (셀렉트변경)
             btnCategory.setOnClickListener(v -> {
-                // 현재 카테고리 isSelected 변경하도록 카테고리 객체 넘김
-                mMainViewModel.changeSelectCategory(category);
+                // 선택되지 않은 카테고리 isSelected 변경하도록 카테고리 객체 넘김
+                if(!category.isSelected()){
+                    mMainViewModel.changeSelectCategory(category);
+                }
+            });
+            // 롱클릭 이벤트 -> 롱클릭으로 선택된 카테고리 편집 팝업 띄우기
+            btnCategory.setOnLongClickListener(v -> {
+                mMainViewModel.editLongClickCategory(category);
+                return false;
             });
         }
     }

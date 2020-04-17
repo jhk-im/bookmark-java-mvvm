@@ -93,7 +93,7 @@ public class MainFragment extends Fragment {
         inflater.inflate(R.menu.bookmark_frag_menu, menu);
     }
 
-    // 옵션메뉴 셀렉터
+    // 옵션메뉴 셀렉터 - 툴바
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){

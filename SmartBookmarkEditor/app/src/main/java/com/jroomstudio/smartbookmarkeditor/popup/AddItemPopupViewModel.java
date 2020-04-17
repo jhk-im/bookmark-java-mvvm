@@ -27,6 +27,9 @@ import java.util.Objects;
 
 public class AddItemPopupViewModel extends BaseObservable {
 
+    /**
+     * 뷰 관찰 변수
+     **/
     // 카테고리 타이틀 입력 관찰
     public final ObservableField<String> categoryTitle = new ObservableField<>();
     // 북마크 타이틀 입력 관찰변수
@@ -43,9 +46,9 @@ public class AddItemPopupViewModel extends BaseObservable {
 
 
     // 액티비티 네비게이터
-    private PopupAddItemNavigator mNavigator;
+    private EditAddItemPopupNavigator mNavigator;
     // 액티비티 시작시 네비게이터 셋팅
-    void onActivityCreated(PopupAddItemNavigator navigator){ mNavigator = navigator; }
+    void onActivityCreated(EditAddItemPopupNavigator navigator){ mNavigator = navigator; }
     // 액티비티 종료시 네비게이터 종료
     void onActivityDestroyed() {
         // Clear references to avoid potential memory leaks.
@@ -75,14 +78,14 @@ public class AddItemPopupViewModel extends BaseObservable {
     }
 
 
-    // 아이템이 저장되었으니 종료
+    // 아이템이 생성 or 편집 완료되었으니 액티비티 종료
     private void navigationAddNewItem(){
         if(mNavigator!=null){
-            mNavigator.addNewItem();
+            mNavigator.updateItem();
         }
     }
 
-    // 취소버튼 클릭
+    // 액티비티의 취소버튼 클릭
     public void cancelButtonOnClick(){
         // 뒤로가기
         if(mNavigator!=null){

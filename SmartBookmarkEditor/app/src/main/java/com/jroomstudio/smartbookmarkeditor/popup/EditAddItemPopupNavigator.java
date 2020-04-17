@@ -1,6 +1,6 @@
 package com.jroomstudio.smartbookmarkeditor.popup;
 
-public interface PopupAddItemNavigator {
-    void addNewItem();
+public interface EditAddItemPopupNavigator {
+    void updateItem();
     void cancelAddItem();
 }

@@ -1,5 +1,6 @@
 package com.jroomstudio.smartbookmarkeditor.main;
 
+import com.jroomstudio.smartbookmarkeditor.data.bookmark.Bookmark;
 import com.jroomstudio.smartbookmarkeditor.data.category.Category;
 
 import java.util.List;
@@ -12,5 +13,9 @@ public interface ItemNavigator {
     void addNewItems(List<Category> categories);
 
     void setToolbarTitle(String title);
+
+    void editSelectCategory(Category category);
+
+    void editSelectBookmark(Bookmark bookmark);
 
 }

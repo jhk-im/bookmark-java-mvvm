@@ -62,16 +62,40 @@ public class MainViewModel extends BaseObservable {
     // 네비게이터 셋팅
     void setNavigator(ItemNavigator navigator) { mNavigator = navigator; }
 
+    /**
+     * mNavigator -> ItemNavigator 메소드
+     **/
     // 네비게이터 null 셋팅
     void onActivityDestroyed() {
         // Clear references to avoid potential memory leaks.
         mNavigator = null;
     }
+
+    // 프래그먼트 옵션메뉴 -> + 버튼 클릭
     // 액티비티 네비게이터 메소드 실행
     // -> 새로운 아이템 추가하는 팝업이 실행된다.
     public void addNewItem(){
         if(mNavigator != null){
+            // 카테고리 리스트를 메인액티비티의 addNewItems 로 전달
             mNavigator.addNewItems(categoryItems);
+        }
+    }
+
+    // 카테고리 리사이클러뷰의 아이템 클릭
+    // 카테고리 아이템 롱클릭하여 편집팝업 띄우기
+    public void editLongClickCategory(Category category){
+        if(mNavigator != null){
+            // 선택된 카테고리 객체를 메인액티비티의 editSelectCategory 로 전달
+            mNavigator.editSelectCategory(category);
+        }
+    }
+
+    // 북마크 리사이클러뷰의 아이템 클릭
+    // 북마크 아이템 롱클릭하여 편집팝업 띄우기
+    public void editLongClickBookmark(Bookmark bookmark){
+        if(mNavigator != null){
+            // 선택된 북마크 객체를 메인 액티비티의 editSelectBookmark 로 전달
+            mNavigator.editSelectBookmark(bookmark);
         }
     }
 

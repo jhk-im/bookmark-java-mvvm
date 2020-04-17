@@ -98,15 +98,22 @@ public class BookmarkRecyclerAdapter
             // 파비콘 셋팅
             // 로드 실패하면 기본 로고 이미지 셋팅
             // 로드 성공하면 파비콘을 셋팅
+            // error()  실패했을 때 이미지 지정할 수 있음
             Glide.with(itemView)
                     .load(bookmark.getFaviconUrl())
                     .error(R.drawable.logo)
                     .into(bookmarkFavicon);
-            // error()  실패했을 때 이미지 지정할 수 있음
-            // 임시 test 용
-            itemView.setOnClickListener(v -> Log.e("bookmark",
-                    bookmark.getTitle()+"\n"+ bookmark.getCategory()+"\n"+ bookmark.getPosition())
-            );
+
+            // 웹 띄우기 구현해야함
+            itemView.setOnClickListener(v -> {
+                Log.e("Web_View",bookmark.toString());
+            });
+
+            // 롱클릭시 북마크 아이템 편집 팝업띄우기
+            itemView.setOnLongClickListener(v -> {
+                mMainViewModel.editLongClickBookmark(bookmark);
+                return false;
+            });
         }
     }
 }

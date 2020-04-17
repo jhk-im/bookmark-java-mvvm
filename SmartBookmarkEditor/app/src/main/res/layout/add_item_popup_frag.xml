@@ -7,6 +7,9 @@
     <data>
         <import type="android.view.View" />
         <variable
+            name="view"
+            type="com.jroomstudio.smartbookmarkeditor.popup.EditAddItemPopupActivity" />
+        <variable
             name="viewmodel"
             type="com.jroomstudio.smartbookmarkeditor.popup.AddItemPopupViewModel" />
     </data>
@@ -16,7 +19,7 @@
         android:background="#eeeeee"
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
 
         <!-- 타이틀 -->
         <LinearLayout
@@ -89,7 +92,7 @@
                 android:orientation="horizontal">
                 <TextView
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:textSize="20sp"
                     android:gravity="center"
@@ -99,11 +102,11 @@
                 <EditText
                     android:id="@+id/et_bookmark_title"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:ems="8"
-                    android:maxLength="10"
-                    android:inputType="text"
+                    android:ems="10"
+                    android:maxLength="20"
+                    android:inputType="textPersonName"
                     android:text="@={viewmodel.bookmarkTitle}"
                     />
             </LinearLayout>
@@ -118,7 +121,7 @@
                 android:orientation="horizontal">
                 <TextView
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:textSize="20sp"
                     android:gravity="center"
@@ -128,7 +131,7 @@
                 <EditText
                     android:id="@+id/et_bookmark_url"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:ems="10"
                     android:inputType="textUri"
@@ -145,7 +148,7 @@
                 android:orientation="horizontal">
                 <TextView
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:textSize="20sp"
                     android:gravity="center"
@@ -155,8 +158,8 @@
                 <Spinner
                     android:id="@+id/spinner_category"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_height="match_parent"
+                    android:layout_weight="8"
                     />
             </LinearLayout>
 
@@ -180,7 +183,7 @@
                 android:orientation="horizontal">
                 <TextView
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:textSize="20sp"
                     android:gravity="center"
@@ -191,10 +194,10 @@
                     android:id="@+id/et_category_title"
                     android:text="@={viewmodel.categoryTitle}"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:ems="8"
-                    android:maxLength="10"
+                    android:ems="10"
+                    android:maxLength="20"
                     android:inputType="textPersonName" />
             </LinearLayout>
 
