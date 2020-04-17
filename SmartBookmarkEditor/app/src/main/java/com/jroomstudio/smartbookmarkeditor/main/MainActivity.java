@@ -196,10 +196,9 @@ public class MainActivity extends AppCompatActivity implements ItemNavigator {
         super.onDestroy();
     }
 
-    // 아이템 추가 팝업 띄우기 - 툴바 + 버튼
-    @Override
-    public void addNewItems(List<Category> categories) {
-        Intent intent = new Intent(this, EditAddItemPopupActivity.class);
+
+    // 카테고리 리스트에서 TITLE 만 추출하여 반환
+    private ArrayList<String> setupCategoryList(List<Category> categories){
         // 카테고리가 있으면 카테고리 리스트를 보낸다.
         // 현재 선택되어있는 카테고리도 보낸다.
         ArrayList<String> title = new ArrayList<String>();
@@ -211,42 +210,69 @@ public class MainActivity extends AppCompatActivity implements ItemNavigator {
                 }
             }
         }
-        // 인텐트로 타이틀 리스트 전달
-        //intent.putExtra(EditAddItemPopupActivity.INTENT_TYPE,EditAddItemPopupActivity.ADD_ITEM);
+        return title;
+    }
+
+    // 아이템 추가 팝업 띄우기 - 툴바 + 버튼
+    @Override
+    public void addNewItems(List<Category> categories) {
+        Intent intent = new Intent(this, EditAddItemPopupActivity.class);
+        // 인텐트 타입
         intent.setType(EditAddItemPopupActivity.ADD_ITEM);
-        intent.putStringArrayListExtra(EditAddItemPopupActivity.CATEGORY_LIST, title);
+        // 카테고리 TITLE 리스트
+        intent.putStringArrayListExtra(EditAddItemPopupActivity.CATEGORY_LIST,
+                setupCategoryList(categories));
         intent.putExtra(EditAddItemPopupActivity.SELECT_CATEGORY,mSelectCategoryCount);
-        //startActivityForResult(intent, EditAddItemPopupActivity.REQUEST_CODE);
         startActivity(intent);
     }
 
     // 선택한 카테고리 편집 팝업 띄우기
     @Override
-    public void editSelectCategory(Category category) {
+    public void editSelectCategory(Category category, List<Category> categories) {
         Intent intent = new Intent(this, EditAddItemPopupActivity.class);
         // 편집할 카테고리 데이터 전달
-        //intent.putExtra(EditAddItemPopupActivity.INTENT_TYPE,EditAddItemPopupActivity.EDIT_CATEGORY);
+        // INTENT 타입
         intent.setType(EditAddItemPopupActivity.EDIT_CATEGORY);
+        // 카테고리 ID
         intent.putExtra(EditAddItemPopupActivity.ID,category.getId());
+        // 카테고리 TITLE
         intent.putExtra(EditAddItemPopupActivity.TITLE,category.getTitle());
+        // 카테고리 POSITION
         intent.putExtra(EditAddItemPopupActivity.POSITION,category.getPosition());
+        // 카테고리 선택여부
         intent.putExtra(EditAddItemPopupActivity.SELECTED,category.isSelected());
         //startActivityForResult(intent, EditAddItemPopupActivity.REQUEST_CODE);
+        // 카테고리 리스트
+        intent.putStringArrayListExtra(EditAddItemPopupActivity.CATEGORY_LIST,
+                setupCategoryList(categories));
+        intent.putExtra(EditAddItemPopupActivity.SELECT_CATEGORY,mSelectCategoryCount);
+
         startActivity(intent);
     }
     // 선택한 북마크 편집팝업 띄우기
     @Override
-    public void editSelectBookmark(Bookmark bookmark) {
+    public void editSelectBookmark(Bookmark bookmark, List<Category> categories) {
         Intent intent = new Intent(this, EditAddItemPopupActivity.class);
         // 편집할 북마크 데이터 전달
         //intent.putExtra(EditAddItemPopupActivity.INTENT_TYPE,EditAddItemPopupActivity.EDIT_BOOKMARK);
+        // 인텐트 타입
         intent.setType(EditAddItemPopupActivity.EDIT_BOOKMARK);
+        // 북마크 ID
         intent.putExtra(EditAddItemPopupActivity.ID,bookmark.getId());
+        // 북마크 제목
         intent.putExtra(EditAddItemPopupActivity.TITLE,bookmark.getTitle());
+        // 북마크 포지션
         intent.putExtra(EditAddItemPopupActivity.POSITION,bookmark.getPosition());
+        // URL
         intent.putExtra(EditAddItemPopupActivity.URL,bookmark.getUrl());
         intent.putExtra(EditAddItemPopupActivity.BOOKMARK_ACTION,bookmark.getAction());
+        // 파비콘 url
         intent.putExtra(EditAddItemPopupActivity.FAVICON_URL,bookmark.getFaviconUrl());
+        // 카테고리 리스트
+        intent.putStringArrayListExtra(EditAddItemPopupActivity.CATEGORY_LIST,
+                setupCategoryList(categories));
+        intent.putExtra(EditAddItemPopupActivity.SELECT_CATEGORY,mSelectCategoryCount);
+
         startActivity(intent);
     }
 

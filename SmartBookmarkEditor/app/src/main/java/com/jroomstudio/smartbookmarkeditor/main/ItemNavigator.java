@@ -14,8 +14,8 @@ public interface ItemNavigator {
 
     void setToolbarTitle(String title);
 
-    void editSelectCategory(Category category);
+    void editSelectCategory(Category category, List<Category> categories);
 
-    void editSelectBookmark(Bookmark bookmark);
+    void editSelectBookmark(Bookmark bookmark, List<Category> categories);
 
 }

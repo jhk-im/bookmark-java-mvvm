@@ -86,7 +86,7 @@ public class MainViewModel extends BaseObservable {
     public void editLongClickCategory(Category category){
         if(mNavigator != null){
             // 선택된 카테고리 객체를 메인액티비티의 editSelectCategory 로 전달
-            mNavigator.editSelectCategory(category);
+            mNavigator.editSelectCategory(category,categoryItems);
         }
     }
 
@@ -95,7 +95,7 @@ public class MainViewModel extends BaseObservable {
     public void editLongClickBookmark(Bookmark bookmark){
         if(mNavigator != null){
             // 선택된 북마크 객체를 메인 액티비티의 editSelectBookmark 로 전달
-            mNavigator.editSelectBookmark(bookmark);
+            mNavigator.editSelectBookmark(bookmark,categoryItems);
         }
     }
 

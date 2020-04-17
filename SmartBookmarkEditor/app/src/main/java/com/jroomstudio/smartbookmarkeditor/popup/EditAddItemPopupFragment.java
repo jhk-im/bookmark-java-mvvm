@@ -19,25 +19,25 @@ import java.util.ArrayList;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class AddItemPopupFragment extends Fragment {
+public class EditAddItemPopupFragment extends Fragment {
 
 
     //public static final String ARGUMENT_EDIT_TASK_ID = "EDIT_TASK_ID";
 
     // 뷰모델
-    private AddItemPopupViewModel mViewModel;
+    private EditItemPopupViewModel mViewModel;
 
     // 프레그먼트 데이터바인딩
     private AddItemPopupFragBinding mDataBinding;
 
     //프래그먼트 인스턴스 생성
-    public static AddItemPopupFragment newInstance() { return new AddItemPopupFragment(); }
+    static EditAddItemPopupFragment newInstance() { return new EditAddItemPopupFragment(); }
 
     // 비어있는 생성자
-    public AddItemPopupFragment() {}
+    public EditAddItemPopupFragment() {}
 
     // 프래그먼트의 뷰모델 셋팅
-    public void setViewModel(AddItemPopupViewModel viewModel){
+    void setViewModel(EditItemPopupViewModel viewModel){
         mViewModel = checkNotNull(viewModel);
     }
 
@@ -46,10 +46,19 @@ public class AddItemPopupFragment extends Fragment {
     private ArrayList<String> mCategoryList = new ArrayList<>();
     private int mCategoryCount;
     // set 스피너 어댑터
-    public void setSpinnerList(ArrayList<String> categoryList, int categoryCount){
+    void setSpinnerList(ArrayList<String> categoryList, int categoryCount){
         mCategoryList = categoryList;
         mCategoryCount = categoryCount;
     }
+
+    // 아이템 추가할때를 구분하기 위해
+    private boolean mIsAdd = false;
+    void setViewType(String viewType){
+        if(viewType.equals(EditAddItemPopupActivity.ADD_ITEM)){
+            mIsAdd = true;
+        }
+    }
+
 
     // 뷰연결
     @Nullable
@@ -98,14 +107,29 @@ public class AddItemPopupFragment extends Fragment {
         // 카테고리 or 북마크 라디오버튼 선택시
         mDataBinding.contentLinearCategory.setVisibility(categoryAction);
         mDataBinding.contentLinearBookmark.setVisibility(bookmarkAction);
-        // Edit text 초기화
-        mDataBinding.etCategoryTitle.setText("");
-        mDataBinding.etBookmarkTitle.setText("");
-        mDataBinding.etBookmarkUrl.setText(R.string.https);
+        // 편집이 아닌 추가 화면일때만 초기화 진행
+        if(mIsAdd){
+            // Edit text 초기화
+            mDataBinding.etCategoryTitle.setText("");
+            mDataBinding.etBookmarkTitle.setText("");
+            mDataBinding.etBookmarkUrl.setText(R.string.https);
+        }
+
     }
 
     // 스피너 셀렉트 리스너
     private void spinnerSelectedListener(){
+
+        // 카테고리의 아이템 리스트를 뷰모델에 저장
+        // categories 변수는 뷰모델에서 관찰중
+        mDataBinding.getViewmodel().categories.clear();
+        mDataBinding.getViewmodel().categories.addAll(mCategoryList);
+
+        // 북마크 편집이나 추가가 아니면 스피너 셋팅은 하지 않음
+       if(!mViewModel.isSelectBookmark.get()){
+            return;
+        }
+
         // 스피너에 셋팅할 ArrayAdapter 생성
         ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(
                 getActivity(),android.R.layout.simple_spinner_item, mCategoryList);
@@ -114,11 +138,6 @@ public class AddItemPopupFragment extends Fragment {
         // 스피너 어댑터 셋팅
         mDataBinding.spinnerCategory.setAdapter(spinnerAdapter);
 
-
-        // 카테고리의 아이템 리스트를 뷰모델에 저장
-        // categories 변수는 뷰모델에서 관찰중
-        mDataBinding.getViewmodel().categories.clear();
-        mDataBinding.getViewmodel().categories.addAll(mCategoryList);
 
         // 선택된 카테고리를 북마크 생성 팝업의 스피너리스트에서 선택한다.
         mDataBinding.spinnerCategory.setSelection(mCategoryCount);

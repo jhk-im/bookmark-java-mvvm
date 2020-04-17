@@ -5,28 +5,26 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/linear_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     tools:context=".popup.EditAddItemPopupActivity"
     tools:openDrawer="start"
     android:orientation="vertical">
 
     <!-- editItem view -->
     <LinearLayout
-        android:id="@+id/popup_edit_item_container"
+        android:id="@+id/popup_edit_item_linear"
         android:background="#eeeeee"
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_anchor="@+id/content_linear"
-        app:layout_anchorGravity="center" >
+        android:layout_height="match_parent" >
 
-        <!-- 타이틀 -->
+        <!-- 타이틀 (유형 구분) -->
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <TextView
-                android:id="@+id/tv_edit_item_title"
+                android:id="@+id/tv_edit_item_type"
                 android:textSize="20sp"
                 android:textColor="#fff"
                 android:gravity="center"
@@ -35,14 +33,69 @@
                 android:layout_height="50dp" />
         </LinearLayout>
 
+        <!-- 타이틀 -->
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:textSize="10sp"
+                android:padding="5dp"
+                android:textColor="#818181"
+                android:text="@string/edit_item_title"
+                android:gravity="center"
+                android:layout_weight="1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:ignore="SmallSp" />
+
+            <TextView
+                android:id="@+id/tv_edit_item_title"
+                android:textSize="15sp"
+                android:textColor="@color/colorPrimaryDark"
+                android:padding="5dp"
+                android:layout_gravity="end"
+                android:layout_weight="8"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <!-- 타이틀 -->
+        <LinearLayout
+            android:id="@+id/popup_edit_item_url_linear"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:textSize="10sp"
+                android:padding="5dp"
+                android:textColor="#818181"
+                android:text="@string/edit_item_url"
+                android:gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:ignore="SmallSp" />
+
+            <TextView
+                android:id="@+id/tv_edit_item_url"
+                android:textSize="15sp"
+                android:textColor="@color/colorPrimaryDark"
+                android:padding="5dp"
+                android:layout_gravity="end"
+                android:layout_weight="8"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp" />
+        </LinearLayout>
+
         <Button
             android:layout_margin="5dp"
             android:id="@+id/btn_edit"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:background="@drawable/category_touch_feedback"
-            android:text="편집"
-            android:textSize="20dp"
+            android:text="@string/popup_edit_btn_edit"
+            android:textSize="20sp"
             android:textAllCaps="false"
             android:textColor="#ffffff"/>
 
@@ -52,8 +105,8 @@
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:background="@drawable/category_touch_feedback"
-            android:text="삭제"
-            android:textSize="20dp"
+            android:text="@string/popup_edit_btn_delete"
+            android:textSize="20sp"
             android:textAllCaps="false"
             android:textColor="#ffffff"/>
 
@@ -63,8 +116,8 @@
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:background="@drawable/category_touch_feedback"
-            android:text="공유"
-            android:textSize="20dp"
+            android:text="@string/popup_edit_btn_share"
+            android:textSize="20sp"
             android:textAllCaps="false"
             android:textColor="#ffffff"/>
 
@@ -73,35 +126,28 @@
             android:id="@+id/btn_complete"
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:background="@drawable/category_touch_feedback"
-            android:text="확인"
-            android:textSize="20dp"
+            android:background="@drawable/bookmark_touch_feedback"
+            android:text="@string/popup_add_item_ok"
+            android:textSize="20sp"
             android:textAllCaps="false"
             android:textColor="#ffffff"/>
     </LinearLayout>
 
     <!-- addItem fragment view -->
-    <androidx.coordinatorlayout.widget.CoordinatorLayout
-        android:id="@+id/coordinator_layout"
+    <LinearLayout
+        android:id="@+id/popup_fragment_linear"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <LinearLayout
-            android:id="@+id/content_linear"
+        <FrameLayout
+            android:id="@+id/content_frame"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
+            app:layout_anchor="@+id/content_linear"
+            app:layout_anchorGravity="center" />
 
-            <FrameLayout
-                android:id="@+id/content_frame"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:layout_anchor="@+id/content_linear"
-                app:layout_anchorGravity="center" />
-
-        </LinearLayout>
-
-    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+    </LinearLayout>
 
 </LinearLayout>
 
