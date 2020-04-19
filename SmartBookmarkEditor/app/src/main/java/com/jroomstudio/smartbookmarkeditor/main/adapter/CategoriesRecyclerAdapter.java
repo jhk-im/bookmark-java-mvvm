@@ -113,6 +113,7 @@ public class CategoriesRecyclerAdapter
 
             // 롱클릭 이벤트 -> 롱클릭으로 선택된 카테고리 편집 팝업 띄우기
             btnCategory.setOnLongClickListener(v -> {
+                mCategoryItemViewModel.categoryClicked();
                 mMainViewModel.editLongClickCategory(category);
                 return false;
             });

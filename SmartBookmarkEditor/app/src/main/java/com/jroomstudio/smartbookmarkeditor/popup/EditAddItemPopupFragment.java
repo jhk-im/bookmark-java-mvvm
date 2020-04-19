@@ -13,7 +13,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.jroomstudio.smartbookmarkeditor.R;
-import com.jroomstudio.smartbookmarkeditor.databinding.AddItemPopupFragBinding;
+
+import com.jroomstudio.smartbookmarkeditor.databinding.EditAddItemPopupFragBinding;
 
 import java.util.ArrayList;
 
@@ -28,7 +29,7 @@ public class EditAddItemPopupFragment extends Fragment {
     private EditAddItemPopupViewModel mViewModel;
 
     // 프레그먼트 데이터바인딩
-    private AddItemPopupFragBinding mDataBinding;
+    private EditAddItemPopupFragBinding mDataBinding;
 
     //프래그먼트 인스턴스 생성
     static EditAddItemPopupFragment newInstance() { return new EditAddItemPopupFragment(); }
@@ -65,9 +66,9 @@ public class EditAddItemPopupFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.add_item_popup_frag,container,false);
+        View root = inflater.inflate(R.layout.edit_add_item_popup_frag,container,false);
         if(mDataBinding == null) {
-            mDataBinding = AddItemPopupFragBinding.bind(root);
+            mDataBinding = EditAddItemPopupFragBinding.bind(root);
         }
         mDataBinding.setViewmodel(mViewModel);
 
@@ -107,7 +108,7 @@ public class EditAddItemPopupFragment extends Fragment {
         // 카테고리 or 북마크 라디오버튼 선택시
         mDataBinding.contentLinearCategory.setVisibility(categoryAction);
         mDataBinding.contentLinearBookmark.setVisibility(bookmarkAction);
-        // 편집이 아닌 추가 화면일때만 초기화 진행
+        // 추가 화면일때만 초기화 진행
         if(mIsAdd){
             // Edit text 초기화
             mDataBinding.etCategoryTitle.setText("");

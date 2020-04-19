@@ -45,6 +45,7 @@ public class MainActivity extends AppCompatActivity
 
     // 아이템추가 -> 스피너리스트로 전달할 카테고리 리스트 카운트
     private int mSelectCategoryCount;
+    private String mSelectCategory;
 
 
 
@@ -67,7 +68,6 @@ public class MainActivity extends AppCompatActivity
         mViewModel.setNavigator(this);
         // 프래그먼트와 뷰모델 연결
         mainFragment.setMainViewModel(mViewModel);
-
     }
 
     // 프래그먼트 생성 또는 재활용
@@ -209,6 +209,7 @@ public class MainActivity extends AppCompatActivity
                 title.add(category.getTitle());
                 if(category.isSelected()){
                     mSelectCategoryCount = categories.indexOf(category);
+                    mSelectCategory = category.getTitle();
                 }
             }
         }
@@ -225,6 +226,7 @@ public class MainActivity extends AppCompatActivity
         intent.putStringArrayListExtra(EditAddItemPopupActivity.CATEGORY_LIST,
                 setCategoriesTitle(categories));
         intent.putExtra(EditAddItemPopupActivity.SELECT_CATEGORY_COUNT,mSelectCategoryCount);
+        intent.putExtra(EditAddItemPopupActivity.SELECT_CATEGORY,mSelectCategory);
         startActivity(intent);
     }
 
@@ -242,6 +244,7 @@ public class MainActivity extends AppCompatActivity
         intent.putStringArrayListExtra(EditAddItemPopupActivity.CATEGORY_LIST,
                 setCategoriesTitle(categories));
         intent.putExtra(EditAddItemPopupActivity.SELECT_CATEGORY_COUNT,mSelectCategoryCount);
+        intent.putExtra(EditAddItemPopupActivity.SELECT_CATEGORY,mSelectCategory);
         startActivity(intent);
     }
 
@@ -260,6 +263,7 @@ public class MainActivity extends AppCompatActivity
         intent.putStringArrayListExtra(EditAddItemPopupActivity.CATEGORY_LIST,
                 setCategoriesTitle(categories));
         intent.putExtra(EditAddItemPopupActivity.SELECT_CATEGORY_COUNT,mSelectCategoryCount);
+        intent.putExtra(EditAddItemPopupActivity.SELECT_CATEGORY,mSelectCategory);
         startActivity(intent);
     }
 
@@ -268,7 +272,6 @@ public class MainActivity extends AppCompatActivity
     public void selectedCategory(Category category) {
         mViewModel.changeSelectCategory(category);
     }
-
 
     // 북마크 셀렉트 구현
     @Override

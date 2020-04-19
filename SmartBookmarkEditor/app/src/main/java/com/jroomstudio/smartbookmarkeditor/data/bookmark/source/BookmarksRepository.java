@@ -1,5 +1,7 @@
 package com.jroomstudio.smartbookmarkeditor.data.bookmark.source;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -156,12 +158,11 @@ public class BookmarksRepository implements BookmarksDataSource {
         // Map<String, Bookmark> 이 null 이 아니고 mCacheDirty 가 false 일때는 캐시메모리로 즉시 응답
         // 즉, remote 나 local 로 부터 데이터를 받아오는데 성공 한 후
         // 캐시 메모리의 강제 업데이트가 필요 없는 경우는 캐시메모리로 응답한다.
-        /*
         if (mCachedBookmarks != null && !mCacheDirty) {
+            Log.e("test","북마크 캐시 리턴");
             callback.onBookmarksLoaded(new ArrayList<>(mCachedBookmarks.values()));
             return;
         }
-        */
         // mCacheDirty 가 true 이면 데이터가 변경되어 refresh 해야하는 상황
         /*
         if(mCacheDirty) {
@@ -183,6 +184,7 @@ public class BookmarksRepository implements BookmarksDataSource {
             public void onDataNotAvailable() {
                 // 로컬이 비어있을때 원격에서 확인한다.
                 // getBookmarksFromRemoteDataSource(callback);
+                callback.onDataNotAvailable();
             }
         });
 
@@ -198,12 +200,19 @@ public class BookmarksRepository implements BookmarksDataSource {
     public void getBookmarks(@NonNull String category, @NonNull LoadBookmarksCallback callback) {
         checkNotNull(callback);
         checkNotNull(category);
+
+        if (mCachedBookmarks != null && !mCacheDirty) {
+            callback.onBookmarksLoaded(new ArrayList<>(mCachedBookmarks.values()));
+            return;
+        }
+
         // LocalDataSource 로 부터 데이터를 가져온다.
         mLocalDataSource.getBookmarks(category,new LoadBookmarksCallback() {
             @Override
             public void onBookmarksLoaded(List<Bookmark> bookmarks) {
                 // 로드 성공하면 로드 콜백에 리스트를 보낸다.
-                callback.onBookmarksLoaded(bookmarks);
+                refreshCache(bookmarks);
+                callback.onBookmarksLoaded(new ArrayList<>(mCachedBookmarks.values()));
             }
             @Override
             public void onDataNotAvailable() {

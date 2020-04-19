@@ -42,6 +42,7 @@ public class EditAddItemPopupActivity extends AppCompatActivity implements EditA
     public static final String ID = "ID";
     public static final String TITLE = "TITLE";
     public static final String URL = "URL";
+    public static final String SELECT_CATEGORY = "SELECT_CATEGORY";
 
     // 프래그먼트 생성 여부
     public boolean isCreateFragment;
@@ -90,8 +91,6 @@ public class EditAddItemPopupActivity extends AppCompatActivity implements EditA
         super.onDestroy();
     }
 
-
-
     /**
      * 1. 아이템 추가 팝업 프래그먼트 셋팅
      * 2. 카테고리 편집 버튼 셋팅
@@ -132,12 +131,10 @@ public class EditAddItemPopupActivity extends AppCompatActivity implements EditA
             // 프래그먼트 생성 시 문제없음
             // 리니어 visibility 만 설정
             mEditPopupLinear.setVisibility(View.GONE);
-            mFragmentPopupLinear.setVisibility(View.VISIBLE);
         }else{
-            // Activity 에 팝업 셋팅 시 화면 width 가 조절이 안됨
             // 리니어 visibility 설정
             mEditPopupLinear.setVisibility(View.VISIBLE);
-            mFragmentPopupLinear.setVisibility(View.GONE);
+            // Activity 에 팝업 셋팅 시 화면 width 가 조절이 안됨
             // 레이아웃 크기설정
             // 너무 작게나와서 디바이스 화면 전체크기 구하고
             // 전체크기의 60 퍼센트로 셋팅
@@ -188,14 +185,6 @@ public class EditAddItemPopupActivity extends AppCompatActivity implements EditA
                 .findFragmentById(R.id.content_frame);
         if(fragment==null){
             fragment = EditAddItemPopupFragment.newInstance();
-
-            // Send the task ID to the fragment
-            /*
-            Bundle bundle = new Bundle();
-            bundle.putString(AddItemPopupFragment.ARGUMENT_EDIT_TASK_ID,
-                    getIntent().getStringExtra(AddItemPopupFragment.ARGUMENT_EDIT_TASK_ID));
-            fragment.setArguments(bundle);
-            */
             ActivityUtils.addFragmentToActivity(getSupportFragmentManager(),
                     fragment, R.id.content_frame);
         }

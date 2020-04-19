@@ -108,6 +108,7 @@ public class MainFragment extends Fragment {
 
     // 리사이클러뷰 어댑터 셋팅
     public void setupRecyclerAdapter(){
+
         //1. 북마크 어댑터 생성
         // 북마크 리사이클러뷰 어댑터
         BookmarkRecyclerAdapter mBookmarkAdapter = new BookmarkRecyclerAdapter(
@@ -116,6 +117,20 @@ public class MainFragment extends Fragment {
                 mMainViewModel,
                 (MainActivity) getActivity()
         );
+
+
+        /**
+         * https://developer88.tistory.com/119
+         * 리사이클러뷰 깜빡임 방지
+         **/
+        mBookmarkAdapter.setHasStableIds(true);
+        // 깜빡임 방지
+        /*
+        RecyclerView.ItemAnimator animator = mMainFragBinding.rvBookmarks.getItemAnimator();
+        if (animator instanceof SimpleItemAnimator) {
+            ((SimpleItemAnimator) animator).setSupportsChangeAnimations(false);
+        }
+        */
         // 리사이클러뷰 레이아웃 매니져
         mMainFragBinding.rvBookmarks.setLayoutManager(
                 new LinearLayoutManager(getContext().getApplicationContext())
@@ -132,6 +147,14 @@ public class MainFragment extends Fragment {
                 mMainViewModel,
                 (MainActivity) getActivity()
         );
+        mCategoryAdapter.setHasStableIds(true);
+        // 깜빡임 방지
+        /*
+        RecyclerView.ItemAnimator animator2 = mMainFragBinding.rvCategories.getItemAnimator();
+        if (animator2 instanceof SimpleItemAnimator) {
+            ((SimpleItemAnimator) animator2).setSupportsChangeAnimations(false);
+        }
+        */
         // 리사이클러뷰 레이아웃 메니저
         mMainFragBinding.rvCategories.setLayoutManager(
                 new LinearLayoutManager(getContext().getApplicationContext())

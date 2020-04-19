@@ -119,6 +119,7 @@ public class BookmarkRecyclerAdapter
             // error()  실패했을 때 이미지 지정할 수 있음
             Glide.with(itemView)
                     .load(bookmark.getFaviconUrl())
+                    .placeholder(R.drawable.logo)
                     .error(R.drawable.logo)
                     .into(bookmarkFavicon);
 

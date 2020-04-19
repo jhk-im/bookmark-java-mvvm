@@ -159,12 +159,10 @@ public class CategoriesRepository implements CategoriesDataSource {
         // Map<String, Bookmark> 이 null 이 아니고 mCacheDirty 가 false 일때는 캐시메모리로 즉시 응답
         // 즉, remote 나 local 로 부터 데이터를 받아오는데 성공 한 후
         // 캐시 메모리의 강제 업데이트가 필요 없는 경우는 캐시메모리로 응답한다.
-        /*
         if (mCachedCategories != null && !mCacheDirty) {
             callback.onCategoriesLoaded(new ArrayList<>(mCachedCategories.values()));
             return;
         }
-        */
         // mCacheDirty 가 true 이면 데이터가 변경되어 refresh 해야하는 상황
         /*
         if(mCacheDirty) {

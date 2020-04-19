@@ -141,6 +141,7 @@ public class MainViewModel extends BaseObservable {
      **/
     private void loadCategories()
     {
+
         // 카테고리
         mCategoriesRepository.getCategories(new CategoriesDataSource.LoadCategoriesCallback() {
             @Override
@@ -169,9 +170,11 @@ public class MainViewModel extends BaseObservable {
         });
     }
 
+
     // 데이터베이스에서 북마크 로드
     private void loadBookmarks(){
         // 현재 선택된 카테고리 북마크 가져오기
+        mBookmarksRepository.refreshBookmarks();
         mBookmarksRepository.getBookmarks(Objects.requireNonNull(currentCategory.get().getTitle()),
                 new BookmarksDataSource.LoadBookmarksCallback() {
                     @Override
