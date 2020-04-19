@@ -11,7 +11,7 @@
             type="com.jroomstudio.smartbookmarkeditor.popup.EditAddItemPopupActivity" />
         <variable
             name="viewmodel"
-            type="com.jroomstudio.smartbookmarkeditor.popup.EditItemPopupViewModel" />
+            type="com.jroomstudio.smartbookmarkeditor.popup.EditAddItemPopupViewModel" />
     </data>
 
     <LinearLayout

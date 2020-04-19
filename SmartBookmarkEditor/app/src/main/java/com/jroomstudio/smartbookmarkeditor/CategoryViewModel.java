@@ -6,6 +6,7 @@ import androidx.annotation.Nullable;
 import androidx.databinding.BaseObservable;
 import androidx.databinding.Bindable;
 import androidx.databinding.Observable;
+import androidx.databinding.ObservableBoolean;
 import androidx.databinding.ObservableField;
 
 import com.jroomstudio.smartbookmarkeditor.data.category.Category;
@@ -22,8 +23,12 @@ public abstract class CategoryViewModel extends BaseObservable
     // 카테고리 아이템의 title 관찰 변수
     public final ObservableField<String> title = new ObservableField<>();
 
+    // 카테고리 isSelected 관찰변수
+    public final ObservableBoolean isSelected = new ObservableBoolean();
+
     // 카테고리 단일객체 관찰
     private final ObservableField<Category> mCategoryObservable = new ObservableField<>();
+
 
     // 카테고리 원격, 로컬 데이터 소스 멤버변수
     private final CategoriesRepository mCategoriesRepository;
@@ -43,6 +48,7 @@ public abstract class CategoryViewModel extends BaseObservable
                 Category category = mCategoryObservable.get();
                 if(category != null){
                     title.set(category.getTitle());
+                    isSelected.set(category.isSelected());
                 }
             }
         });
@@ -55,8 +61,10 @@ public abstract class CategoryViewModel extends BaseObservable
         }
     }
 
-    // 객체 관찰가능 변수에 카테고리객체 추가
-    public void setCategory(Category category){ mCategoryObservable.set(category); }
+    // 객체 관찰가능 변수에 카테고리객체 추가 + 버튼객체 받아서 추가
+    public void setCategory(Category category){
+        mCategoryObservable.set(category);
+    }
 
     // 객체 널 체크
     @Bindable
@@ -88,10 +96,13 @@ public abstract class CategoryViewModel extends BaseObservable
         }
     }
 
+
     // 객체 id 반환
     @Nullable
     protected String getCategoryId() { return mCategoryObservable.get().getId(); }
 
+    // 객체 반환
+    protected Category getCategory() { return mCategoryObservable.get(); }
 
 
 }

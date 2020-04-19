@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class EditItemPopupViewModel extends BaseObservable {
+public class EditAddItemPopupViewModel extends BaseObservable {
 
     /**
      * 뷰 관찰 변수
@@ -44,12 +44,14 @@ public class EditItemPopupViewModel extends BaseObservable {
     final ObservableField<String> bookmarkCategory = new ObservableField<>();
     // 카테고리 or 북마크
     public final ObservableBoolean isSelectBookmark = new ObservableBoolean();
+    // 편집과 추가 를 구분한다.
+    public final ObservableBoolean isAddItem = new ObservableBoolean();
 
     // 카테고리 리스트
     public final ObservableList<String> categories = new ObservableArrayList<>();
 
     // 뷰형식 구분
-    // 1. 추가 or 편집(카테고리) or 편집(북마크)
+    // 추가 or 편집(카테고리) or 편집(북마크)
     public final ObservableField<String> viewTitle = new ObservableField<>();
     private String mViewType;
 
@@ -83,40 +85,50 @@ public class EditItemPopupViewModel extends BaseObservable {
      * @param categoriesRepository - 카테고리 로컬, 원격 데이터 액세스
      * @param context - 응용프로그램 context 를 강제로 사용함
      **/
-    public EditItemPopupViewModel(BookmarksRepository bookmarksRepository,
-                                  CategoriesRepository categoriesRepository, Context context
-                                    , boolean isBookmark, String type, String id) {
+    public EditAddItemPopupViewModel(BookmarksRepository bookmarksRepository,
+                                     CategoriesRepository categoriesRepository, Context context
+                                     ,String type, String id) {
         mBookmarksRepository = bookmarksRepository;
         mCategoriesRepository = categoriesRepository;
         mContext = context.getApplicationContext();
-        // 라디오버튼 구분
-        isSelectBookmark.set(isBookmark);
         // 뷰타입 구분자
         mViewType = type;
+        setViewType();
         // 편집할 아이템의 아이디 값
         itemId.set(id);
-        // 뷰타입 구분하여 타이틀 지정
-        setViewTitle();
-        // 편집할 아이템 입력값 셋팅
-        setEditItemInfo();
+
+        // 편집인 경우
+        if(!isAddItem.get()){
+            setEditItemInfo();
+        }
+
     }
+
+    // 카테고리 스피너 리스트 추가를 위해서 카테고리 모두 가져오기
+
 
     // 현재 프래그먼트가 추가 작업인지 편집작업인지를 구분한다.
     @Bindable
-    public boolean isAddNewItem() {
-        return Objects.equals(mViewType, EditAddItemPopupActivity.ADD_ITEM);
+    public boolean isAddItem() {
+        return isAddItem.get();
     }
 
     // 타이틀 제목 상황에맞게 셋팅
-    private void setViewTitle(){
+    private void setViewType(){
         switch (mViewType) {
             case EditAddItemPopupActivity.ADD_ITEM :
+                isSelectBookmark.set(true);
+                isAddItem.set(true);
                 viewTitle.set("아이템 추가");
                 break;
             case EditAddItemPopupActivity.EDIT_CATEGORY :
+                isSelectBookmark.set(false);
+                isAddItem.set(false);
                 viewTitle.set("카테고리 편집");
                 break;
             case EditAddItemPopupActivity.EDIT_BOOKMARK :
+                isSelectBookmark.set(true);
+                isAddItem.set(false);
                 viewTitle.set("북마크 편집");
                 break;
         }
@@ -126,9 +138,10 @@ public class EditItemPopupViewModel extends BaseObservable {
     private void setEditItemInfo(){
 
         switch (mViewType){
-            // 카테고리 편집 셋팅
+
+            // 1. 카테고리 편집 셋팅
             case EditAddItemPopupActivity.EDIT_CATEGORY :
-                // 생성시 전달받은 id 로 카테고리 객체 가져오기
+                // -> 생성시 전달받은 id 로 카테고리 객체 가져오기
                 mCategoriesRepository.getCategory(Objects.requireNonNull(itemId.get()),
                         new CategoriesDataSource.GetCategoryCallback() {
                     @Override
@@ -144,7 +157,7 @@ public class EditItemPopupViewModel extends BaseObservable {
                         // 데이터 가져오는데 실패
                     }
                 });
-                // 변경할 카테고리의 북마크 리스트 가져오기
+                // -> 변경할 카테고리의 북마크 리스트 가져오기
                 mBookmarksRepository.getBookmarks(Objects.requireNonNull(categoryTitle.get()),
                         new BookmarksDataSource.LoadBookmarksCallback() {
                             @Override
@@ -157,9 +170,10 @@ public class EditItemPopupViewModel extends BaseObservable {
                             }
                         });
                 break;
-            // 북마크 편집 셋팅
+
+            // 2. 북마크 편집 셋팅
             case EditAddItemPopupActivity.EDIT_BOOKMARK :
-                // 생성시 전달받은 id 로 북마크 가져오기
+                // -> 생성시 전달받은 id 로 북마크 가져오기
                 mBookmarksRepository.getBookmark(Objects.requireNonNull(itemId.get()),
                         new BookmarksDataSource.GetBookmarkCallback() {
                     @Override
@@ -182,12 +196,22 @@ public class EditItemPopupViewModel extends BaseObservable {
 
 
 
+    /**
+     * 네비게이터 실행 메소드
+     **/
     // 아이템이 생성 or 편집 완료되었으니 액티비티 종료
     private void navigationAddNewItem(){
         if(mNavigator!=null){
             mNavigator.updateItem();
         }
     }
+
+
+
+
+    /**
+     * 저장 , 취소
+     **/
 
     // 액티비티의 취소버튼 클릭
     public void cancelButtonOnClick(){
@@ -214,6 +238,7 @@ public class EditItemPopupViewModel extends BaseObservable {
                 break;
         }
     }
+
 
     // 카테고리 업데이트
     private void updateCategory(){
@@ -254,7 +279,6 @@ public class EditItemPopupViewModel extends BaseObservable {
         navigationAddNewItem();
 
     }
-
 
     // 아이템 생성 (카테고리와 북마크 구분)
     private void createItem(){
@@ -504,6 +528,7 @@ public class EditItemPopupViewModel extends BaseObservable {
             // 북마크 저장
             // 파싱 성공 or 실패를 전달
             saveBookmark(parse,baseUri,isAdd);
+
         }
     }
 

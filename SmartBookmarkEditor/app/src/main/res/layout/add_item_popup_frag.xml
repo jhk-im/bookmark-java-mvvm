@@ -11,7 +11,7 @@
             type="com.jroomstudio.smartbookmarkeditor.popup.EditAddItemPopupActivity" />
         <variable
             name="viewmodel"
-            type="com.jroomstudio.smartbookmarkeditor.popup.EditItemPopupViewModel" />
+            type="com.jroomstudio.smartbookmarkeditor.popup.EditAddItemPopupViewModel" />
     </data>
 
     <LinearLayout
@@ -44,7 +44,7 @@
             android:layout_height="wrap_content">
 
             <RadioGroup
-                android:visibility="@{viewmodel.addNewItem ? View.VISIBLE : View.GONE}"
+                android:visibility="@{viewmodel.addItem ? View.VISIBLE : View.GONE}"
                 android:id="@+id/radio_group"
                 android:orientation="horizontal"
                 android:layout_width="match_parent"

@@ -26,7 +26,7 @@ public abstract class BookmarkViewModel extends BaseObservable
     public final ObservableField<String> url = new ObservableField<>();
 
     // 북마크 아이템의 이미지 url 관찰
-    // public final ObservableField<String> imgUrl = new ObservableField<>();
+    public final ObservableField<String> faviconUrl = new ObservableField<>();
 
     // 북마크 단일 객체 관찰
     private final ObservableField<Bookmark> mBookmarkObservable = new ObservableField<>();
@@ -50,6 +50,7 @@ public abstract class BookmarkViewModel extends BaseObservable
                 if(bookmark != null){
                     title.set(bookmark.getTitle());
                     url.set(bookmark.getUrl());
+                    faviconUrl.set(bookmark.getFaviconUrl());
                 }
             }
         });
@@ -101,4 +102,6 @@ public abstract class BookmarkViewModel extends BaseObservable
     @Nullable
     protected String getBookmarkId() { return mBookmarkObservable.get().getId(); }
 
+    // 객체반환
+    protected Bookmark getBookmark() { return mBookmarkObservable.get(); }
 }

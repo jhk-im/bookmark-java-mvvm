@@ -39,7 +39,7 @@ public class MainViewModel extends BaseObservable {
     public final ObservableList<Bookmark> bookmarkItems = new ObservableArrayList<>();
     // 카테고리 리스트 옵저버블 변수
     public final ObservableList<Category> categoryItems = new ObservableArrayList<>();
-    // 선택된 카테고리 옵저버블 변수
+    // 현재 선택된 카테고리 옵저버블 변수
     public final ObservableField<Category> currentCategory = new ObservableField<>();
 
     /**
@@ -57,10 +57,10 @@ public class MainViewModel extends BaseObservable {
     private CategoriesRepository mCategoriesRepository;
 
     // 액티비티 아이템 네비게이터
-    private ItemNavigator mNavigator;
+    private MainNavigator mNavigator;
 
     // 네비게이터 셋팅
-    void setNavigator(ItemNavigator navigator) { mNavigator = navigator; }
+    void setNavigator(MainNavigator navigator) { mNavigator = navigator; }
 
     /**
      * mNavigator -> ItemNavigator 메소드
@@ -81,21 +81,25 @@ public class MainViewModel extends BaseObservable {
         }
     }
 
-    // 카테고리 리사이클러뷰의 아이템 클릭
+
+    /**
+     * 카테고리, 북마크의 롱클릭 메소드
+     * - 메인 액티비티로 선택된 카테고리, 북마크, 카테고리 리스트를 전달한다.
+     **/
+
     // 카테고리 아이템 롱클릭하여 편집팝업 띄우기
     public void editLongClickCategory(Category category){
         if(mNavigator != null){
             // 선택된 카테고리 객체를 메인액티비티의 editSelectCategory 로 전달
-            mNavigator.editSelectCategory(category,categoryItems);
+            mNavigator.editCategory(category,categoryItems);
         }
     }
-
     // 북마크 리사이클러뷰의 아이템 클릭
     // 북마크 아이템 롱클릭하여 편집팝업 띄우기
     public void editLongClickBookmark(Bookmark bookmark){
         if(mNavigator != null){
             // 선택된 북마크 객체를 메인 액티비티의 editSelectBookmark 로 전달
-            mNavigator.editSelectBookmark(bookmark,categoryItems);
+            mNavigator.editBookmark(bookmark,categoryItems);
         }
     }
 
@@ -112,12 +116,13 @@ public class MainViewModel extends BaseObservable {
         mContext = context.getApplicationContext();
     }
 
-    public void start(){
+    // 프래그먼트 onResume
+    void start(){
         loadCategories();
     }
 
     // 아이템 클릭시 실행
-    public void changeSelectCategory(Category category){
+    void changeSelectCategory(Category category){
         // 현재 카테고리 isSelected false 로 변경
         mCategoriesRepository.
                 selectedCategory(Objects.requireNonNull(currentCategory.get()),false);
@@ -136,16 +141,11 @@ public class MainViewModel extends BaseObservable {
      **/
     private void loadCategories()
     {
-        /*
-        if(forceUpdate){
-            mCategoriesRepository.refreshCategories();
-            mBookmarksRepository.refreshBookmarks();
-        }
-        */
         // 카테고리
         mCategoriesRepository.getCategories(new CategoriesDataSource.LoadCategoriesCallback() {
             @Override
             public void onCategoriesLoaded(List<Category> categories) {
+
                 for(Category category : categories){
                     if(category.isSelected()){
                         // 액티비티 액션바 타이틀을 현재 선택된 카테고리로 업데이트
@@ -153,6 +153,7 @@ public class MainViewModel extends BaseObservable {
                         currentCategory.set(category);
                     }
                 }
+
                 // 옵저버블 리스트에 추가
                 // 카테고리 position 순서대로 정렬
                 categoryItems.clear();
@@ -192,7 +193,7 @@ public class MainViewModel extends BaseObservable {
     }
 
     // 북마크 리스트를 position 값에 맞게 순서정렬
-    public List<Bookmark> sortToBookmarks(List<Bookmark> bookmarks){
+    private List<Bookmark> sortToBookmarks(List<Bookmark> bookmarks){
         Collections.sort(bookmarks, (o1, o2) -> {
             if(o1.getPosition() < o2.getPosition()){
                 return -1;
@@ -205,7 +206,7 @@ public class MainViewModel extends BaseObservable {
     }
 
     //카테고리 리스트를 position 값에 맞게 순서 정렬
-    public List<Category> sortToCategories(List<Category> categories){
+    private List<Category> sortToCategories(List<Category> categories){
         Collections.sort(categories, (o1, o2) -> {
             if(o1.getPosition() < o2.getPosition()){
                 return -1;

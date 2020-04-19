@@ -20,9 +20,11 @@
             android:layout_width="match_parent"
             android:layout_height="30dp"
             android:background="@drawable/category_touch_feedback"
-            android:text="title"
             android:textAllCaps="false"
-            android:textColor="#ffffff"/>
+            android:textColor="#ffffff"
+            android:text="@{viewmodel.title}"
+            android:onClick="@{() -> viewmodel.categoryClicked()}"
+            />
 
     </LinearLayout>
 

@@ -13,9 +13,14 @@ import com.jroomstudio.smartbookmarkeditor.R;
 import com.jroomstudio.smartbookmarkeditor.data.category.Category;
 import com.jroomstudio.smartbookmarkeditor.data.category.source.CategoriesRepository;
 import com.jroomstudio.smartbookmarkeditor.databinding.MainCategoryItemBinding;
+import com.jroomstudio.smartbookmarkeditor.main.CategoryItemNavigator;
+import com.jroomstudio.smartbookmarkeditor.main.CategoryItemViewModel;
+import com.jroomstudio.smartbookmarkeditor.main.MainActivity;
 import com.jroomstudio.smartbookmarkeditor.main.MainViewModel;
 
 import java.util.List;
+
+import javax.annotation.Nullable;
 
 
 public class CategoriesRecyclerAdapter
@@ -33,15 +38,19 @@ public class CategoriesRecyclerAdapter
     // 카테고리 아이템 데이터 바인딩
     private MainCategoryItemBinding mCategoryItemBinding;
 
+    // 메인 액티비티 네비게이터
+    @Nullable private CategoryItemNavigator mItemNavigator;
+
     /**
      * 어댑터 생성자
      **/
     public CategoriesRecyclerAdapter(List<Category> categories,
                                      CategoriesRepository categoriesRepository,
-                                     MainViewModel mainViewModel){
+                                     MainViewModel mainViewModel, MainActivity itemNavigator){
         setCategories(categories);
         mCategoriesRepository = categoriesRepository;
         mMainViewModel = mainViewModel;
+        mItemNavigator = itemNavigator;
     }
 
     // 각 아이템의 view 추가
@@ -51,13 +60,13 @@ public class CategoriesRecyclerAdapter
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         mCategoryItemBinding = MainCategoryItemBinding.inflate(inflater,parent,false);
         View view = mCategoryItemBinding.getRoot();
-        return new ItemViewHolder(view);
+        return new ItemViewHolder(view,parent);
     }
 
     // 포지션 입력하여 아이템 구분하여 값 지정 (text, img 등)
     @Override
     public void onBindViewHolder(@NonNull ItemViewHolder holder, int position) {
-        holder.onBind(mCategories.get(position));
+         holder.onBind(mCategories.get(position));
     }
 
     // 멤버변수 리스트 사이즈만큼 반복실행
@@ -75,31 +84,41 @@ public class CategoriesRecyclerAdapter
         setCategories(categories);
     }
 
-    // 각 아이템의 text  title 값 지정
-    // onBind 랑 뷰홀더에서 데이터바인딩 사용하면 꼬임
     public class ItemViewHolder extends RecyclerView.ViewHolder {
         Button btnCategory;
-        public ItemViewHolder(@NonNull View itemView) {
+        // 카테고리 아이템뷰의 뷰모델
+        CategoryItemViewModel mCategoryItemViewModel;
+        public ItemViewHolder(@NonNull View itemView ,ViewGroup viewGroup) {
             super(itemView);
             btnCategory = itemView.findViewById(R.id.button_category);
+
+            // 카테고리 아이템 뷰모델 생성
+            mCategoryItemViewModel = new CategoryItemViewModel(
+                    viewGroup.getContext().getApplicationContext(),
+                    mCategoriesRepository
+            );
+            // 뷰모델에 네비게이터 셋팅
+            mCategoryItemViewModel.setNavigator(mItemNavigator);
+            // 뷰모델과 뷰를 연결
+            mCategoryItemBinding.setViewmodel(mCategoryItemViewModel);
         }
         @SuppressLint("ResourceAsColor")
         public void onBind(Category category){
-            btnCategory.setText(category.getTitle());
+
+            // 뷰모델에 관찰할 카테고리 아이템 셋팅
+            mCategoryItemViewModel.setCategory(category);
+
+            // 버튼 selected 설정
             btnCategory.setSelected(category.isSelected());
-            // 클릭이벤트 (셀렉트변경)
-            btnCategory.setOnClickListener(v -> {
-                // 선택되지 않은 카테고리 isSelected 변경하도록 카테고리 객체 넘김
-                if(!category.isSelected()){
-                    mMainViewModel.changeSelectCategory(category);
-                }
-            });
+
             // 롱클릭 이벤트 -> 롱클릭으로 선택된 카테고리 편집 팝업 띄우기
             btnCategory.setOnLongClickListener(v -> {
                 mMainViewModel.editLongClickCategory(category);
                 return false;
             });
+
         }
+
     }
 
 }

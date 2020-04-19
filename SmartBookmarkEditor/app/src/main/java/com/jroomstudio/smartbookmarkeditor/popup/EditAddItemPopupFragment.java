@@ -25,7 +25,7 @@ public class EditAddItemPopupFragment extends Fragment {
     //public static final String ARGUMENT_EDIT_TASK_ID = "EDIT_TASK_ID";
 
     // 뷰모델
-    private EditItemPopupViewModel mViewModel;
+    private EditAddItemPopupViewModel mViewModel;
 
     // 프레그먼트 데이터바인딩
     private AddItemPopupFragBinding mDataBinding;
@@ -37,7 +37,7 @@ public class EditAddItemPopupFragment extends Fragment {
     public EditAddItemPopupFragment() {}
 
     // 프래그먼트의 뷰모델 셋팅
-    void setViewModel(EditItemPopupViewModel viewModel){
+    void setViewModel(EditAddItemPopupViewModel viewModel){
         mViewModel = checkNotNull(viewModel);
     }
 

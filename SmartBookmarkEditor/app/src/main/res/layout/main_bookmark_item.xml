@@ -17,7 +17,9 @@
             android:layout_margin="3dp"
             android:background="@drawable/bookmark_touch_feedback"
             android:clickable="true"
-            android:focusable="true">
+            android:focusable="true"
+            android:onClick="@{() -> viewmodel.bookmarkClicked()}"
+            >
 
             <ImageView
                 android:id="@+id/iv_url_image"
@@ -38,6 +40,7 @@
                 android:layout_marginEnd="10dp"
                 android:textColor="#ffffff"
                 android:textSize="20sp"
+                android:text="@{viewmodel.title}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/iv_url_image"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -50,6 +53,7 @@
                 android:layout_marginBottom="10dp"
                 android:textSize="10sp"
                 android:textColor="#ffffff"
+                android:text="@{viewmodel.url}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="@+id/tv_bookmark_title"
                 app:layout_constraintStart_toStartOf="@+id/tv_bookmark_title"

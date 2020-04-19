@@ -2,6 +2,7 @@ package com.jroomstudio.smartbookmarkeditor.main;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Switch;
 import android.widget.Toast;
@@ -25,7 +26,8 @@ import com.jroomstudio.smartbookmarkeditor.util.ActivityUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements ItemNavigator {
+public class MainActivity extends AppCompatActivity
+        implements MainNavigator,CategoryItemNavigator,BookmarkItemNavigator {
 
     private DrawerLayout mDrawerLayout;
 
@@ -197,8 +199,8 @@ public class MainActivity extends AppCompatActivity implements ItemNavigator {
     }
 
 
-    // 카테고리 리스트에서 TITLE 만 추출하여 반환
-    private ArrayList<String> setupCategoryList(List<Category> categories){
+    // 카테고리 리스트 셋팅
+    private ArrayList<String> setCategoriesTitle(List<Category> categories){
         // 카테고리가 있으면 카테고리 리스트를 보낸다.
         // 현재 선택되어있는 카테고리도 보낸다.
         ArrayList<String> title = new ArrayList<String>();
@@ -221,59 +223,59 @@ public class MainActivity extends AppCompatActivity implements ItemNavigator {
         intent.setType(EditAddItemPopupActivity.ADD_ITEM);
         // 카테고리 TITLE 리스트
         intent.putStringArrayListExtra(EditAddItemPopupActivity.CATEGORY_LIST,
-                setupCategoryList(categories));
-        intent.putExtra(EditAddItemPopupActivity.SELECT_CATEGORY,mSelectCategoryCount);
+                setCategoriesTitle(categories));
+        intent.putExtra(EditAddItemPopupActivity.SELECT_CATEGORY_COUNT,mSelectCategoryCount);
         startActivity(intent);
     }
 
-    // 선택한 카테고리 편집 팝업 띄우기
+    // 카테고리 롱클릭하여 편집하기 (팝업)
     @Override
-    public void editSelectCategory(Category category, List<Category> categories) {
+    public void editCategory(Category category,List<Category> categories) {
         Intent intent = new Intent(this, EditAddItemPopupActivity.class);
         // 편집할 카테고리 데이터 전달
         // INTENT 타입
         intent.setType(EditAddItemPopupActivity.EDIT_CATEGORY);
-        // 카테고리 ID
+        // 카테고리 ID, TITLE
         intent.putExtra(EditAddItemPopupActivity.ID,category.getId());
-        // 카테고리 TITLE
         intent.putExtra(EditAddItemPopupActivity.TITLE,category.getTitle());
-        // 카테고리 POSITION
-        intent.putExtra(EditAddItemPopupActivity.POSITION,category.getPosition());
-        // 카테고리 선택여부
-        intent.putExtra(EditAddItemPopupActivity.SELECTED,category.isSelected());
-        //startActivityForResult(intent, EditAddItemPopupActivity.REQUEST_CODE);
-        // 카테고리 리스트
+        // 카테고리 TITLE 리스트
         intent.putStringArrayListExtra(EditAddItemPopupActivity.CATEGORY_LIST,
-                setupCategoryList(categories));
-        intent.putExtra(EditAddItemPopupActivity.SELECT_CATEGORY,mSelectCategoryCount);
-
+                setCategoriesTitle(categories));
+        intent.putExtra(EditAddItemPopupActivity.SELECT_CATEGORY_COUNT,mSelectCategoryCount);
         startActivity(intent);
     }
-    // 선택한 북마크 편집팝업 띄우기
+
+    // 북마크 롱클릭하여 편집하기 (팝업)
     @Override
-    public void editSelectBookmark(Bookmark bookmark, List<Category> categories) {
+    public void editBookmark(Bookmark bookmark,List<Category> categories) {
         Intent intent = new Intent(this, EditAddItemPopupActivity.class);
         // 편집할 북마크 데이터 전달
-        //intent.putExtra(EditAddItemPopupActivity.INTENT_TYPE,EditAddItemPopupActivity.EDIT_BOOKMARK);
         // 인텐트 타입
         intent.setType(EditAddItemPopupActivity.EDIT_BOOKMARK);
         // 북마크 ID
         intent.putExtra(EditAddItemPopupActivity.ID,bookmark.getId());
-        // 북마크 제목
         intent.putExtra(EditAddItemPopupActivity.TITLE,bookmark.getTitle());
-        // 북마크 포지션
-        intent.putExtra(EditAddItemPopupActivity.POSITION,bookmark.getPosition());
-        // URL
         intent.putExtra(EditAddItemPopupActivity.URL,bookmark.getUrl());
-        intent.putExtra(EditAddItemPopupActivity.BOOKMARK_ACTION,bookmark.getAction());
-        // 파비콘 url
-        intent.putExtra(EditAddItemPopupActivity.FAVICON_URL,bookmark.getFaviconUrl());
-        // 카테고리 리스트
+        // 카테고리 TITLE 리스트
         intent.putStringArrayListExtra(EditAddItemPopupActivity.CATEGORY_LIST,
-                setupCategoryList(categories));
-        intent.putExtra(EditAddItemPopupActivity.SELECT_CATEGORY,mSelectCategoryCount);
-
+                setCategoriesTitle(categories));
+        intent.putExtra(EditAddItemPopupActivity.SELECT_CATEGORY_COUNT,mSelectCategoryCount);
         startActivity(intent);
     }
+
+    // 카테고리 셀렉트 구현
+    @Override
+    public void selectedCategory(Category category) {
+        mViewModel.changeSelectCategory(category);
+    }
+
+
+    // 북마크 셀렉트 구현
+    @Override
+    public void selectedBookmark(Bookmark bookmark) {
+        // 웹뷰로 이동하여 웹페이지 보여주는 것 구현하기
+        Log.e("selectedBookmark",bookmark.toString());
+    }
+
 
 }

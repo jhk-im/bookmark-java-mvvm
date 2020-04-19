@@ -1,11 +1,9 @@
 package com.jroomstudio.smartbookmarkeditor.main.adapter;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -15,9 +13,14 @@ import com.jroomstudio.smartbookmarkeditor.R;
 import com.jroomstudio.smartbookmarkeditor.data.bookmark.Bookmark;
 import com.jroomstudio.smartbookmarkeditor.data.bookmark.source.BookmarksRepository;
 import com.jroomstudio.smartbookmarkeditor.databinding.MainBookmarkItemBinding;
+import com.jroomstudio.smartbookmarkeditor.main.BookmarkItemNavigator;
+import com.jroomstudio.smartbookmarkeditor.main.BookmarkItemViewModel;
+import com.jroomstudio.smartbookmarkeditor.main.MainActivity;
 import com.jroomstudio.smartbookmarkeditor.main.MainViewModel;
 
 import java.util.List;
+
+import javax.annotation.Nullable;
 
 public class BookmarkRecyclerAdapter
         extends RecyclerView.Adapter<BookmarkRecyclerAdapter.ItemViewHolder> {
@@ -34,15 +37,19 @@ public class BookmarkRecyclerAdapter
     // 북마크 아이템 데이터 바인딩
     private MainBookmarkItemBinding mBookmarkItemBinding;
 
+    // 메인 액티비티 네비게이터
+    @Nullable private BookmarkItemNavigator mItemNavigator;
+
     /**
      * 어댑터 생성자
      **/
     public BookmarkRecyclerAdapter(List<Bookmark> bookmarks,
                                    BookmarksRepository bookmarksRepository,
-                                   MainViewModel mainViewModel){
+                                   MainViewModel mainViewModel, MainActivity itemNavigator){
         setBookmarks(bookmarks);
         mBookmarksRepository = bookmarksRepository;
         mMainViewModel = mainViewModel;
+        mItemNavigator = itemNavigator;
     }
 
     // 각 아이템의 view 추가
@@ -52,7 +59,7 @@ public class BookmarkRecyclerAdapter
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         mBookmarkItemBinding = MainBookmarkItemBinding.inflate(inflater,parent,false);
         View view = mBookmarkItemBinding.getRoot();
-        return new ItemViewHolder(view);
+        return new ItemViewHolder(view,parent);
     }
 
     // 포지션 입력하여 아이템 구분하여 값 지정 (text, img 등)
@@ -78,23 +85,34 @@ public class BookmarkRecyclerAdapter
         setBookmarks(bookmarks);
     }
 
-    // 각 아이템 text 및 이미지 셋팅
-    // onBind 랑 뷰홀더에서 데이터바인딩 사용하면 꼬임
+
     public class ItemViewHolder extends RecyclerView.ViewHolder {
-        TextView bookmarkTitle, bookmarkUrl;
-        ImageView bookmarkFavicon;
-        public ItemViewHolder(@NonNull View itemView) {
+
+         ImageView bookmarkFavicon;
+         // 북마크 아이템뷰의 뷰모델
+         BookmarkItemViewModel mBookmarkItemViewModel;
+        public ItemViewHolder(@NonNull View itemView, ViewGroup viewGroup) {
             super(itemView);
-            bookmarkTitle = itemView.findViewById(R.id.tv_bookmark_title);
-            bookmarkUrl = itemView.findViewById(R.id.tv_bookmark_url);
+            // 파비콘 이미지뷰
             bookmarkFavicon = itemView.findViewById(R.id.iv_url_image);
+
+            // 뷰모델 생성
+            mBookmarkItemViewModel = new BookmarkItemViewModel(
+                    viewGroup.getContext().getApplicationContext(),
+                    mBookmarksRepository
+            );
+            // 뷰모델 네비게이터 셋팅
+            mBookmarkItemViewModel.setNavigator(mItemNavigator);
+            // 뷰모델과 뷰를 연결
+            mBookmarkItemBinding.setViewmodel(mBookmarkItemViewModel);
+
         }
 
         public void onBind(Bookmark bookmark) {
-            // 북마크 제목
-            bookmarkTitle.setText(bookmark.getTitle());
-            // url 주소
-            bookmarkUrl.setText(bookmark.getUrl());
+
+            // 뷰모델에 관찰할 북마크 아이템 셋팅
+            mBookmarkItemViewModel.setBookmark(bookmark);
+
             // 파비콘 셋팅
             // 로드 실패하면 기본 로고 이미지 셋팅
             // 로드 성공하면 파비콘을 셋팅
@@ -104,16 +122,12 @@ public class BookmarkRecyclerAdapter
                     .error(R.drawable.logo)
                     .into(bookmarkFavicon);
 
-            // 웹 띄우기 구현해야함
-            itemView.setOnClickListener(v -> {
-                Log.e("Web_View",bookmark.toString());
-            });
-
             // 롱클릭시 북마크 아이템 편집 팝업띄우기
             itemView.setOnLongClickListener(v -> {
                 mMainViewModel.editLongClickBookmark(bookmark);
                 return false;
             });
+
         }
     }
 }
