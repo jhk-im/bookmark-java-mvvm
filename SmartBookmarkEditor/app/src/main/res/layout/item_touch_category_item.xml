@@ -8,22 +8,20 @@
         <import type="android.view.View" />
         <variable
             name="viewmodel"
-            type="com.jroomstudio.smartbookmarkeditor.main.CategoryItemViewModel" />
+            type="com.jroomstudio.smartbookmarkeditor.itemtouch.adapter.CategoryItemTouchViewModel" />
     </data>
 
     <FrameLayout
+        android:id="@+id/touch_category_layout"
         android:layout_margin="1dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <Button
-            android:visibility="visible"
             android:id="@+id/button_category"
             android:layout_width="match_parent"
             android:layout_height="30dp"
-            android:background="@drawable/category_touch_feedback"
-            android:onClick="@{() -> viewmodel.categoryClicked()}"
-            android:text="@{viewmodel.title}"
+            android:background="@drawable/category_touch_edit_feedback"
             android:textAllCaps="false"
             android:textColor="#ffffff" />
 

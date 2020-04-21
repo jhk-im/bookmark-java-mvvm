@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity
-        implements MainNavigator,CategoryItemNavigator,BookmarkItemNavigator {
+        implements MainNavigator, CategoryItemNavigator, BookmarkItemNavigator {
 
     private DrawerLayout mDrawerLayout;
 
@@ -46,8 +46,6 @@ public class MainActivity extends AppCompatActivity
     // 아이템추가 -> 스피너리스트로 전달할 카테고리 리스트 카운트
     private int mSelectCategoryCount;
     private String mSelectCategory;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -133,16 +131,14 @@ public class MainActivity extends AppCompatActivity
     // 옵션메뉴 Item 셀렉트
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
-            case android.R.id.home:
-                // Open navigation drawer
-                mDrawerLayout.openDrawer(GravityCompat.START);
-                return true;
+        if (item.getItemId() == android.R.id.home) {// Open navigation drawer
+            mDrawerLayout.openDrawer(GravityCompat.START);
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    // Navigation Drawer 셋팅 메소드
+    // Navigation Drawer 셋팅 메소드ㅇ
     private void setupNavigationDrawer(){
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerLayout.setStatusBarBackground(R.color.colorPrimary);
@@ -279,6 +275,7 @@ public class MainActivity extends AppCompatActivity
         // 웹뷰로 이동하여 웹페이지 보여주는 것 구현하기
         Log.e("selectedBookmark",bookmark.toString());
     }
+
 
 
 }

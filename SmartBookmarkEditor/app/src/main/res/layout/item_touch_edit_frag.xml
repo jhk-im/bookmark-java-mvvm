@@ -4,14 +4,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <!-- data binding -->
+
     <data>
         <import type="android.view.View"/>
         <variable
             name="view"
-            type="com.jroomstudio.smartbookmarkeditor.main.MainFragment" />
+            type="com.jroomstudio.smartbookmarkeditor.itemtouch.ItemTouchEditFragment" />
         <variable
             name="viewmodel"
-            type="com.jroomstudio.smartbookmarkeditor.main.MainViewModel" />
+            type="com.jroomstudio.smartbookmarkeditor.itemtouch.ItemTouchEditViewModel" />
     </data>
 
     <LinearLayout
@@ -90,5 +91,6 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </LinearLayout>
+
 
 </layout>

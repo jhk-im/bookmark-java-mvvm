@@ -29,6 +29,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class EditAddItemPopupViewModel extends BaseObservable {
 
@@ -43,27 +45,36 @@ public class EditAddItemPopupViewModel extends BaseObservable {
     public final ObservableField<String> bookmarkUrl = new ObservableField<>();
     // 북마크 카테고리 스피너 현재 선택된 카테고리 관찰변수
     public final ObservableField<String> bookmarkCategory = new ObservableField<>();
-    // 카테고리 or 북마크
+    // 카테고리 or 북마크 구분하는 관찰변수
     public final ObservableBoolean isSelectBookmark = new ObservableBoolean();
-    // 편집과 추가 를 구분한다.
-    public final ObservableBoolean isAddItem = new ObservableBoolean();
-
-    // 카테고리 리스트
+    // 스피너 카테고리 리스트 관찰변수
     public final ObservableList<String> categories = new ObservableArrayList<>();
-
-    // 뷰형식 구분
-    // 추가 or 편집(카테고리) or 편집(북마크)
+    // 추가 or 편집(카테고리) or 편집(북마크) 타이틀제목 표시 관찰변수
     public final ObservableField<String> viewTitle = new ObservableField<>();
-    private String mViewType;
+    // 삭제시 안내문구
+    public final ObservableField<String> deleteQuestions = new ObservableField<>();
 
+    // 편집과 추가 를 구분
+    private boolean mIsAddItem;
+
+    // 뷰형식 구분자
+    private String mViewType;
     // 편집할 아이템의 아이디
-    private final ObservableField<String> itemId = new ObservableField<>();
+    private String mEditItemId;
+    // 편집할 카테고리 객체
     private Category mUpdateCategory;
+    // 카테고리 편집할 경우 같이 변동할 북마크 리스트
     private List<Bookmark> mUpdateBookmarks = new ArrayList<Bookmark>();
+    // 편집할 북마크 객체
     private Bookmark mUpdateBookmark;
 
     // 데이터 로딩바 표시
     private boolean mIsDataLoadingBar;
+
+    // 아이템 삭제시 구분자
+    private boolean mIsDeleteItem;
+    // 아이템 삭제시 타입 구분자 ( 북마크 or 카테고리 )
+    private String mDeleteItemType;
 
     // 액티비티 네비게이터
     private EditAddItemPopupNavigator mNavigator;
@@ -91,15 +102,18 @@ public class EditAddItemPopupViewModel extends BaseObservable {
      **/
     public EditAddItemPopupViewModel(BookmarksRepository bookmarksRepository,
                                      CategoriesRepository categoriesRepository, Context context
-                                     ,String type, String id) {
+                                     ,String type, String editItemId, String deleteItemType) {
         mBookmarksRepository = bookmarksRepository;
         mCategoriesRepository = categoriesRepository;
         mContext = context.getApplicationContext();
+        // 로딩바 false
         mIsDataLoadingBar = false;
         // 뷰타입 구분자
         mViewType = type;
         // 편집할 아이템의 아이디 값
-        itemId.set(id);
+        mEditItemId = editItemId;
+        // 삭제할 아이템의 타입
+        mDeleteItemType = deleteItemType;
         //타이틀설정
         setViewType();
         // 편집인 경우 각 아이템의 필요한 데이터 셋팅
@@ -108,7 +122,11 @@ public class EditAddItemPopupViewModel extends BaseObservable {
 
     // 현재 프래그먼트가 추가 작업인지 편집작업인지를 구분한다.
     @Bindable
-    public boolean isAddItem() { return isAddItem.get(); }
+    public boolean isAddItem() { return mIsAddItem; }
+
+    // 현재 프래그 먼트가 삭제작업인지 아닌지를 구분한다.
+    @Bindable
+    public boolean isDeleteItem() { return mIsDeleteItem; }
 
     // 데이터 로딩중인지 아닌지를 구분한다.
     @Bindable
@@ -119,18 +137,34 @@ public class EditAddItemPopupViewModel extends BaseObservable {
         switch (mViewType) {
             case EditAddItemPopupActivity.ADD_ITEM :
                 isSelectBookmark.set(true);
-                isAddItem.set(true);
+                mIsAddItem = true;
+                mIsDeleteItem = false;
                 viewTitle.set("아이템 추가");
                 break;
             case EditAddItemPopupActivity.EDIT_CATEGORY :
                 isSelectBookmark.set(false);
-                isAddItem.set(false);
+                mIsAddItem = false;
+                mIsDeleteItem = false;
                 viewTitle.set("카테고리 편집");
                 break;
             case EditAddItemPopupActivity.EDIT_BOOKMARK :
                 isSelectBookmark.set(true);
-                isAddItem.set(false);
+                mIsAddItem = false;
+                mIsDeleteItem = false;
                 viewTitle.set("북마크 편집");
+                break;
+            case EditAddItemPopupActivity.DELETE_ITEM :
+                isSelectBookmark.set(false);
+                mIsAddItem = false;
+                mIsDeleteItem = true;
+                // 카테고리
+                if(mDeleteItemType.equals(EditAddItemPopupActivity.EDIT_CATEGORY)){
+                    viewTitle.set("카테고리 삭제");
+                }
+                // 북마크
+                if(mDeleteItemType.equals(EditAddItemPopupActivity.EDIT_BOOKMARK)){
+                    viewTitle.set("북마크 삭제");
+                }
                 break;
         }
     }
@@ -139,44 +173,71 @@ public class EditAddItemPopupViewModel extends BaseObservable {
     private void setEditItemInfo(){
 
         switch (mViewType){
-
             // 1. 카테고리 편집 셋팅
             case EditAddItemPopupActivity.EDIT_CATEGORY :
-                // -> 생성시 전달받은 id 로 카테고리 객체 가져오기
-                mCategoriesRepository.getCategory(Objects.requireNonNull(itemId.get()),
-                        new CategoriesDataSource.GetCategoryCallback() {
+                setEditCategoryData();
+                break;
+
+            // 2. 북마크 편집 셋팅
+            case EditAddItemPopupActivity.EDIT_BOOKMARK :
+                setEditBookmarkData();
+                break;
+
+            // 3. 아이템 삭제
+            case EditAddItemPopupActivity.DELETE_ITEM :
+                // 카테고리 삭제
+                if(mDeleteItemType.equals(EditAddItemPopupActivity.EDIT_CATEGORY)){
+                    // 카테고리 데이터 셋팅
+                    setEditCategoryData();
+                    deleteQuestions.set("카테고리 "+mUpdateCategory.getTitle());
+                }
+                // 북마크 삭제
+                if(mDeleteItemType.equals(EditAddItemPopupActivity.EDIT_BOOKMARK)){
+                    // 북마크 데이터 셋팅
+                    setEditBookmarkData();
+                    deleteQuestions.set("북마크 "+mUpdateBookmark.getTitle());
+                }
+                break;
+
+        }
+
+    }
+
+    // 편집할 카테고리의 데이터 셋팅
+    private void setEditCategoryData(){
+        // -> 생성시 전달받은 id 로 카테고리 객체 가져오기
+        mCategoriesRepository.getCategory(mEditItemId,
+                new CategoriesDataSource.GetCategoryCallback() {
                     @Override
                     public void onCategoryLoaded(Category category) {
                         categoryTitle.set(category.getTitle());
                         mUpdateCategory = category;
                         notifyPropertyChanged(BR._all);
-
                     }
-
                     @Override
                     public void onDataNotAvailable() {
                         // 데이터 가져오는데 실패
                     }
                 });
-                // -> 변경할 카테고리의 북마크 리스트 가져오기
-                mBookmarksRepository.getBookmarks(Objects.requireNonNull(categoryTitle.get()),
-                        new BookmarksDataSource.LoadBookmarksCallback() {
-                            @Override
-                            public void onBookmarksLoaded(List<Bookmark> bookmarks) {
-                                mUpdateBookmarks.addAll(bookmarks);
-                            }
 
-                            @Override
-                            public void onDataNotAvailable() {
-                            }
-                        });
-                break;
+        // -> 변경할 카테고리의 북마크 리스트 가져오기
+        mBookmarksRepository.getBookmarks(Objects.requireNonNull(categoryTitle.get()),
+                new BookmarksDataSource.LoadBookmarksCallback() {
+                    @Override
+                    public void onBookmarksLoaded(List<Bookmark> bookmarks) {
+                        mUpdateBookmarks.addAll(bookmarks);
+                    }
 
-            // 2. 북마크 편집 셋팅
-            case EditAddItemPopupActivity.EDIT_BOOKMARK :
-                // -> 생성시 전달받은 id 로 북마크 가져오기
-                mBookmarksRepository.getBookmark(Objects.requireNonNull(itemId.get()),
-                        new BookmarksDataSource.GetBookmarkCallback() {
+                    @Override
+                    public void onDataNotAvailable() {
+                    }
+                });
+    }
+    // 편집할 북마크의 데이터 셋팅
+    private void setEditBookmarkData(){
+        // -> 생성시 전달받은 id 로 북마크 가져오기
+        mBookmarksRepository.getBookmark(mEditItemId,
+                new BookmarksDataSource.GetBookmarkCallback() {
                     @Override
                     public void onBookmarkLoaded(Bookmark bookmark) {
                         bookmarkTitle.set(bookmark.getTitle());
@@ -191,19 +252,17 @@ public class EditAddItemPopupViewModel extends BaseObservable {
                         // 실패
                     }
                 });
-                break;
-        }
-
     }
 
-    // 아이템이 생성 or 편집 완료되었으니 팝업 액티비티 종료
+
+    // 아이템이 생성 or 편집 or 삭제 완료되어 팝업 액티비티 종료
     private void navigationAddNewItem(){
         if(mNavigator!=null){
             mNavigator.updateItem();
         }
     }
 
-    // 액티비티의 취소버튼 클릭
+    // 취소버튼 클릭
     public void cancelButtonOnClick(){
         // 뒤로가기
         if(mNavigator!=null){
@@ -217,20 +276,51 @@ public class EditAddItemPopupViewModel extends BaseObservable {
         mIsDataLoadingBar = true;
         notifyChange(); // For the @Bindable properties
         switch (mViewType) {
-            // 아이템 추가
+
+                // 아이템 추가
             case EditAddItemPopupActivity.ADD_ITEM :
                 createItem();
                 break;
+
                 // 카테고리 업데이트
             case EditAddItemPopupActivity.EDIT_CATEGORY :
-                updateCategory();
+                createCategory();
                 break;
+
                 // 북마크 업데이트
             case EditAddItemPopupActivity.EDIT_BOOKMARK :
-                checkBookmark();
+                createBookmark();
+                break;
+
+                // 아이템 삭제
+            case EditAddItemPopupActivity.DELETE_ITEM :
+                deleteItem();
                 break;
         }
     }
+
+    private void deleteItem(){
+        // 카테고리 삭제
+        if(mDeleteItemType.equals(EditAddItemPopupActivity.EDIT_CATEGORY)){
+
+            // 해당 카테고리에 북마크가 존재하면
+            if(mUpdateBookmarks.size() != 0){
+                // 카테고리 안에있는 모든 북마크도 삭제
+                mBookmarksRepository.deleteAllInCategory(mUpdateCategory.getTitle());
+            }
+            mCategoriesRepository.deleteCategory(mUpdateCategory.getId());
+            Toast.makeText(mContext, mUpdateCategory.getTitle()+" 카테고리 삭제", Toast.LENGTH_SHORT).show();
+            navigationAddNewItem();
+        }
+        // 북마크 삭제
+        if(mDeleteItemType.equals(EditAddItemPopupActivity.EDIT_BOOKMARK)){
+            // 북마크 삭제
+            mBookmarksRepository.deleteBookmark(mUpdateBookmark.getId());
+            Toast.makeText(mContext, mUpdateBookmark.getTitle()+" 북마크 삭제", Toast.LENGTH_SHORT).show();
+            navigationAddNewItem();
+        }
+    }
+
 
     /**
      *  createItem()
@@ -240,7 +330,7 @@ public class EditAddItemPopupViewModel extends BaseObservable {
     private void createItem(){
         if(isSelectBookmark.get()){
             //북마크 생성가능 확인
-            checkBookmark();
+            createBookmark();
         }else{
             //카테고리 생성
             createCategory();
@@ -255,14 +345,7 @@ public class EditAddItemPopupViewModel extends BaseObservable {
      * 3. url 유효성 체크
      * 4. htmlParser 생성하여 jsoup 으로 url 응답확인
      **/
-    private void checkBookmark(){
-
-        // 정규표현식 구현
-        /*
-        String regex = "^((http|https)://)?(www.)?([a-zA-Z0-9]+)\\\\.[a-z]+([a-zA-z0-9.?#]+)?";
-        Pattern p = Pattern.compile(regex);
-        Log.e("regex test", p.matcher(bookmarkUrl.get()).matches() +"");
-        */
+    private void createBookmark(){
 
         // 북마크 edit text null 체크 확인
         if(editTextNullCheck(bookmarkTitle.get(), "북마크")){ return; }
@@ -270,7 +353,7 @@ public class EditAddItemPopupViewModel extends BaseObservable {
         if(editTextNullCheck(bookmarkUrl.get(), "URL")){return;}
 
         // 편집하는 상황
-        if(!isAddItem.get()){
+        if(!mIsAddItem){
             // 아무것도 변경되지 않았다면
             if(mUpdateBookmark.getUrl().equals(bookmarkUrl.get()) &&
                     mUpdateBookmark.getTitle().equals(bookmarkTitle.get()) &&
@@ -280,28 +363,20 @@ public class EditAddItemPopupViewModel extends BaseObservable {
                 notifyChange(); // For the @Bindable properties
                 return;
             }
-        }
-
-        // url 유효성 체크
-        if(urlValidationCheck(Objects.requireNonNull(bookmarkUrl.get()))){
-            // 파비콘 url 생성후 저장
-            setFaviconUrlAndSaveBookmark(true,bookmarkUrl.get());
-            /*
-            // 인터넷 연결확인
-            if(NetworkStatus.getConnectivityStatus(mContext)){
-                // -> 연결이 되어있으면
-                // Jsoup 으로 입력한 url 응답 확인
-                HtmlParser htmlParser = new HtmlParser();
-                htmlParser.execute();
-            }else{
-                // -> 연결이 안되어있으면
-                // 로딩바 비활성화
+            // 타이틀이나 카테고리만 변경했을 때
+            if(!mUpdateBookmark.getTitle().equals(bookmarkTitle.get()) ||
+                    !mUpdateBookmark.getCategory().equals(bookmarkCategory.get())){
+                // url 검사 진행하지않고 바로 저장
+                saveBookmark(mUpdateBookmark.getFaviconUrl());
                 mIsDataLoadingBar = false;
                 notifyChange(); // For the @Bindable properties
-                Toast.makeText(mContext, "인터넷 연결을 확인해주세요.", Toast.LENGTH_SHORT).show();
+                return;
             }
-            */
         }
+
+        // url 정규표현식으로 검사 후 저장 혹은 false 알림
+        urlPatternMatchingCheck(Objects.requireNonNull(bookmarkUrl.get()));
+
     }
 
 
@@ -311,7 +386,7 @@ public class EditAddItemPopupViewModel extends BaseObservable {
      * - 카테고리 생성하고 저장한다.
      * 1. 카테고리 입력 null 체크
      * 2. 카테고리 중복체크
-     * 3. 저장
+     * 3. 추가 or 업데이트
      **/
     private void createCategory(){
 
@@ -321,155 +396,76 @@ public class EditAddItemPopupViewModel extends BaseObservable {
         // 카테고리 중복체크
         if(categoryOverlapCheck()){ return; }
 
-        // 중복 아니면 저장진행
-        Category newCategory = new Category(
-                Objects.requireNonNull(categoryTitle.get()),
-                categories.size(),
-                false);
-        mCategoriesRepository.saveCategory(newCategory);
-        Toast.makeText(mContext, categoryTitle.get()+" 카테고리 생성", Toast.LENGTH_SHORT).show();
-        navigationAddNewItem();
-    }
-
-
-    /**
-     * updateCategory()
-     * - 이미 생성된 카테고리명을 변경한다.
-     * 1. 카테고리 입력 null 체크
-     * 2. 카테고리 중복체크
-     * 3. 카테고리에 포함된 북마크의 카테고리명 변경
-     * 4. 카테고리 업데이트
-     **/
-    private void updateCategory(){
-
-        // 카테고리 edit text null 체크 확인
-        if(editTextNullCheck(categoryTitle.get(), "카테고리")){ return; }
-
-        // 카테고리 중복체크
-        if(categoryOverlapCheck()){ return; }
-
-        Category updateCategory = new Category(mUpdateCategory.getId(),
-                Objects.requireNonNull(categoryTitle.get()),
-                mUpdateCategory.getPosition(),
-                mUpdateCategory.isSelected());
-
-        // 카테고리에 포함된 북마크 카테고리명 변경
-        for(Bookmark bookmark : mUpdateBookmarks){
-            Bookmark updateBookmark = new Bookmark(bookmark.getId(),
-                    bookmark.getTitle(),
-                    bookmark.getUrl(),
-                    bookmark.getAction(),
+        //새로 추가하는경우
+        if(mIsAddItem){
+            // 중복 아니면 저장진행
+            Category newCategory = new Category(
                     Objects.requireNonNull(categoryTitle.get()),
-                    bookmark.getPosition(),
-                    bookmark.getFaviconUrl());
-            mBookmarksRepository.saveBookmark(updateBookmark);
-        }
-        // 카테고리 업데이트
-        mCategoriesRepository.saveCategory(updateCategory);
-        Toast.makeText(mContext, categoryTitle.get()+" 카테고리명 업데이트", Toast.LENGTH_SHORT).show();
-        navigationAddNewItem();
+                    categories.size(),
+                    false);
+            mCategoriesRepository.saveCategory(newCategory);
+            Toast.makeText(mContext, categoryTitle.get()+" 카테고리 생성", Toast.LENGTH_SHORT).show();
+            navigationAddNewItem();
+        }else{
+            // 업데이트 하는 경우
+            Category updateCategory = new Category(mUpdateCategory.getId(),
+                    Objects.requireNonNull(categoryTitle.get()),
+                    mUpdateCategory.getPosition(),
+                    mUpdateCategory.isSelected());
 
+            // 카테고리에 포함된 북마크 카테고리명 변경
+            for(Bookmark bookmark : mUpdateBookmarks){
+                Bookmark updateBookmark = new Bookmark(bookmark.getId(),
+                        bookmark.getTitle(),
+                        bookmark.getUrl(),
+                        bookmark.getAction(),
+                        Objects.requireNonNull(categoryTitle.get()),
+                        bookmark.getPosition(),
+                        bookmark.getFaviconUrl());
+                mBookmarksRepository.saveBookmark(updateBookmark);
+            }
+            // 카테고리 업데이트
+            mCategoriesRepository.saveCategory(updateCategory);
+            Toast.makeText(mContext, categoryTitle.get()+" 카테고리명 업데이트", Toast.LENGTH_SHORT).show();
+            navigationAddNewItem();
+        }
     }
 
 
     /**
-     * urlValidationCheck
-     * - 응답보내기 전 입력된 url 의 입력 형식을 체크한다.
+     * urlPatternMatchingCheck
+     * - 정규표현식으로 url 주소를 검사하고 결과를 반환한다.
      * - 북마크 추가, 편집시 호출된다.
      * @param url - 입력된 url 주소
      **/
-    private boolean urlValidationCheck(String url){
-        // 1. http 로 시작하는가
-        if(url.startsWith("http")){
-            //https:// 혹은 http:// 가 중복 확인
-            if(url.contains("https://") || url.contains("http://")){
-                StringBuilder sb = new StringBuilder();
-                sb.append(url);
-                String temp;
-                if(url.contains("https://")){
-                    // https 형식 중복확인
-                    sb.delete(0,8);
-                    temp = sb.toString();
-                    if(!temp.contains("https://") && !temp.contains("http://")){
-                        return true;
-                    }else{
-                        // 로딩바 비활성화
-                        mIsDataLoadingBar = false;
-                        notifyChange(); // For the @Bindable properties
-                        Toast.makeText(mContext,"잘못된 url 형식입니다.", Toast.LENGTH_SHORT).show();
-                        return false;
-                    }
-                }else if(url.contains("http://")){
-                    // http 형식 중복확인
-                    sb.delete(0,7);
-                    temp = sb.toString();
-                    if(!temp.contains("https://") && !temp.contains("http://")){
-                        return true;
-                    }else{
-                        // 로딩바 비활성화
-                        mIsDataLoadingBar = false;
-                        notifyChange(); // For the @Bindable properties
-                        Toast.makeText(mContext,"잘못된 url 형식입니다.", Toast.LENGTH_SHORT).show();
-                        return false;
-                    }
-                }
-                return true;
-            }else{
-                // 로딩바 비활성화
-                mIsDataLoadingBar = false;
-                notifyChange(); // For the @Bindable properties
-                Toast.makeText(mContext,"잘못된 url 형식입니다.", Toast.LENGTH_SHORT).show();
-                return false;
+    private void urlPatternMatchingCheck(String url){
+
+        // 1. 입력한 url 의 형식을 검사한다.
+        String regex = "^((http|https)://){1}([a-zA-Z0-9]+[.]{1})?([a-zA-Z0-9]+){1}[.]{1}[a-z]+([/]{1}[a-zA-Z0-9]*)*";
+        boolean match = Objects.requireNonNull(url).matches(regex);
+        Log.e("regex1", match+"");
+
+        if(match){
+            // 2. 검사를 통과한 url 주소를 http , 도메인, 경로를 각각 추출한다.
+            Pattern urlPattern = Pattern.compile("^(https?):\\/\\/([^:\\/\\s]+)((\\/[^\\s\\/]+)*)");
+            Matcher mc = urlPattern.matcher(url);
+            String faviconUrl;
+            if(mc.matches()){
+                // http 와 도메인에 favicon.ico 를 입력하여 url 완성
+                faviconUrl = mc.group(1) + "://" + mc.group(2)+ "/favicon.ico";
+                Log.e("favicon url -> ",faviconUrl);
+                saveBookmark(faviconUrl);
+                //String http = mc.group(1);
+                //String domain = mc.group(2);
+                //String route = mc.group(3);
             }
         }else{
-            // 로딩바 비활성화
+            Toast.makeText(mContext, "URL 주소를 확인해주세요.", Toast.LENGTH_SHORT).show();
             mIsDataLoadingBar = false;
             notifyChange(); // For the @Bindable properties
-            Toast.makeText(mContext,"잘못된 url 형식입니다.", Toast.LENGTH_SHORT).show();
-            return false;
         }
+
     }
-
-    /**
-     * setFaviconUrlAndSaveBookmark
-     * - 입력형식 체크 완료후 htmlParse 로 응답 요청을 보낸 후 결과를 받아 작업한다.
-     * - htmlParse 객체의 onPostExecute() 에서 호출된다.
-     * 1. 성공한 경우 전달받은 baseUri 를 사용하여 favicon url 을 만들어 저장한다.
-     * 2. 북마크 추가, 북마크 편집( 카테고리 변동x ), 북마크 편집( 카테고리 변동 o) 을 구분하여 저장한다.
-     * @param urlCheck - htmlParse 객체를 통해 전달받은 응답 성공 실패 여부
-     * @param baseUri - 응답 성공 시 전달받은 base uri
-     **/
-    private void setFaviconUrlAndSaveBookmark(boolean urlCheck, String baseUri){
-
-        // 응답에 성공한 url 일경우만 진행
-        if(urlCheck){
-            //favicon url 설정
-            StringBuilder sb = new StringBuilder();
-            int count=0;
-            // uri for 문으로 검사하여 기본 uri 만 추출하기
-            for(int i=0; i<baseUri.length(); i++){
-                if(baseUri.charAt(i)=='/'){
-                    count++;
-                    if(count==3){
-                        break;
-                    }
-                }
-                sb.append(baseUri.charAt(i));
-            }
-            // 파비콘 url 추출
-            sb.append("/favicon.ico");
-            // 북마크 저장
-            saveBookmark(sb.toString());
-        }
-        else{
-            // 응답실패
-            // 로딩바 비활성화
-            mIsDataLoadingBar = false;
-            notifyChange(); // For the @Bindable properties
-            Toast.makeText(mContext, "유효하지 않은 url 입니다.", Toast.LENGTH_SHORT).show();
-        }
-    }
-
 
     /**
      * saveBookmark
@@ -484,7 +480,7 @@ public class EditAddItemPopupViewModel extends BaseObservable {
                     @Override
                     public void onBookmarksLoaded(List<Bookmark> bookmarks) {
                         // 1. 아이템 추가
-                        if(isAddItem.get()){
+                        if(mIsAddItem){
                             // 1-1 해당 카테고리에 북마크가 있는경우
                             // position 값을 카테고리안의 북마크 사이즈 크기로 지정
                             // -> 해당 카테고리 전체 사이즈, 파비콘 url
@@ -506,7 +502,7 @@ public class EditAddItemPopupViewModel extends BaseObservable {
                     @Override
                     public void onDataNotAvailable() {
                         // 1-2. 카테고리 추가시 해당 카테고리에 북마크가 없는경우
-                        if(isAddItem.get()){
+                        if(mIsAddItem){
                             // 해당 카테고리에 북마크가 없다면 position 0 으로 추가한다.
                             addBookmark(0,faviconUrl);
                         } else {
@@ -606,7 +602,6 @@ public class EditAddItemPopupViewModel extends BaseObservable {
         return false;
     }
 
-
     /**
      * 북마크생성
      * - 북마크 최초 생성 시 사용하는 메소드
@@ -658,25 +653,11 @@ public class EditAddItemPopupViewModel extends BaseObservable {
 
     /**
      * Jsoup 을 활용해 url 유효성을 확인하는 AsyncTask 객체
-     * 1. 존재하는 사이트인가?
-     * boolean urlCheck
-     * -> 응답이 있는 사이트인가 없는 사이트인가
-     *
-     * 2. 유효한 url 의 경우 baseUri 를 전달받아 확인한다.
-     * String baseUri
-     *
-     * onPostExecute()
-     * - doInBackground 작업이 끝난 후 실행된다.
-     * - setFaviconUrlAndSaveBookmark()
-     *   -> urlCheck 와 baseUri 를 입력하여 결과를 알려준다.
      **/
     @SuppressLint("StaticFieldLeak")
     private class HtmlParser extends AsyncTask<Void,Void,Void> {
         String baseUri = "";
         boolean urlCheck = false;
-
-
-
         @Override
         protected Void doInBackground(Void... voids) {
             // url 을 입력받아 파싱을 진행한다.
@@ -708,9 +689,6 @@ public class EditAddItemPopupViewModel extends BaseObservable {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            // 북마크 파비콘 url 추출
-            // 파싱 성공 or 실패를 전달
-            setFaviconUrlAndSaveBookmark(urlCheck,baseUri);
         }
     }
 

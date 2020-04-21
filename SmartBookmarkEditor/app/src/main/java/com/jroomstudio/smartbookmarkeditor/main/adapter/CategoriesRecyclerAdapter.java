@@ -24,7 +24,7 @@ import javax.annotation.Nullable;
 
 
 public class CategoriesRecyclerAdapter
-        extends RecyclerView.Adapter<CategoriesRecyclerAdapter.ItemViewHolder> {
+        extends RecyclerView.Adapter<CategoriesRecyclerAdapter.ItemViewHolder>{
 
     // 카테고리 리스트 멤버변수
     private List<Category> mCategories;
@@ -84,6 +84,7 @@ public class CategoriesRecyclerAdapter
         setCategories(categories);
     }
 
+
     public class ItemViewHolder extends RecyclerView.ViewHolder {
         Button btnCategory;
         // 카테고리 아이템뷰의 뷰모델
@@ -104,7 +105,6 @@ public class CategoriesRecyclerAdapter
         }
         @SuppressLint("ResourceAsColor")
         public void onBind(Category category){
-
             // 뷰모델에 관찰할 카테고리 아이템 셋팅
             mCategoryItemViewModel.setCategory(category);
 

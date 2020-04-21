@@ -86,6 +86,7 @@ public class BookmarkRecyclerAdapter
     }
 
 
+
     public class ItemViewHolder extends RecyclerView.ViewHolder {
 
          ImageView bookmarkFavicon;
@@ -109,7 +110,6 @@ public class BookmarkRecyclerAdapter
         }
 
         public void onBind(Bookmark bookmark) {
-
             // 뷰모델에 관찰할 북마크 아이템 셋팅
             mBookmarkItemViewModel.setBookmark(bookmark);
 

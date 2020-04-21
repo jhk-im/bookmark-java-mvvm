@@ -27,12 +27,14 @@ public class EditAddItemPopupActivity extends AppCompatActivity implements EditA
      * ADD_ITEM - 아이템 추가
      * EDIT_CATEGORY - 카테고리 편집
      * EDIT_BOOKMARK - 북마크 편집
-     *
+     * DELETE_ITEM - 아이템 삭제시 사용
      * 뷰모델 구분 태그로도 사용됨
      **/
     public static final String ADD_ITEM = "ADD_ITEM";
     public static final String EDIT_CATEGORY = "EDIT_CATEGORY";
     public static final String EDIT_BOOKMARK = "EDIT_BOOKMARK";
+    public static final String DELETE_ITEM = "DELETE_ITEM";
+
 
     // 카테고리 리스트 intent key
     public static final String CATEGORY_LIST = "CATEGORY_LIST";
@@ -59,6 +61,9 @@ public class EditAddItemPopupActivity extends AppCompatActivity implements EditA
 
     // 편집할 아이템의 ID
     private String mItemId;
+
+    // 삭제하려는 아이템이 카테고리인지 북마크인지 구분
+    private String mDeleteItemType;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,6 +108,7 @@ public class EditAddItemPopupActivity extends AppCompatActivity implements EditA
             case ADD_ITEM :
                 // 프래그먼트와 뷰모델 생성
                 mItemId = "";
+                mDeleteItemType = "";
                 isCreateFragment = true;
                 setFragmentViewModel();
                 break;
@@ -111,12 +117,14 @@ public class EditAddItemPopupActivity extends AppCompatActivity implements EditA
                 // 편집 관련 버튼 레이아웃 셋팅
                 mItemId = getIntent().getStringExtra(ID);
                 isCreateFragment = false;
+                mDeleteItemType = EDIT_CATEGORY;
                 setButtonLinear(View.GONE);
                 break;
 
             case EDIT_BOOKMARK:
                 // 편집 관련 버튼 레이아웃 셋팅
                 mItemId = getIntent().getStringExtra(ID);
+                mDeleteItemType = EDIT_BOOKMARK;
                 isCreateFragment = false;
                 setButtonLinear(View.VISIBLE);
                 break;
@@ -210,7 +218,8 @@ public class EditAddItemPopupActivity extends AppCompatActivity implements EditA
                     Injection.provideCategoriesRepository(getApplicationContext()),
                     getApplicationContext(),
                     mIntentViewType,
-                    mItemId
+                    mItemId,
+                    mDeleteItemType
             );
             // ViewModelHolder(UI 없는 Fragment) 생성
             ActivityUtils.addFragmentToActivity(
@@ -221,6 +230,8 @@ public class EditAddItemPopupActivity extends AppCompatActivity implements EditA
             return viewModel;
         }
     }
+
+
 
     // edit 화면일 경우 셋팅 ( 북마크와 카테고리를 다르게 셋팅)
     private void setButtonLinear(int urlVisibility){
@@ -267,8 +278,10 @@ public class EditAddItemPopupActivity extends AppCompatActivity implements EditA
         // 삭제버튼
         Button mDeleteBtn = (Button) findViewById(R.id.btn_delete);
         mDeleteBtn.setOnClickListener(v -> {
-            Toast.makeText(this,
-                    "삭제", Toast.LENGTH_SHORT).show();
+            // 뷰타입 DELETE 로 변경
+            mIntentViewType = DELETE_ITEM;
+            isCreateFragment = true;
+            setFragmentViewModel();
         });
 
         // 공유버튼

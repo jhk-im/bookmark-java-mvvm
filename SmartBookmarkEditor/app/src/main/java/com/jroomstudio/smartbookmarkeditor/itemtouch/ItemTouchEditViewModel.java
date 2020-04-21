@@ -1,4 +1,4 @@
-package com.jroomstudio.smartbookmarkeditor.main;
+package com.jroomstudio.smartbookmarkeditor.itemtouch;
 
 import android.content.Context;
 
@@ -20,19 +20,16 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * - 메인 액티비티에서 사용할 데이터를 노출한다.
+ * - ItemTouchEditActivity 에서 사용할 데이터를 노출한다.
  *
  * {@link BaseObservable}
  * - 속성이 변경될 때 알림을 받는 리스너 등록 메커니즘을 구현
  **/
-public class MainViewModel extends BaseObservable {
+public class ItemTouchEditViewModel extends BaseObservable {
 
     /**
      * Observable
      * 해당 뷰모델과 연결된 액티비티의 UI 를 관찰하고 컨트롤한다.
-     *
-     * main_act.xml 의 데이터 바인딩 뷰모델로 지정이 되어있기 때문에
-     * Observable 로 선언한 변수를 main_act.xml 에서 연결 할 수 있다.
      **/
 
     // 북마크 리스트 옵저버블 변수
@@ -41,8 +38,6 @@ public class MainViewModel extends BaseObservable {
     public final ObservableList<Category> categoryItems = new ObservableArrayList<>();
     // 현재 선택된 카테고리 옵저버블 변수
     public final ObservableField<Category> currentCategory = new ObservableField<>();
-
-
 
     /**
      * - 해당 뷰모델과 연결될 액티비티,프래그먼트 의 Context
@@ -57,15 +52,13 @@ public class MainViewModel extends BaseObservable {
     private BookmarksRepository mBookmarksRepository;
     // 카테고리
     private CategoriesRepository mCategoriesRepository;
-
-    // 액티비티 아이템 네비게이터
-    private MainNavigator mNavigator;
-
-    // 네비게이터 셋팅
-    void setNavigator(MainNavigator navigator) { mNavigator = navigator; }
+    // 네비게이터
+    private ItemTouchEditNavigator mNavigator;
+    // 네비게이터 셋팅 - 프래그먼트와 뷰모델 생성시
+    void setNavigator(ItemTouchEditNavigator navigator){ mNavigator = navigator; }
 
     /**
-     * mNavigator -> ItemNavigator 메소드
+     * mNavigator  메소드
      **/
     // 네비게이터 null 셋팅
     void onActivityDestroyed() {
@@ -73,58 +66,34 @@ public class MainViewModel extends BaseObservable {
         mNavigator = null;
     }
 
-    // 프래그먼트 옵션메뉴 -> + 버튼 클릭
-    // 액티비티 네비게이터 메소드 실행
-    // -> 새로운 아이템 추가하는 팝업이 실행된다.
-    void addNewItem(){
+    // fab 버튼 누르고 편집 종료
+    // -> 액티비티에서 종료를 진행한다.
+    void onItemsSaved(){
         if(mNavigator != null){
-            // 카테고리 리스트를 메인액티비티의 addNewItems 로 전달
-            mNavigator.addNewItems(categoryItems);
-        }
-    }
-
-
-    /**
-     * 카테고리, 북마크의 롱클릭 메소드
-     * - 메인 액티비티로 선택된 카테고리, 북마크, 카테고리 리스트를 전달한다.
-     **/
-
-    // 카테고리 아이템 롱클릭하여 편집팝업 띄우기
-    public void editLongClickCategory(Category category){
-        if(mNavigator != null){
-            // 선택된 카테고리 객체를 메인액티비티의 editSelectCategory 로 전달
-            mNavigator.editCategory(category,categoryItems);
-        }
-    }
-    // 북마크 리사이클러뷰의 아이템 클릭
-    // 북마크 아이템 롱클릭하여 편집팝업 띄우기
-    public void editLongClickBookmark(Bookmark bookmark){
-        if(mNavigator != null){
-            // 선택된 북마크 객체를 메인 액티비티의 editSelectBookmark 로 전달
-            mNavigator.editBookmark(bookmark,categoryItems);
+            mNavigator.onItemsSaved();
         }
     }
 
     /**
-     * Main Activity ViewModel 생성자
+     * ItemTouchEditViewModel 생성자
      * @param bookmarksRepository - 북마크 로컬, 원격 데이터 액세스
      * @param categoriesRepository - 카테고리 로컬, 원격 데이터 액세스
      * @param context - 응용프로그램 context 를 강제로 사용함
      **/
-    public MainViewModel(BookmarksRepository bookmarksRepository,
+    public ItemTouchEditViewModel(BookmarksRepository bookmarksRepository,
                          CategoriesRepository categoriesRepository, Context context){
         mBookmarksRepository = bookmarksRepository;
         mCategoriesRepository = categoriesRepository;
         mContext = context.getApplicationContext();
     }
 
-    // 프래그먼트 onResume
-    void start(){
+    // 프래그먼트 onResume 에서 실행
+    void start() {
         loadCategories();
     }
 
     // 아이템 클릭시 실행
-    void changeSelectCategory(Category category){
+    public void changeSelectCategory(Category category){
         // 현재 카테고리 isSelected false 로 변경
         mCategoriesRepository.
                 selectedCategory(Objects.requireNonNull(currentCategory.get()),false);
@@ -151,8 +120,6 @@ public class MainViewModel extends BaseObservable {
 
                 for(Category category : categories){
                     if(category.isSelected()){
-                        // 액티비티 액션바 타이틀을 현재 선택된 카테고리로 업데이트
-                        mNavigator.setToolbarTitle(category.getTitle());
                         currentCategory.set(category);
                     }
                 }
@@ -167,11 +134,10 @@ public class MainViewModel extends BaseObservable {
             }
             @Override
             public void onDataNotAvailable() {
-                     //onDataNotAvailable();
+                //onDataNotAvailable();
             }
         });
     }
-
 
     // 데이터베이스에서 북마크 로드
     private void loadBookmarks(){
@@ -222,5 +188,6 @@ public class MainViewModel extends BaseObservable {
         });
         return categories;
     }
+
 
 }

@@ -31,6 +31,12 @@ public abstract class BookmarkViewModel extends BaseObservable
     // 북마크 단일 객체 관찰
     private final ObservableField<Bookmark> mBookmarkObservable = new ObservableField<>();
 
+    // 북마크 itemTouch 여부 구분자
+    private boolean mIsTouchMove = false;
+    @Bindable
+    public boolean isTouchMove(){ return mIsTouchMove; }
+
+
     // 북마크 원격, 로컬 데이터 소스 멤버변수
     private final BookmarksRepository mBookmarksRepository;
 
@@ -41,7 +47,6 @@ public abstract class BookmarkViewModel extends BaseObservable
     public BookmarkViewModel(Context context, BookmarksRepository bookmarksRepository){
         mContext = context;
         mBookmarksRepository = bookmarksRepository;
-
         // 노출 된 관찰 가능 항목은 mBookmarkObservable 관찰 가능 항목에 따라 다르다.
         mBookmarkObservable.addOnPropertyChangedCallback(new OnPropertyChangedCallback() {
             @Override

@@ -34,21 +34,30 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <LinearLayout
+<!--            <LinearLayout
                 android:id="@+id/content_linear"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical">
-                <!-- fragment view -->
+                &lt;!&ndash; fragment view &ndash;&gt;
 
-            </LinearLayout>
+            </LinearLayout>-->
 
             <FrameLayout
                 android:id="@+id/content_frame"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:layout_anchor="@+id/content_linear"
-                app:layout_anchorGravity="center" />
+                android:layout_height="match_parent"/>
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fab_setting_items"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_settings"
+                android:layout_margin="@dimen/fab_margin"
+                app:fabSize="normal"
+                app:layout_anchor="@id/content_frame"
+                app:layout_anchorGravity="bottom|right|end" />
+
 
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

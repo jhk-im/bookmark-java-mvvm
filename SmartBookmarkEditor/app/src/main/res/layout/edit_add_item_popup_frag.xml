@@ -15,30 +15,38 @@
     </data>
 
 
+    <LinearLayout
+        android:id="@+id/popup_add_item_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#eeeeee"
+        android:orientation="vertical">
+
+        <!-- 타이틀 -->
         <LinearLayout
-            android:id="@+id/popup_add_item_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="53dp"
+                android:background="@color/colorPrimary"
+                android:gravity="center"
+                android:text="@={viewmodel.viewTitle}"
+                android:textColor="#fff"
+                android:textSize="20sp" />
+
+        </LinearLayout>
+
+        <!-- Item Edit Layout -->
+        <LinearLayout
+            android:visibility="@{viewmodel.deleteItem ? View.GONE :  View.VISIBLE}"
+            android:id="@+id/popup_edit_item_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="#eeeeee"
-            android:orientation="vertical"
->
-
-            <!-- 타이틀 -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="53dp"
-                    android:background="@color/colorPrimary"
-                    android:gravity="center"
-                    android:text="@={viewmodel.viewTitle}"
-                    android:textColor="#fff"
-                    android:textSize="20sp" />
-            </LinearLayout>
-
+            android:orientation="vertical">
 
             <!-- radio -->
             <LinearLayout
@@ -223,43 +231,73 @@
 
             </LinearLayout>
 
-            <!-- 확인 / 취소 버튼 -->
-            <LinearLayout
+        </LinearLayout>
+
+        <!-- Item Delete Layout -->
+        <LinearLayout
+            android:visibility="@{viewmodel.deleteItem ? View.VISIBLE : View.GONE}"
+            android:id="@+id/popup_delete_item_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#eeeeee"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_delete_questions"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:orientation="horizontal">
+                android:padding="5dp"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:text="@{viewmodel.deleteQuestions}" />
 
-                <Button
-                    android:id="@+id/btn_aip_ok"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:onClick="@{()->viewmodel.okButtonOnClick()}"
-                    android:enabled="@{!viewmodel.dataLoadingBar}"
-                    android:background="@drawable/bookmark_touch_feedback"
-                    android:layout_margin="10dp"
-                    android:padding="10dp"
-                    android:text="@string/popup_add_item_ok"
-                    android:textColor="#ffffff"
-                    android:textSize="15sp" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="5dp"
+                android:textSize="20sp"
+                android:text="@string/edit_delete_questions" />
+        </LinearLayout>
 
-                <Button
-                    android:id="@+id/btn_aip_cancel"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:onClick="@{()->viewmodel.cancelButtonOnClick()}"
-                    android:background="@drawable/bookmark_touch_feedback"
-                    android:layout_margin="10dp"
-                    android:text="@string/popup_add_item_cancel"
-                    android:textColor="#ffffff"
-                    android:textSize="15sp" />
-            </LinearLayout>
+        <!-- 확인 / 취소 버튼 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btn_aip_ok"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:onClick="@{()->viewmodel.okButtonOnClick()}"
+                android:enabled="@{!viewmodel.dataLoadingBar}"
+                android:background="@drawable/bookmark_touch_feedback"
+                android:layout_margin="10dp"
+                android:padding="10dp"
+                android:text="@string/popup_add_item_ok"
+                android:textColor="#ffffff"
+                android:textSize="15sp" />
+
+            <Button
+                android:id="@+id/btn_aip_cancel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:onClick="@{()->viewmodel.cancelButtonOnClick()}"
+                android:background="@drawable/bookmark_touch_feedback"
+                android:layout_margin="10dp"
+                android:text="@string/popup_add_item_cancel"
+                android:textColor="#ffffff"
+                android:textSize="15sp" />
 
         </LinearLayout>
 
+    </LinearLayout>
 
 </layout>
