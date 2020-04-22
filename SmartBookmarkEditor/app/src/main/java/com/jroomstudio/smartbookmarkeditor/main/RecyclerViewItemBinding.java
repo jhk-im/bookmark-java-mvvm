@@ -27,7 +27,6 @@ public class RecyclerViewItemBinding {
                 bookmarkAdapter.replaceBookmarks(bookmarks);
             }
 
-
         }catch (ClassCastException e){
             e.getStackTrace();
         }

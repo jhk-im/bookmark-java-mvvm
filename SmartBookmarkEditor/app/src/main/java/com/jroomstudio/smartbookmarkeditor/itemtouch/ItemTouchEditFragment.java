@@ -81,7 +81,7 @@ public class ItemTouchEditFragment extends Fragment {
                 (FloatingActionButton) getActivity().findViewById(R.id.fab_setting_done);
 
         fab.setOnClickListener(v -> {
-            mViewModel.onItemsSaved();
+            mViewModel.updatePosition();
         });
 
     }

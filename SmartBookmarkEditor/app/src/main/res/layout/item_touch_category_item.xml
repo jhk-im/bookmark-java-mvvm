@@ -1,20 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+
+<layout
+    xmlns:tools="http://schemas.android.com/tools"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/touch_category_layout"
-    android:layout_margin="1dp"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <Button
-        android:id="@+id/button_category"
+    <data>
+        <import type="android.view.View" />
+        <variable
+            name="viewmodel"
+            type="com.jroomstudio.smartbookmarkeditor.itemtouch.CategoryItemTouchViewModel" />
+    </data>
+
+    <FrameLayout
+        android:id="@+id/touch_category_layout"
+        android:layout_margin="1dp"
         android:layout_width="match_parent"
-        android:layout_height="30dp"
-        android:background="@drawable/category_touch_edit_feedback"
-        android:textAllCaps="false"
-        android:textColor="#ffffff" />
+        android:layout_height="wrap_content">
 
-</FrameLayout>
+        <Button
+            android:id="@+id/button_category"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:background="@drawable/category_touch_edit_feedback"
+            android:textAllCaps="false"
+            android:textColor="#ffffff" />
+
+    </FrameLayout>
+
+</layout>
+
 
 
 

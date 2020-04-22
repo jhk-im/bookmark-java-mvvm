@@ -1,4 +1,4 @@
-package com.jroomstudio.smartbookmarkeditor.itemtouch.adapter;
+package com.jroomstudio.smartbookmarkeditor.itemtouch;
 
 import android.content.Context;
 
@@ -31,6 +31,9 @@ public class CategoryItemTouchViewModel extends CategoryViewModel {
     public void setNavigator(CategoryItemNavigator navigator) {
         mNavigator = new WeakReference<>(navigator);
     }
+
+
+
 
 }
 

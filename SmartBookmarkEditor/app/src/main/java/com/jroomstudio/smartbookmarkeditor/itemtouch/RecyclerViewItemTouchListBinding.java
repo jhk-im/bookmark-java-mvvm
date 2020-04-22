@@ -17,7 +17,7 @@ public class RecyclerViewItemTouchListBinding {
      **/
     @SuppressWarnings("unchecked")
     @BindingAdapter("app:bookmarkTouchItems")
-    public static void setBookmarkItems(RecyclerView recyclerView, List<Bookmark> bookmarks){
+    public static void setBookmarkTouchItems(RecyclerView recyclerView, List<Bookmark> bookmarks){
 
         try{
 
@@ -42,7 +42,7 @@ public class RecyclerViewItemTouchListBinding {
      **/
     @SuppressWarnings("unchecked")
     @BindingAdapter("app:categoryTouchItems")
-    public static void setCategoryItems(RecyclerView recyclerView, List<Category> categories){
+    public static void setCategoryTouchItems(RecyclerView recyclerView, List<Category> categories){
 
         try{
 

@@ -1,11 +1,10 @@
-package com.jroomstudio.smartbookmarkeditor.itemtouch.adapter;
+package com.jroomstudio.smartbookmarkeditor.itemtouch;
 
 import android.content.Context;
 
 import androidx.annotation.Nullable;
 
 import com.jroomstudio.smartbookmarkeditor.BookmarkViewModel;
-import com.jroomstudio.smartbookmarkeditor.data.bookmark.Bookmark;
 import com.jroomstudio.smartbookmarkeditor.data.bookmark.source.BookmarksRepository;
 import com.jroomstudio.smartbookmarkeditor.main.BookmarkItemNavigator;
 import com.jroomstudio.smartbookmarkeditor.main.MainFragment;
@@ -33,18 +32,6 @@ public class BookmarkItemTouchViewModel extends BookmarkViewModel {
         mNavigator = new WeakReference<>(navigator);
     }
 
-    /**
-     * 북마크가 선택되었을 때
-     **/
-    public void bookmarkClicked(){
-        Bookmark bookmark = getBookmark();
-        if(bookmark == null){
-            return;
-        }
-        if(mNavigator != null && mNavigator.get() != null){
-            mNavigator.get().selectedBookmark(bookmark);
-        }
-    }
 
 
 }

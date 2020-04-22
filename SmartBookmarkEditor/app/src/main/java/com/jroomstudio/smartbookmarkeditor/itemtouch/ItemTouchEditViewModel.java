@@ -94,6 +94,22 @@ public class ItemTouchEditViewModel extends BaseObservable {
         loadCategories();
     }
 
+    // 포지션 변경후 fab 버튼 누르고 종료
+    public void updatePosition(){
+        // 북마크 포지션 값 변경
+        for(Bookmark bookmark : bookmarkItems){
+            // 포지션값 변경
+            mBookmarksRepository.updatePosition(bookmark,bookmarkItems.indexOf(bookmark));
+        }
+        // 카테고리 포지션값 변경
+        for(Category category : categoryItems){
+            // 포지션값 변경
+            mCategoriesRepository.updatePosition(category,categoryItems.indexOf(category));
+        }
+        // 저장하고 종료
+        onItemsSaved();
+    }
+
     /**
      * 데이터베이스에서 카테고리 정보 받아오기
      * -> 프래그먼트가 시작될 때 실행된다.

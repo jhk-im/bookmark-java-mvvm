@@ -1,51 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+
+<layout
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/touch_bookmark_layout"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_margin="3dp"
-    android:background="@drawable/bookmark_touch_edit_feedback"
-    android:clickable="true"
-    android:focusable="true">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <ImageView
-        android:id="@+id/iv_url_image"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_marginStart="10dp"
-        android:src="@drawable/ic_help_black_24dp"
-        app:layout_constraintBottom_toBottomOf="@+id/tv_bookmark_url"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/tv_bookmark_title" />
+    <data>
+        <import type="android.view.View" />
+        <variable
+            name="viewmodel"
+            type="com.jroomstudio.smartbookmarkeditor.itemtouch.BookmarkItemTouchViewModel" />
+    </data>
 
-    <TextView
-        android:id="@+id/tv_bookmark_title"
-        android:layout_width="0dp"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/touch_bookmark_layout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="10dp"
-        android:textColor="#ffffff"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/iv_url_image"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_margin="3dp"
+        android:background="@drawable/bookmark_touch_edit_feedback"
+        android:clickable="true"
+        android:focusable="true">
 
-    <TextView
-        android:id="@+id/tv_bookmark_url"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="10dp"
-        android:textSize="10sp"
-        android:textColor="#ffffff"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/tv_bookmark_title"
-        app:layout_constraintStart_toStartOf="@+id/tv_bookmark_title"
-        app:layout_constraintTop_toBottomOf="@+id/tv_bookmark_title"
-        tools:ignore="SmallSp" />
+        <ImageView
+            android:id="@+id/iv_url_image"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="10dp"
+            android:src="@drawable/ic_help_black_24dp"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_bookmark_url"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/tv_bookmark_title" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <TextView
+            android:id="@+id/tv_bookmark_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:textColor="#ffffff"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/iv_url_image"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_bookmark_url"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="10dp"
+            android:textSize="10sp"
+            android:textColor="#ffffff"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/tv_bookmark_title"
+            app:layout_constraintStart_toStartOf="@+id/tv_bookmark_title"
+            app:layout_constraintTop_toBottomOf="@+id/tv_bookmark_title"
+            tools:ignore="SmallSp" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>
