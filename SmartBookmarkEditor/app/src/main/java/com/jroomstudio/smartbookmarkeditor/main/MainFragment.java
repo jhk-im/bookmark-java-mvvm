@@ -41,11 +41,6 @@ public class MainFragment extends Fragment {
      * */
     private MainFragBinding mMainFragBinding;
 
-    // 북마크 리사이클러뷰 어댑터
-    private BookmarkRecyclerAdapter mBookmarkRecyclerAdapter;
-    // 카테고리 리사이클러뷰 어댑터
-    private CategoriesRecyclerAdapter mCategoriesRecyclerAdapter;
-
     // 다이렉트 인스턴스 생성 방지
     public MainFragment() {}
 
@@ -75,8 +70,7 @@ public class MainFragment extends Fragment {
         setupRecyclerAdapter();
 
         // view 에 데이터바인딩 getRoot() 매치하여 반환 (view 반환)
-        View root = mMainFragBinding.getRoot();
-        return root;
+        return mMainFragBinding.getRoot();
     }
 
     // 액티비티 생성 될 때
@@ -129,7 +123,7 @@ public class MainFragment extends Fragment {
 
         //1. 북마크 어댑터 생성
         // 북마크 리사이클러뷰 어댑터
-       mBookmarkRecyclerAdapter = new BookmarkRecyclerAdapter(
+        BookmarkRecyclerAdapter mBookmarkRecyclerAdapter = new BookmarkRecyclerAdapter(
                 new ArrayList<>(0),
                 Injection.provideBookmarksRepository(getContext().getApplicationContext()),
                 mMainViewModel,
@@ -153,7 +147,8 @@ public class MainFragment extends Fragment {
 
         //2. 카테고리 어댑터 생성
         // 카테고리 리사이클러뷰 어댑터
-        mCategoriesRecyclerAdapter = new CategoriesRecyclerAdapter(
+        // 카테고리 리사이클러뷰 어댑터
+        CategoriesRecyclerAdapter mCategoriesRecyclerAdapter = new CategoriesRecyclerAdapter(
                 new ArrayList<>(0),
                 Injection.provideCategoriesRepository(getContext().getApplicationContext()),
                 mMainViewModel,

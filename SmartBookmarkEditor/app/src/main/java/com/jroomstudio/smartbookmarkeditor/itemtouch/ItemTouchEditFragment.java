@@ -1,6 +1,7 @@
 package com.jroomstudio.smartbookmarkeditor.itemtouch;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,7 +46,7 @@ public class ItemTouchEditFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
+        Log.d("fragment on create view","ItemTouchEditFragment");
         // 프래그먼트 뷰 생성
         mDataBinding = ItemTouchEditFragBinding.inflate(inflater,container,false);
         // 현재 프래그먼트를 xml view 로 지정
@@ -58,9 +59,7 @@ public class ItemTouchEditFragment extends Fragment {
         setupRecyclerAdapter();
 
         //최종 뷰 생성
-        View root = mDataBinding.getRoot();
-
-        return root;
+        return mDataBinding.getRoot();
     }
 
     // 액티비티가 생성될 때
@@ -96,6 +95,8 @@ public class ItemTouchEditFragment extends Fragment {
                 Injection.provideBookmarksRepository(getContext().getApplicationContext()),
                 mViewModel
         );
+        // 깜빡임 방지
+        bookmarkAdapter.setHasStableIds(true);
         // 리사이클러뷰 레이아웃 매니져
         mDataBinding.rvBookmarks.setLayoutManager(
                 new LinearLayoutManager(getContext().getApplicationContext())
@@ -106,8 +107,7 @@ public class ItemTouchEditFragment extends Fragment {
         ItemTouchHelper bookmarkHelper =
                 new ItemTouchHelper(new ItemTouchHelperCallback(bookmarkAdapter));
         bookmarkHelper.attachToRecyclerView(mDataBinding.rvBookmarks);
-        // 깜빡임 방지
-        //bookmarkAdapter.setHasStableIds(true);
+
 
         // 카테고리 어댑터 생성
         CategoriesItemTouchRecyclerAdapter categoryAdapter = new CategoriesItemTouchRecyclerAdapter(
@@ -115,6 +115,8 @@ public class ItemTouchEditFragment extends Fragment {
                 Injection.provideCategoriesRepository(getContext().getApplicationContext()),
                 mViewModel
         );
+        // 깜빡임 방지
+        categoryAdapter.setHasStableIds(true);
         // 리사이클러뷰 레이아웃 매니져
         mDataBinding.rvCategories.setLayoutManager(
                 new LinearLayoutManager(getContext().getApplicationContext())
@@ -123,10 +125,9 @@ public class ItemTouchEditFragment extends Fragment {
         mDataBinding.rvCategories.setAdapter(categoryAdapter);
         // 북마크 리사이클러뷰 터치헬퍼 연결
         ItemTouchHelper categoryHelper =
-                new ItemTouchHelper(new ItemTouchHelperCallback(bookmarkAdapter));
+                new ItemTouchHelper(new ItemTouchHelperCallback(categoryAdapter));
         categoryHelper.attachToRecyclerView(mDataBinding.rvCategories);
-        // 깜빡임 방지
-        // categoryAdapter.setHasStableIds(true);
+
     }
 
 

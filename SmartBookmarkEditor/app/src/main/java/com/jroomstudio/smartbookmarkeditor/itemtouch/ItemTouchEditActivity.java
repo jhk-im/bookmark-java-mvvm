@@ -1,6 +1,7 @@
 package com.jroomstudio.smartbookmarkeditor.itemtouch;
 
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
@@ -52,6 +53,7 @@ public class ItemTouchEditActivity extends AppCompatActivity implements ItemTouc
                 (ItemTouchEditFragment) getSupportFragmentManager().findFragmentById(R.id.content_frame);
         if(fragment == null){
             // 프래그먼트 생성
+            Log.d("create fragment","ItemTouchEditFragment");
             fragment = ItemTouchEditFragment.newInstance();
             ActivityUtils.addFragmentToActivity(getSupportFragmentManager(),
                     fragment, R.id.content_frame);
@@ -78,6 +80,7 @@ public class ItemTouchEditActivity extends AppCompatActivity implements ItemTouc
                     Injection.provideCategoriesRepository(getApplicationContext()),
                     getApplicationContext()
             );
+            Log.d("create view model","ItemTouchEditViewModel");
             // ViewModelHolder(UI 없는 Fragment) 생성
             ActivityUtils.addFragmentToActivity(
                     getSupportFragmentManager(),
@@ -93,7 +96,6 @@ public class ItemTouchEditActivity extends AppCompatActivity implements ItemTouc
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ActionBar ab = getSupportActionBar();
-        assert ab != null;
         ab.setDisplayHomeAsUpEnabled(false);
         ab.setTitle("아이템 순서변경");
     }

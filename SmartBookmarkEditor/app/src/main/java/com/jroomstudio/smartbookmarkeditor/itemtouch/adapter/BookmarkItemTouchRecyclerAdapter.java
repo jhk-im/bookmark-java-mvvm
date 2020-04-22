@@ -1,19 +1,20 @@
 package com.jroomstudio.smartbookmarkeditor.itemtouch.adapter;
 
 import android.annotation.SuppressLint;
-import android.util.Log;
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.jroomstudio.smartbookmarkeditor.R;
 import com.jroomstudio.smartbookmarkeditor.data.bookmark.Bookmark;
 import com.jroomstudio.smartbookmarkeditor.data.bookmark.source.BookmarksRepository;
-import com.jroomstudio.smartbookmarkeditor.databinding.ItemTouchCategoryItemBinding;
 import com.jroomstudio.smartbookmarkeditor.itemtouch.ItemTouchEditViewModel;
 import com.jroomstudio.smartbookmarkeditor.util.ItemTouchHelperListener;
 
@@ -32,7 +33,8 @@ public class BookmarkItemTouchRecyclerAdapter
     // 메인프래그먼트 뷰모델
     private ItemTouchEditViewModel mViewModel;
 
-    private ItemTouchCategoryItemBinding mDatabindig;
+    // item move 상태 구분
+    private boolean isItemMove = false;
 
     /**
      * 어댑터 생성자
@@ -49,18 +51,10 @@ public class BookmarkItemTouchRecyclerAdapter
     @NonNull
     @Override
     public ItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        Log.e("test","category on create holder");
-       /*
-        Log.e("test","book on create holder");
         Context context = parent.getContext();
         LayoutInflater inflater =
                 (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.item_touch_bookmark_item, parent, false);
-        */
-        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        mDatabindig = ItemTouchCategoryItemBinding.inflate(inflater,parent,false);
-        View view = mDatabindig.getRoot();
-
         return new ItemViewHolder(view);
     }
 
@@ -73,7 +67,7 @@ public class BookmarkItemTouchRecyclerAdapter
     // 리스트 사이즈만큼 반복실행
     @Override
     public int getItemCount() {
-        return mBookmarks.size();
+        return mBookmarks != null ? mBookmarks.size() : 0;
     }
 
     // 북마크 멤버리스트 갱신
@@ -90,6 +84,8 @@ public class BookmarkItemTouchRecyclerAdapter
     // 아이템 무브
     @Override
     public boolean onItemMove(int from_position, int to_position) {
+        // 움직이고 있을 때에는 view model 에서 갱신하지 못하도록함
+        isItemMove = true;
         // 이동할 객체 포지션으로 가져와 생성
         Bookmark bookmark = mBookmarks.get(from_position);
         // 이동할 객체 삭제
@@ -101,22 +97,38 @@ public class BookmarkItemTouchRecyclerAdapter
         return true;
     }
 
+    // 움직이고 있는지 아닌지 반환
+    public boolean isMove() {
+        return isItemMove;
+    }
+
 
     public class ItemViewHolder extends RecyclerView.ViewHolder {
         TextView title, url;
+        ImageView bookmarkFavicon;
         @SuppressLint("CutPasteId")
         public ItemViewHolder(@NonNull View itemView) {
             super(itemView);
             // 제목 텍스트
-            title = itemView.findViewById(R.id.tv_bookmark_url);
+            title = itemView.findViewById(R.id.tv_bookmark_title);
             // url 텍스트
             url = itemView.findViewById(R.id.tv_bookmark_url);
+            // 파비콘 이미지뷰
+            bookmarkFavicon = itemView.findViewById(R.id.iv_url_image);
         }
 
         public void onBind(Bookmark bookmark) {
-            Log.e("test","bookmark on bind");
             title.setText(bookmark.getTitle());
             url.setText(bookmark.getUrl());
+            // 파비콘 셋팅
+            // 로드 실패하면 기본 로고 이미지 셋팅
+            // 로드 성공하면 파비콘을 셋팅
+            // error()  실패했을 때 이미지 지정할 수 있음
+            Glide.with(itemView)
+                    .load(bookmark.getFaviconUrl())
+                    .placeholder(R.drawable.logo)
+                    .error(R.drawable.logo)
+                    .into(bookmarkFavicon);
         }
     }
 }

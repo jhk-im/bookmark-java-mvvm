@@ -1,6 +1,7 @@
 package com.jroomstudio.smartbookmarkeditor.itemtouch;
 
 import android.content.Context;
+import android.widget.Toast;
 
 import androidx.databinding.BaseObservable;
 import androidx.databinding.ObservableArrayList;
@@ -89,17 +90,7 @@ public class ItemTouchEditViewModel extends BaseObservable {
 
     // 프래그먼트 onResume 에서 실행
     void start() {
-        loadCategories();
-    }
-
-    // 아이템 클릭시 실행
-    public void changeSelectCategory(Category category){
-        // 현재 카테고리 isSelected false 로 변경
-        mCategoriesRepository.
-                selectedCategory(Objects.requireNonNull(currentCategory.get()),false);
-        // 전달받은 카테고리 isSelected true 로 변경
-        mCategoriesRepository.selectedCategory(category,true);
-        // 업데이트
+        Toast.makeText(mContext, "롱클릭으로 아이템 순서변경", Toast.LENGTH_SHORT).show();
         loadCategories();
     }
 

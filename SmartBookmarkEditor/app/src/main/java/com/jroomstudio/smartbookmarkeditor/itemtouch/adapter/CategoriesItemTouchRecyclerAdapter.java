@@ -1,6 +1,6 @@
 package com.jroomstudio.smartbookmarkeditor.itemtouch.adapter;
 
-import android.annotation.SuppressLint;
+import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.jroomstudio.smartbookmarkeditor.R;
 import com.jroomstudio.smartbookmarkeditor.data.category.Category;
 import com.jroomstudio.smartbookmarkeditor.data.category.source.CategoriesRepository;
-import com.jroomstudio.smartbookmarkeditor.databinding.ItemTouchBookmarkItemBinding;
 import com.jroomstudio.smartbookmarkeditor.itemtouch.ItemTouchEditViewModel;
 import com.jroomstudio.smartbookmarkeditor.util.ItemTouchHelperListener;
 
@@ -33,8 +32,9 @@ public class CategoriesItemTouchRecyclerAdapter
     // 메인프래그먼트 뷰모델
     private ItemTouchEditViewModel mViewModel;
 
-    private ItemTouchBookmarkItemBinding mDatabindig;
 
+    // item move 상태 구분
+    private boolean isItemMove = false;
     /**
      * 어댑터 생성자
      **/
@@ -51,15 +51,10 @@ public class CategoriesItemTouchRecyclerAdapter
     @Override
     public ItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         Log.e("test","category on create holder");
-        /*
         Context context = parent.getContext();
         LayoutInflater inflater =
                 (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.item_touch_category_item, parent, false);
-        */
-        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        mDatabindig = ItemTouchBookmarkItemBinding.inflate(inflater,parent,false);
-        View view = mDatabindig.getRoot();
         return new ItemViewHolder(view);
     }
 
@@ -71,7 +66,7 @@ public class CategoriesItemTouchRecyclerAdapter
 
     // 멤버변수 리스트 사이즈만큼 반복실행
     @Override
-    public int getItemCount() { return mCategories.size(); }
+    public int getItemCount() { return mCategories != null ? mCategories.size() : 0; }
 
     // 카테고리 멤버리스트 갱신
     private void setCategories(List<Category> categories){
@@ -84,10 +79,16 @@ public class CategoriesItemTouchRecyclerAdapter
         setCategories(categories);
     }
 
+    // 움직이고 있는지 아닌지 반환
+    public boolean isMove() {
+        return isItemMove;
+    }
+
     // 아이템 무브
     @Override
     public boolean onItemMove(int from_position, int to_position) {
-
+        // 움직이고 있을 때에는 view model 에서 갱신하지 못하도록함
+        isItemMove = true;
         // 이동할 객체 가져와 생성
         Category category = mCategories.get(from_position);
         // 이동할 객체 삭제
@@ -106,16 +107,13 @@ public class CategoriesItemTouchRecyclerAdapter
             super(itemView);
             btnCategory = itemView.findViewById(R.id.button_category);
         }
-        @SuppressLint("ResourceAsColor")
+
         public void onBind(Category category){
-            Log.e("test","category on bind");
             // 버튼 selected 설정
             btnCategory.setSelected(category.isSelected());
+            // 선택되지 않은 카테고리는 클릭 못함
+            btnCategory.setClickable(category.isSelected());
             btnCategory.setText(category.getTitle());
-            // 버튼클릭시
-            btnCategory.setOnClickListener(v -> {
-                mViewModel.changeSelectCategory(category);
-            });
         }
 
     }

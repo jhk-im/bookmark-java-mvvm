@@ -1,14 +1,10 @@
 package com.jroomstudio.smartbookmarkeditor.main;
 
-import android.util.Log;
-
 import androidx.databinding.BindingAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.jroomstudio.smartbookmarkeditor.data.bookmark.Bookmark;
 import com.jroomstudio.smartbookmarkeditor.data.category.Category;
-import com.jroomstudio.smartbookmarkeditor.itemtouch.adapter.BookmarkItemTouchRecyclerAdapter;
-import com.jroomstudio.smartbookmarkeditor.itemtouch.adapter.CategoriesItemTouchRecyclerAdapter;
 import com.jroomstudio.smartbookmarkeditor.main.adapter.BookmarkRecyclerAdapter;
 import com.jroomstudio.smartbookmarkeditor.main.adapter.CategoriesRecyclerAdapter;
 
@@ -31,13 +27,6 @@ public class RecyclerViewItemBinding {
                 bookmarkAdapter.replaceBookmarks(bookmarks);
             }
 
-            // 터치 편집 프래그먼트 리사이클러뷰
-            BookmarkItemTouchRecyclerAdapter bookmarkTouchAdapter =
-                    (BookmarkItemTouchRecyclerAdapter) recyclerView.getAdapter();
-            if(bookmarkTouchAdapter != null){
-                Log.e("fuck","fuck");
-                bookmarkTouchAdapter.replaceBookmarks(bookmarks);
-            }
 
         }catch (ClassCastException e){
             e.getStackTrace();
@@ -58,14 +47,6 @@ public class RecyclerViewItemBinding {
                     (CategoriesRecyclerAdapter) recyclerView.getAdapter();
             if(categoryAdapter != null){
                 categoryAdapter.replaceCategories(categories);
-            }
-
-            // 터치 편집 프래그먼트 리사이클러뷰
-            CategoriesItemTouchRecyclerAdapter categoryTouchAdapter =
-                    (CategoriesItemTouchRecyclerAdapter) recyclerView.getAdapter();
-            if(categoryTouchAdapter != null){
-                Log.e("fuck","fuck");
-                categoryTouchAdapter.replaceCategories(categories);
             }
 
         }catch (ClassCastException e){

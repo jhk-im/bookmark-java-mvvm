@@ -43,8 +43,9 @@ public class MainActivity extends AppCompatActivity
     // 네비게이션 스위치
     private Switch mThemeSwitch, mNoticeSwitch;
 
-    // 아이템추가 -> 스피너리스트로 전달할 카테고리 리스트 카운트
+    // 아이템추가 or 편집 -> 스피너리스트로 전달할 카테고리 리스트 카운트
     private int mSelectCategoryCount;
+    // 현재 선택된 카테고리
     private String mSelectCategory;
 
     @Override
