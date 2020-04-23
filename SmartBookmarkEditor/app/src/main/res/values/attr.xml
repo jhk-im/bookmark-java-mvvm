@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
+    <attr name="custom_primary" format="color" />
+    <attr name="custom_primary_dark" format="color" />
+    <attr name="custom_primary_accent" format="color" />
 </resources>
