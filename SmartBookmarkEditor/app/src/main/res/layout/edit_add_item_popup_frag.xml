@@ -19,8 +19,8 @@
         android:id="@+id/popup_add_item_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#eeeeee"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:background="?attr/custom_background">
 
         <!-- 타이틀 -->
         <LinearLayout
@@ -45,7 +45,6 @@
             android:id="@+id/popup_edit_item_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#eeeeee"
             android:orientation="vertical">
 
             <!-- radio -->
@@ -59,6 +58,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
+                    android:background="?attr/custom_background"
                     android:visibility="@{viewmodel.addItem ? View.VISIBLE : View.GONE}">
 
                     <RadioButton
@@ -67,8 +67,9 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:checked="@={viewmodel.isSelectBookmark}"
-                        android:text="@string/bookmark_title"
-                        android:textColor="@color/colorPrimaryDark" />
+                        android:buttonTint="?attr/colorAccent"
+                        android:textColor="?attr/custom_text"
+                        android:text="@string/bookmark_title" />
 
                     <RadioButton
                         android:id="@+id/rb_category"
@@ -76,24 +77,20 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:checked="@={!viewmodel.isSelectBookmark}"
+                        android:buttonTint="?attr/colorAccent"
                         android:text="@string/popup_add_item_category"
-                        android:textColor="@color/colorPrimaryDark" />
+                        android:textColor="?attr/custom_text" />
 
                 </RadioGroup>
 
             </LinearLayout>
-
-            <!-- 구분선 -->
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@drawable/bookmark_round_dark" />
 
             <!-- 북마크 컨테이너 -->
             <LinearLayout
                 android:id="@+id/content_linear_bookmark"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="?attr/custom_background"
                 android:orientation="vertical">
 
                 <!-- title 입력 -->
@@ -111,6 +108,7 @@
                         android:gravity="center"
                         android:paddingHorizontal="10dp"
                         android:text="@string/popup_add_item_et_title"
+                        android:textColor="?attr/custom_text"
                         android:textSize="20sp"
                         android:textStyle="bold" />
 
@@ -122,6 +120,8 @@
                         android:ems="10"
                         android:inputType="text"
                         android:maxLength="20"
+                        android:backgroundTint="?attr/custom_text"
+                        android:textColor="?attr/custom_text"
                         android:text="@={viewmodel.bookmarkTitle}" />
                 </LinearLayout>
 
@@ -140,6 +140,7 @@
                         android:gravity="center"
                         android:paddingHorizontal="10dp"
                         android:text="@string/popup_add_item_et_url"
+                        android:textColor="?attr/custom_text"
                         android:textSize="20sp"
                         android:textStyle="bold" />
 
@@ -150,6 +151,8 @@
                         android:layout_weight="1"
                         android:ems="10"
                         android:inputType="textUri"
+                        android:backgroundTint="?attr/custom_text"
+                        android:textColor="?attr/custom_text"
                         android:text="@={viewmodel.bookmarkUrl}" />
                 </LinearLayout>
 
@@ -167,13 +170,16 @@
                         android:gravity="center"
                         android:paddingHorizontal="10dp"
                         android:text="@string/popup_add_item_category"
+                        android:textColor="?attr/custom_text"
                         android:textSize="20sp"
                         android:textStyle="bold" />
                     <Spinner
                         android:id="@+id/spinner_category"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:layout_weight="1" />
+                        android:layout_weight="1"
+                        android:backgroundTint="?attr/custom_text"
+                        />
                 </LinearLayout>
 
                 <!-- 선택된 스피너 관찰 텍스트뷰 -->
@@ -186,6 +192,7 @@
 
             <!-- loading bar -->
             <ProgressBar
+                android:background="?attr/custom_background"
                 android:id="@+id/progress_loading_bar"
                 style="?android:attr/progressBarStyle"
                 android:layout_width="match_parent"
@@ -194,6 +201,7 @@
 
             <!-- 카테고리 컨테이너 -->
             <LinearLayout
+                android:background="?attr/custom_background"
                 android:id="@+id/content_linear_category"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -210,6 +218,7 @@
                     android:padding="5dp">
 
                     <TextView
+                        android:textColor="?attr/custom_text"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:gravity="center"
@@ -226,6 +235,8 @@
                         android:ems="10"
                         android:inputType="text"
                         android:maxLength="20"
+                        android:textColor="?attr/custom_text"
+                        android:backgroundTint="?attr/custom_text"
                         android:text="@={viewmodel.categoryTitle}" />
                 </LinearLayout>
 
@@ -235,11 +246,11 @@
 
         <!-- Item Delete Layout -->
         <LinearLayout
+            android:background="?attr/custom_background"
             android:visibility="@{viewmodel.deleteItem ? View.VISIBLE : View.GONE}"
             android:id="@+id/popup_delete_item_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#eeeeee"
             android:orientation="vertical">
 
             <TextView
@@ -250,6 +261,7 @@
                 android:padding="5dp"
                 android:textSize="20sp"
                 android:textStyle="bold"
+                android:textColor="?attr/custom_text"
                 android:text="@{viewmodel.deleteQuestions}" />
 
             <TextView
@@ -258,11 +270,13 @@
                 android:gravity="center"
                 android:padding="5dp"
                 android:textSize="20sp"
+                android:textColor="?attr/custom_text"
                 android:text="@string/edit_delete_questions" />
         </LinearLayout>
 
         <!-- 확인 / 취소 버튼 -->
         <LinearLayout
+            android:background="?attr/custom_background"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
@@ -280,7 +294,7 @@
                 android:layout_margin="10dp"
                 android:padding="10dp"
                 android:text="@string/popup_add_item_ok"
-                android:textColor="#ffffff"
+                android:textColor="#fff"
                 android:textSize="15sp" />
 
             <Button
@@ -293,7 +307,7 @@
                 android:background="@drawable/bookmark_touch_feedback"
                 android:layout_margin="10dp"
                 android:text="@string/popup_add_item_cancel"
-                android:textColor="#ffffff"
+                android:textColor="#fff"
                 android:textSize="15sp" />
 
         </LinearLayout>

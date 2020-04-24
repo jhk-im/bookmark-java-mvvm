@@ -24,8 +24,8 @@
             android:background="@drawable/category_touch_feedback"
             android:onClick="@{() -> viewmodel.categoryClicked()}"
             android:text="@{viewmodel.title}"
-            android:textAllCaps="false"
-            android:textColor="#ffffff" />
+            android:textColor="#ffffff"
+            android:textAllCaps="false" />
 
     </FrameLayout>
 

@@ -133,7 +133,7 @@ public class EditAddItemPopupFragment extends Fragment {
 
         // 스피너에 셋팅할 ArrayAdapter 생성
         ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(
-                getActivity(),android.R.layout.simple_spinner_item, mCategoryList);
+                getActivity(), R.layout.edit_add_item_row_spinner, mCategoryList);
         // 드롭다운 레이아웃 셋팅
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // 스피너 어댑터 셋팅
@@ -144,6 +144,7 @@ public class EditAddItemPopupFragment extends Fragment {
         mDataBinding.spinnerCategory.setSelection(mCategoryCount);
         mDataBinding.getViewmodel().bookmarkCategory.set(
                 mDataBinding.spinnerCategory.getSelectedItem().toString());
+
 
         mDataBinding.spinnerCategory.
                 setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {

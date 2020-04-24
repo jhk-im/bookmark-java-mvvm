@@ -1,5 +1,6 @@
 package com.jroomstudio.smartbookmarkeditor.popup;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.View;
@@ -68,6 +69,16 @@ public class EditAddItemPopupActivity extends AppCompatActivity implements EditA
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // dark 모드 상태 가져오기
+        SharedPreferences spActStatus = getSharedPreferences("act_status", MODE_PRIVATE);
+        SharedPreferences.Editor editor = spActStatus.edit();
+        editor.apply();
+        // 다크모드이면 다크모드로 테마변경
+        if(spActStatus.getBoolean("dark_mode",false)){
+            setTheme(R.style.DarkAppPopup);
+        }
+
         // 상태바 제거하고 전체화면 모드로
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);

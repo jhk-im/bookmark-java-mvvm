@@ -1,7 +1,7 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:state_pressed="true" android:drawable="@drawable/bookmark_round"/>
-    <item android:state_focused="true" android:drawable="@drawable/bookmark_round_dark"/>
-    <item android:state_selected="true" android:drawable="@drawable/bookmark_round"/>
-    <item android:drawable="@drawable/bookmark_round_dark"/>
+    <item android:state_pressed="true" android:drawable="@drawable/item_round"/>
+    <item android:state_focused="true" android:drawable="@drawable/item_round_dark"/>
+    <item android:state_selected="true" android:drawable="@drawable/item_round"/>
+    <item android:drawable="@drawable/item_round_dark"/>
 </selector>
 

@@ -5,20 +5,27 @@
     <style name="AppTheme.OverlapSystemBar" parent="Base.AppTheme" />
     <!-- Base application theme. -->
     <style name="Base.AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
-        <!-- Customize your theme here. -->
+        <!-- default color. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-
+        <!--custom-->
+        <item name="custom_item_background">#353738</item>
+        <item name="custom_background">#ffffff</item>
+        <item name="custom_text">@color/colorPrimaryDark</item>
     </style>
 
     <!-- popup theme -->
     <style name="AppTheme.Popup" parent="Base.PopupTheme" />
-    <style name="Base.PopupTheme" parent="Theme.AppCompat.DayNight.Dialog">
-        <!-- Customize your theme here. -->
+    <style name="Base.PopupTheme" parent="Theme.AppCompat.Light.Dialog">
+        <!-- default color. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorPrimary</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <!--custom-->
+        <item name="custom_item_background">#353738</item>
+        <item name="custom_background">#ffffff</item>
+        <item name="custom_text">@color/colorPrimaryDark</item>
         <!-- 타이틀 바 제거 -->
         <item name="windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
@@ -26,6 +33,34 @@
 
     <!-- toolbar -->
     <style name="Toolbar" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+
+
+    <!-- Dark Theme Popup -->
+    <style name="DarkAppPopup" parent="Base.PopupTheme">
+        <item name="colorPrimary">#26518a</item>
+        <item name="colorPrimaryDark">#353738</item>
+        <item name="colorAccent">#8e4ab1</item>
+        <!--custom-->
+        <item name="custom_item_background">#353738</item>
+        <item name="custom_background">@color/colorPrimaryDark</item>
+        <item name="custom_text">#ffffff</item>
+        <!-- 타이틀 바 제거 -->
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+    </style>
+
+    <!-- Dark Theme Main , Item touch-->
+    <style name="DarkAppTheme" parent="Base.AppTheme">
+        <item name="colorPrimary">#26518a</item>
+        <item name="colorPrimaryDark">#353738</item>
+        <item name="colorAccent">#8e4ab1</item>
+        <!--custom-->
+        <item name="custom_item_background">#353738</item>
+        <item name="custom_background">@color/colorPrimaryDark</item>
+        <item name="custom_text">#ffffff</item>
+    </style>
+
 
 
 </resources>

@@ -26,7 +26,7 @@
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_marginStart="10dp"
-            android:src="@drawable/ic_help_black_24dp"
+            android:src="@drawable/ic_help"
             app:layout_constraintBottom_toBottomOf="@+id/tv_bookmark_url"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/tv_bookmark_title" />
@@ -38,8 +38,8 @@
             android:layout_marginStart="10dp"
             android:layout_marginTop="10dp"
             android:layout_marginEnd="10dp"
-            android:textColor="#ffffff"
             android:textSize="20sp"
+            android:textColor="#ffffff"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/iv_url_image"
             app:layout_constraintTop_toTopOf="parent" />

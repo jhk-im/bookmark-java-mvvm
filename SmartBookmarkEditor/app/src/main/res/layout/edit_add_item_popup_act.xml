@@ -7,16 +7,16 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     tools:context=".popup.EditAddItemPopupActivity"
+    android:background="?attr/custom_background"
     tools:openDrawer="start"
     android:orientation="vertical">
 
     <!-- editItem view -->
     <LinearLayout
         android:id="@+id/popup_edit_item_linear"
-        android:background="#eeeeee"
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="match_parent">
 
         <!-- 타이틀 (유형 구분) -->
         <LinearLayout
@@ -42,10 +42,10 @@
             <TextView
                 android:textSize="10sp"
                 android:padding="5dp"
-                android:textColor="#818181"
                 android:text="@string/edit_item_title"
                 android:gravity="center"
                 android:layout_weight="1"
+                android:textColor="?attr/custom_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 tools:ignore="SmallSp" />
@@ -53,10 +53,10 @@
             <TextView
                 android:id="@+id/tv_edit_item_title"
                 android:textSize="15sp"
-                android:textColor="@color/colorPrimaryDark"
                 android:padding="5dp"
                 android:layout_gravity="end"
                 android:layout_weight="8"
+                android:textColor="?attr/custom_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
         </LinearLayout>
@@ -70,9 +70,9 @@
             <TextView
                 android:textSize="10sp"
                 android:padding="5dp"
-                android:textColor="#818181"
                 android:text="@string/edit_item_url"
                 android:gravity="center"
+                android:textColor="?attr/custom_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 tools:ignore="SmallSp" />
@@ -80,8 +80,8 @@
             <TextView
                 android:id="@+id/tv_edit_item_url"
                 android:textSize="15sp"
-                android:textColor="@color/colorPrimaryDark"
                 android:padding="5dp"
+                android:textColor="?attr/custom_text"
                 android:layout_gravity="end"
                 android:layout_weight="8"
                 android:layout_width="wrap_content"
@@ -96,8 +96,8 @@
             android:background="@drawable/category_touch_feedback"
             android:text="@string/popup_edit_btn_edit"
             android:textSize="20sp"
-            android:textAllCaps="false"
-            android:textColor="#ffffff"/>
+            android:textColor="#fff"
+            android:textAllCaps="false"/>
 
         <Button
             android:layout_margin="5dp"
@@ -107,8 +107,8 @@
             android:background="@drawable/category_touch_feedback"
             android:text="@string/popup_edit_btn_delete"
             android:textSize="20sp"
-            android:textAllCaps="false"
-            android:textColor="#ffffff"/>
+            android:textColor="#fff"
+            android:textAllCaps="false"/>
 
         <Button
             android:layout_margin="5dp"
@@ -118,8 +118,8 @@
             android:background="@drawable/category_touch_feedback"
             android:text="@string/popup_edit_btn_share"
             android:textSize="20sp"
-            android:textAllCaps="false"
-            android:textColor="#ffffff"/>
+            android:textColor="#fff"
+            android:textAllCaps="false"/>
 
         <Button
             android:layout_margin="5dp"
@@ -129,15 +129,15 @@
             android:background="@drawable/bookmark_touch_feedback"
             android:text="@string/popup_add_item_ok"
             android:textSize="20sp"
-            android:textAllCaps="false"
-            android:textColor="#ffffff"/>
+            android:textColor="#fff"
+            android:textAllCaps="false"/>
     </LinearLayout>
 
     <!-- addItem fragment view -->
     <LinearLayout
         android:id="@+id/popup_fragment_linear"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical">
 
         <FrameLayout

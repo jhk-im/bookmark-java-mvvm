@@ -1,5 +1,6 @@
 package com.jroomstudio.smartbookmarkeditor.itemtouch;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -24,6 +25,16 @@ public class ItemTouchEditActivity extends AppCompatActivity implements ItemTouc
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // dark 모드 상태 가져오기
+        SharedPreferences spActStatus = getSharedPreferences("act_status", MODE_PRIVATE);
+        SharedPreferences.Editor editor = spActStatus.edit();
+        editor.apply();
+        // 다크모드이면 다크모드로 테마변경
+        if(spActStatus.getBoolean("dark_mode",false)){
+            setTheme(R.style.DarkAppTheme);
+        }
+
         setContentView(R.layout.item_touch_edit_act);
 
         // 툴바 셋팅
