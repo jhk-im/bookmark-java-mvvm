@@ -1,4 +1,4 @@
-package com.jroomstudio.smartbookmarkeditor.main.adapter;
+package com.jroomstudio.smartbookmarkeditor.main.home;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,10 +13,9 @@ import com.jroomstudio.smartbookmarkeditor.R;
 import com.jroomstudio.smartbookmarkeditor.data.bookmark.Bookmark;
 import com.jroomstudio.smartbookmarkeditor.data.bookmark.source.BookmarksRepository;
 import com.jroomstudio.smartbookmarkeditor.databinding.MainBookmarkItemBinding;
-import com.jroomstudio.smartbookmarkeditor.main.BookmarkItemNavigator;
-import com.jroomstudio.smartbookmarkeditor.main.BookmarkItemViewModel;
 import com.jroomstudio.smartbookmarkeditor.main.MainActivity;
-import com.jroomstudio.smartbookmarkeditor.main.MainViewModel;
+import com.jroomstudio.smartbookmarkeditor.main.home.item.BookmarkItemNavigator;
+import com.jroomstudio.smartbookmarkeditor.main.home.item.BookmarkItemViewModel;
 
 import java.util.List;
 
@@ -32,7 +31,7 @@ public class BookmarkRecyclerAdapter
     private BookmarksRepository mBookmarksRepository;
 
     // 메인프래그먼트 뷰모델
-    private MainViewModel mMainViewModel;
+    private MainHomeViewModel mMainHomeViewModel;
 
     // 북마크 아이템 데이터 바인딩
     private MainBookmarkItemBinding mBookmarkItemBinding;
@@ -45,10 +44,10 @@ public class BookmarkRecyclerAdapter
      **/
     public BookmarkRecyclerAdapter(List<Bookmark> bookmarks,
                                    BookmarksRepository bookmarksRepository,
-                                   MainViewModel mainViewModel, MainActivity itemNavigator){
+                                   MainHomeViewModel mainHomeViewModel, MainActivity itemNavigator){
         setBookmarks(bookmarks);
         mBookmarksRepository = bookmarksRepository;
-        mMainViewModel = mainViewModel;
+        mMainHomeViewModel = mainHomeViewModel;
         mItemNavigator = itemNavigator;
     }
 
@@ -125,7 +124,7 @@ public class BookmarkRecyclerAdapter
 
             // 롱클릭시 북마크 아이템 편집 팝업띄우기
             itemView.setOnLongClickListener(v -> {
-                mMainViewModel.editLongClickBookmark(bookmark);
+                mMainHomeViewModel.editLongClickBookmark(bookmark);
                 return false;
             });
 

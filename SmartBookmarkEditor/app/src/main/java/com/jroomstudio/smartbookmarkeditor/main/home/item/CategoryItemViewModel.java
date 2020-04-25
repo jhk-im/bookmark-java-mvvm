@@ -1,4 +1,4 @@
-package com.jroomstudio.smartbookmarkeditor.main;
+package com.jroomstudio.smartbookmarkeditor.main.home.item;
 
 import android.content.Context;
 
@@ -7,11 +7,12 @@ import androidx.annotation.Nullable;
 import com.jroomstudio.smartbookmarkeditor.CategoryViewModel;
 import com.jroomstudio.smartbookmarkeditor.data.category.Category;
 import com.jroomstudio.smartbookmarkeditor.data.category.source.CategoriesRepository;
+import com.jroomstudio.smartbookmarkeditor.main.home.MainHomeFragment;
 
 import java.lang.ref.WeakReference;
 
 /**
- * ({@link MainFragment})의 카테고리 리사이클러뷰에서 각각의 카테고리의 리스너 역할
+ * ({@link MainHomeFragment})의 카테고리 리사이클러뷰에서 각각의 카테고리의 리스너 역할
  **/
 public class CategoryItemViewModel extends CategoryViewModel {
 

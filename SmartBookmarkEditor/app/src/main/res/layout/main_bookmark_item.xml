@@ -8,14 +8,16 @@
         <import type="android.view.View" />
         <variable
             name="viewmodel"
-            type="com.jroomstudio.smartbookmarkeditor.main.BookmarkItemViewModel" />
+            type="com.jroomstudio.smartbookmarkeditor.main.home.item.BookmarkItemViewModel" />
     </data>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/cl_bookmark"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="3dp"
+            android:layout_marginTop="3dp"
+            android:layout_marginStart="3dp"
+            android:layout_marginEnd="3dp"
             android:background="@drawable/bookmark_touch_feedback"
             android:clickable="true"
             android:focusable="true"

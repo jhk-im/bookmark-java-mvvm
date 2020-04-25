@@ -1,4 +1,4 @@
-package com.jroomstudio.smartbookmarkeditor.main;
+package com.jroomstudio.smartbookmarkeditor.main.home;
 
 import android.content.Context;
 
@@ -14,6 +14,7 @@ import com.jroomstudio.smartbookmarkeditor.data.bookmark.source.BookmarksReposit
 import com.jroomstudio.smartbookmarkeditor.data.category.Category;
 import com.jroomstudio.smartbookmarkeditor.data.category.source.CategoriesDataSource;
 import com.jroomstudio.smartbookmarkeditor.data.category.source.CategoriesRepository;
+import com.jroomstudio.smartbookmarkeditor.main.MainHomeNavigator;
 
 import java.util.Collections;
 import java.util.List;
@@ -25,7 +26,7 @@ import java.util.Objects;
  * {@link BaseObservable}
  * - 속성이 변경될 때 알림을 받는 리스너 등록 메커니즘을 구현
  **/
-public class MainViewModel extends BaseObservable {
+public class MainHomeViewModel extends BaseObservable {
 
     /**
      * Observable
@@ -59,16 +60,16 @@ public class MainViewModel extends BaseObservable {
     private CategoriesRepository mCategoriesRepository;
 
     // 액티비티 아이템 네비게이터
-    private MainNavigator mNavigator;
+    private MainHomeNavigator mNavigator;
 
     // 네비게이터 셋팅
-    void setNavigator(MainNavigator navigator) { mNavigator = navigator; }
+    public void setNavigator(MainHomeNavigator navigator) { mNavigator = navigator; }
 
     /**
      * mNavigator -> ItemNavigator 메소드
      **/
     // 네비게이터 null 셋팅
-    void onActivityDestroyed() {
+    public void onActivityDestroyed() {
         // Clear references to avoid potential memory leaks.
         mNavigator = null;
     }
@@ -111,8 +112,8 @@ public class MainViewModel extends BaseObservable {
      * @param categoriesRepository - 카테고리 로컬, 원격 데이터 액세스
      * @param context - 응용프로그램 context 를 강제로 사용함
      **/
-    public MainViewModel(BookmarksRepository bookmarksRepository,
-                         CategoriesRepository categoriesRepository, Context context){
+    public MainHomeViewModel(BookmarksRepository bookmarksRepository,
+                             CategoriesRepository categoriesRepository, Context context){
         mBookmarksRepository = bookmarksRepository;
         mCategoriesRepository = categoriesRepository;
         mContext = context.getApplicationContext();
@@ -124,7 +125,7 @@ public class MainViewModel extends BaseObservable {
     }
 
     // 아이템 클릭시 실행
-    void changeSelectCategory(Category category){
+    public void changeSelectCategory(Category category){
         // 현재 카테고리 isSelected false 로 변경
         mCategoriesRepository.
                 selectedCategory(Objects.requireNonNull(currentCategory.get()),false);

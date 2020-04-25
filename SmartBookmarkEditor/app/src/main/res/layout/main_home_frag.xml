@@ -8,10 +8,10 @@
         <import type="android.view.View"/>
         <variable
             name="view"
-            type="com.jroomstudio.smartbookmarkeditor.main.MainFragment" />
+            type="com.jroomstudio.smartbookmarkeditor.main.home.MainHomeFragment" />
         <variable
             name="viewmodel"
-            type="com.jroomstudio.smartbookmarkeditor.main.MainViewModel" />
+            type="com.jroomstudio.smartbookmarkeditor.main.home.MainHomeViewModel" />
     </data>
 
     <LinearLayout

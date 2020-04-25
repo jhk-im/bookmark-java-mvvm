@@ -73,7 +73,7 @@
 
         <include
             android:id="@+id/drawer_include_layout"
-            layout="@layout/main_navigation_view_container"/>
+            layout="@layout/main_nav_view_container"/>
 
     </com.google.android.material.navigation.NavigationView>
 

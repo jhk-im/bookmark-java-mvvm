@@ -8,11 +8,13 @@
         <import type="android.view.View" />
         <variable
             name="viewmodel"
-            type="com.jroomstudio.smartbookmarkeditor.main.CategoryItemViewModel" />
+            type="com.jroomstudio.smartbookmarkeditor.main.home.item.CategoryItemViewModel" />
     </data>
 
     <FrameLayout
-        android:layout_margin="1dp"
+        android:layout_marginTop="2dp"
+        android:layout_marginStart="2dp"
+        android:layout_marginEnd="2dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 

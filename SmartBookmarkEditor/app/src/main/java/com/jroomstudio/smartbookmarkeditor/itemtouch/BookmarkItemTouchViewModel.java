@@ -6,13 +6,13 @@ import androidx.annotation.Nullable;
 
 import com.jroomstudio.smartbookmarkeditor.BookmarkViewModel;
 import com.jroomstudio.smartbookmarkeditor.data.bookmark.source.BookmarksRepository;
-import com.jroomstudio.smartbookmarkeditor.main.BookmarkItemNavigator;
-import com.jroomstudio.smartbookmarkeditor.main.MainFragment;
+import com.jroomstudio.smartbookmarkeditor.main.home.item.BookmarkItemNavigator;
+import com.jroomstudio.smartbookmarkeditor.main.home.MainHomeFragment;
 
 import java.lang.ref.WeakReference;
 
 /**
- * ({@link MainFragment})의 북마크 리사이클러뷰에서 각각의 북마크의 리스너 역할
+ * ({@link MainHomeFragment})의 북마크 리사이클러뷰에서 각각의 북마크의 리스너 역할
  **/
 public class BookmarkItemTouchViewModel extends BookmarkViewModel {
 

@@ -1,4 +1,4 @@
-package com.jroomstudio.smartbookmarkeditor.main.adapter;
+package com.jroomstudio.smartbookmarkeditor.main.home;
 
 import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
@@ -13,10 +13,9 @@ import com.jroomstudio.smartbookmarkeditor.R;
 import com.jroomstudio.smartbookmarkeditor.data.category.Category;
 import com.jroomstudio.smartbookmarkeditor.data.category.source.CategoriesRepository;
 import com.jroomstudio.smartbookmarkeditor.databinding.MainCategoryItemBinding;
-import com.jroomstudio.smartbookmarkeditor.main.CategoryItemNavigator;
-import com.jroomstudio.smartbookmarkeditor.main.CategoryItemViewModel;
 import com.jroomstudio.smartbookmarkeditor.main.MainActivity;
-import com.jroomstudio.smartbookmarkeditor.main.MainViewModel;
+import com.jroomstudio.smartbookmarkeditor.main.home.item.CategoryItemNavigator;
+import com.jroomstudio.smartbookmarkeditor.main.home.item.CategoryItemViewModel;
 
 import java.util.List;
 
@@ -33,7 +32,7 @@ public class CategoriesRecyclerAdapter
     private CategoriesRepository mCategoriesRepository;
 
     // 메인프래그먼트 뷰모델
-    private MainViewModel mMainViewModel;
+    private MainHomeViewModel mMainHomeViewModel;
 
     // 카테고리 아이템 데이터 바인딩
     private MainCategoryItemBinding mCategoryItemBinding;
@@ -46,10 +45,10 @@ public class CategoriesRecyclerAdapter
      **/
     public CategoriesRecyclerAdapter(List<Category> categories,
                                      CategoriesRepository categoriesRepository,
-                                     MainViewModel mainViewModel, MainActivity itemNavigator){
+                                     MainHomeViewModel mainHomeViewModel, MainActivity itemNavigator){
         setCategories(categories);
         mCategoriesRepository = categoriesRepository;
-        mMainViewModel = mainViewModel;
+        mMainHomeViewModel = mainHomeViewModel;
         mItemNavigator = itemNavigator;
     }
 
@@ -114,7 +113,7 @@ public class CategoriesRecyclerAdapter
             // 롱클릭 이벤트 -> 롱클릭으로 선택된 카테고리 편집 팝업 띄우기
             btnCategory.setOnLongClickListener(v -> {
                 mCategoryItemViewModel.categoryClicked();
-                mMainViewModel.editLongClickCategory(category);
+                mMainHomeViewModel.editLongClickCategory(category);
                 return false;
             });
 

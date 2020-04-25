@@ -1,4 +1,4 @@
-package com.jroomstudio.smartbookmarkeditor.main;
+package com.jroomstudio.smartbookmarkeditor.main.home;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -18,10 +18,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.jroomstudio.smartbookmarkeditor.Injection;
 import com.jroomstudio.smartbookmarkeditor.R;
-import com.jroomstudio.smartbookmarkeditor.databinding.MainFragBinding;
+import com.jroomstudio.smartbookmarkeditor.databinding.MainHomeFragBinding;
 import com.jroomstudio.smartbookmarkeditor.itemtouch.ItemTouchEditActivity;
-import com.jroomstudio.smartbookmarkeditor.main.adapter.BookmarkRecyclerAdapter;
-import com.jroomstudio.smartbookmarkeditor.main.adapter.CategoriesRecyclerAdapter;
+import com.jroomstudio.smartbookmarkeditor.main.MainActivity;
 
 import java.util.ArrayList;
 
@@ -29,28 +28,31 @@ import java.util.ArrayList;
 /**
  * 카테고리 / 북마크 리스트를 표시하는 프래그먼트
  **/
-public class MainFragment extends Fragment {
+public class MainHomeFragment extends Fragment {
+
+    //fab 버튼 -> item touch activity 이동
+    private FloatingActionButton fab;
 
     // 뷰모델
-    private MainViewModel mMainViewModel;
+    private MainHomeViewModel mMainHomeViewModel;
 
     /**
      * 프래그먼트 레이아웃 내부에 데이터 바인딩을 구현
      * 자동으로 생성되는 데이터바인딩 객체
      * -> 해당 객채를 활용하면 find.viewById 없이 뷰 아이템에 접근 가능하다.
      * */
-    private MainFragBinding mMainFragBinding;
+    private MainHomeFragBinding mMainFragBinding;
 
     // 다이렉트 인스턴스 생성 방지
-    public MainFragment() {}
+    public MainHomeFragment() {}
 
     // 프래그먼트 인스턴스 생성
-    public static MainFragment newInstance() { return new MainFragment(); }
+    public static MainHomeFragment newInstance() { return new MainHomeFragment(); }
 
     @Override
     public void onResume() {
         super.onResume();
-        mMainViewModel.start();
+        mMainHomeViewModel.start();
     }
 
     // 데이터바인딩 -> 뷰 표시
@@ -58,11 +60,11 @@ public class MainFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         // 현재 프래그먼트의 xml 정보를 액티비티의 viewGroup 에 추가한다.
-        mMainFragBinding = MainFragBinding.inflate(inflater,container,false);
+        mMainFragBinding = MainHomeFragBinding.inflate(inflater,container,false);
         // 레이아웃의 데이터바인딩 view 를 현재 프래그먼트로 설정
         mMainFragBinding.setView(this);
         // 레이아웃의 데이터바인딩 viewModel 을 현재 프래그먼트의 뷰모델로 지정
-        mMainFragBinding.setViewmodel(mMainViewModel);
+        mMainFragBinding.setViewmodel(mMainHomeViewModel);
         // 프래그먼트에서 지정한 옵션메뉴를 보여준다. (액티비티보다 프래그먼트의 메뉴가 우선)
         setHasOptionsMenu(true);
 
@@ -82,6 +84,17 @@ public class MainFragment extends Fragment {
 
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        fab.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        fab.setVisibility(View.GONE);
+    }
 
     // 옵션메뉴
     @Override
@@ -93,7 +106,7 @@ public class MainFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.menu_add) {// 아이템 추가버튼 클릭
-            mMainViewModel.addNewItem();
+            mMainHomeViewModel.addNewItem();
         }
         return true;
     }
@@ -102,13 +115,12 @@ public class MainFragment extends Fragment {
      * 메인 액티비티에서 호출
      * 프래그먼트와 뷰모델을 매치시킨다.
      * */
-    void setMainViewModel(MainViewModel viewModel) { mMainViewModel = viewModel; }
+    public void setMainViewModel(MainHomeViewModel viewModel) { mMainHomeViewModel = viewModel; }
 
     // Floating Action Button 셋팅
     @SuppressLint("ResourceAsColor")
     private void setupFab() {
-        FloatingActionButton fab =
-                (FloatingActionButton) getActivity().findViewById(R.id.fab_setting_items);
+        fab = (FloatingActionButton) getActivity().findViewById(R.id.fab_setting_items);
 
         fab.setOnClickListener(v -> {
             Intent intent =
@@ -126,7 +138,7 @@ public class MainFragment extends Fragment {
         BookmarkRecyclerAdapter mBookmarkRecyclerAdapter = new BookmarkRecyclerAdapter(
                 new ArrayList<>(0),
                 Injection.provideBookmarksRepository(getContext().getApplicationContext()),
-                mMainViewModel,
+                mMainHomeViewModel,
                 (MainActivity) getActivity()
         );
 
@@ -151,7 +163,7 @@ public class MainFragment extends Fragment {
         CategoriesRecyclerAdapter mCategoriesRecyclerAdapter = new CategoriesRecyclerAdapter(
                 new ArrayList<>(0),
                 Injection.provideCategoriesRepository(getContext().getApplicationContext()),
-                mMainViewModel,
+                mMainHomeViewModel,
                 (MainActivity) getActivity()
         );
         // 깜빡임 방지

@@ -1,12 +1,10 @@
-package com.jroomstudio.smartbookmarkeditor.main;
+package com.jroomstudio.smartbookmarkeditor.main.home;
 
 import androidx.databinding.BindingAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.jroomstudio.smartbookmarkeditor.data.bookmark.Bookmark;
 import com.jroomstudio.smartbookmarkeditor.data.category.Category;
-import com.jroomstudio.smartbookmarkeditor.main.adapter.BookmarkRecyclerAdapter;
-import com.jroomstudio.smartbookmarkeditor.main.adapter.CategoriesRecyclerAdapter;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.jroomstudio.smartbookmarkeditor.main;
+package com.jroomstudio.smartbookmarkeditor.main.home.item;
 
 import com.jroomstudio.smartbookmarkeditor.data.bookmark.Bookmark;
 
