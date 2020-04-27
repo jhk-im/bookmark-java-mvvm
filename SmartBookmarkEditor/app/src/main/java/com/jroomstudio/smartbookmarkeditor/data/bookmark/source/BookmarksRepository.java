@@ -371,4 +371,26 @@ public class BookmarksRepository implements BookmarksDataSource {
         checkNotNull(position);
         updatePosition(getBookmarkWithId(id),position);
     }
+
+    @Override
+    public void getBookmark(boolean temp, @NonNull String url, @NonNull GetBookmarkCallback callback) {
+        checkNotNull(url);
+        checkNotNull(callback);
+
+        // 로컬에서 Bookmark 객체를 가져온다.
+        // temp 는 오버로딩 메소드 구분자
+        mLocalDataSource.getBookmark(true,url, new GetBookmarkCallback() {
+            @Override
+            public void onBookmarkLoaded(Bookmark bookmark) {
+                callback.onBookmarkLoaded(bookmark);
+            }
+
+            // 데이터가 없을 때
+            @Override
+            public void onDataNotAvailable() {
+                callback.onDataNotAvailable();
+            }
+        });
+
+    }
 }

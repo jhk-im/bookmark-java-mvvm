@@ -183,4 +183,23 @@ public class BookmarksLocalDataSource implements BookmarksDataSource {
     public void updatePosition(@NonNull String id, int position) {
         // {@link BookmarksRepository} 에서 처리하므로 이곳에서는 필요하지 않다.
     }
+
+    // url 로 bookmark 객체 가져오기
+    @Override
+    public void getBookmark(boolean temp, @NonNull String url, @NonNull GetBookmarkCallback callback) {
+        Runnable runnable = () -> {
+            final Bookmark bookmark = mBookmarksDAO.getBookmarkByUrl(url);
+            mAppExecutors.getMainThread().execute(() -> {
+                if(bookmark != null){
+                    // id 에 해당하는 아이템이 있는경우
+                    callback.onBookmarkLoaded(bookmark);
+                } else{
+                    // 아이템이 없다면
+                    callback.onDataNotAvailable();
+                }
+            });
+        };
+        mAppExecutors.getDiskIO().execute(runnable);
+    }
+
 }

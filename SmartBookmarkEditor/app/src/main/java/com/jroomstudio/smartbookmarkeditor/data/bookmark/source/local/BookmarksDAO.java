@@ -31,6 +31,14 @@ public interface BookmarksDAO {
     List<Bookmark> getAllBookmarks(String category);
 
     /**
+     * url 로 찾은 bookmark 아이템을 가져온다.
+     * @param url - bookmark url
+     * @return url 과 일치하는 bookmark 아이템
+     **/
+    @Query("SELECT * FROM bookmarks WHERE url = :url")
+    Bookmark getBookmarkByUrl(String url);
+
+    /**
      * id로 찾은 bookmark 아이템을 가져온다.
      * @param id - bookmark 프라이머리키
      * @return id 와 일치하는 bookmark 아이템

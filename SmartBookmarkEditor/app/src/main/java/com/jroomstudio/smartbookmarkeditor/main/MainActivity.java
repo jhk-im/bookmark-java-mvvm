@@ -420,7 +420,9 @@ public class MainActivity extends AppCompatActivity
         // 웹뷰로 이동하여 웹페이지 보여주는 것 구현하기
         // Log.e("selectedBookmark",bookmark.toString());
         Intent intent = new Intent(this, WebViewActivity.class);
+        intent.putExtra("bookmarkId",bookmark.getId());
         intent.putExtra("bookmarkUrl",bookmark.getUrl());
+        intent.putExtra("bookmarkCategory",bookmark.getCategory());
         startActivity(intent);
     }
 

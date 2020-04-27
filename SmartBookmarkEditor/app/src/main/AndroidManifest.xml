@@ -11,10 +11,10 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:usesCleartextTraffic="true"
         android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="true"
         tools:targetApi="m">
-
+        <!-- 메인 액티비티 -->
         <activity
             android:name=".main.MainActivity"
             android:theme="@style/Base.AppTheme">
@@ -25,28 +25,32 @@
             </intent-filter>
         </activity>
 
+        <!-- 아이템 터치 순서변경 액티비티 -->
         <activity
             android:name=".itemtouch.ItemTouchEditActivity"
             android:theme="@style/Base.AppTheme">
 
         </activity>
 
-        <activity android:name=".webview.WebViewActivity"
+        <!-- 웹뷰 액티비티 -->
+        <activity
+            android:name=".webview.WebViewActivity"
             android:theme="@style/Base.AppTheme"
             android:windowSoftInputMode="stateHidden">
-
-            <intent-filter>
-                <action android:name="android.intent.action.SEARCH" />
-            </intent-filter>
+        </activity>
+        <!-- 북마크 추가 팝업 -->
+        <activity
+            android:name=".webview.WebAddBookmarkPopupActivity"
+            android:theme="@style/AppTheme.Popup">
 
         </activity>
 
+        <!-- 아이템 추가 편집 팝업 -->
         <activity
             android:name=".popup.EditAddItemPopupActivity"
-            android:theme="@style/AppTheme.Popup" >
+            android:theme="@style/AppTheme.Popup">
 
         </activity>
-
     </application>
 
 </manifest>

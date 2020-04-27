@@ -577,6 +577,8 @@ public class EditAddItemPopupViewModel extends BaseObservable {
         return false;
     }
 
+
+
     /**
      * categoryOverlapCheck()
      * - 카테고리의 중복을 체크한다.
@@ -594,6 +596,8 @@ public class EditAddItemPopupViewModel extends BaseObservable {
         }
         return false;
     }
+
+
 
     /**
      * 북마크생성

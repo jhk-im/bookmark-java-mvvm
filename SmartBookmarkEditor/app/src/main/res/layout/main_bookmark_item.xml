@@ -43,6 +43,7 @@
                 android:textSize="20sp"
                 android:text="@{viewmodel.title}"
                 android:textColor="#ffffff"
+                android:maxLines="1"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/iv_url_image"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -56,6 +57,7 @@
                 android:textSize="10sp"
                 android:text="@{viewmodel.url}"
                 android:textColor="#ffffff"
+                android:maxLines="1"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="@+id/tv_bookmark_title"
                 app:layout_constraintStart_toStartOf="@+id/tv_bookmark_title"

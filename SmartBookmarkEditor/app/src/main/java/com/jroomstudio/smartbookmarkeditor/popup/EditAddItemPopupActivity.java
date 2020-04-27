@@ -78,7 +78,6 @@ public class EditAddItemPopupActivity extends AppCompatActivity implements EditA
         if(spActStatus.getBoolean("dark_mode",false)){
             setTheme(R.style.DarkAppPopup);
         }
-
         // 상태바 제거하고 전체화면 모드로
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);

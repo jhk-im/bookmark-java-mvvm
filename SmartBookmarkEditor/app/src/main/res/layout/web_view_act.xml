@@ -39,17 +39,9 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?android:attr/actionBarSize"
+            app:title="loading..."
             android:theme="@style/Toolbar"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
-
-            <TextView
-                android:id="@+id/tv_url_title"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_margin="8dp"
-                android:gravity="center"
-                android:textSize="20sp"
-                android:textStyle="bold"/>
 
         </androidx.appcompat.widget.Toolbar>
 
@@ -63,6 +55,7 @@
 
         <!-- 중첩된 스크롤 뷰 -->
         <androidx.core.widget.NestedScrollView
+            android:id="@+id/nested_scroll"
             android:layout_weight="0"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

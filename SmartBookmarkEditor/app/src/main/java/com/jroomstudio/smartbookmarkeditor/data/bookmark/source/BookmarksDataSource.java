@@ -68,4 +68,7 @@ public interface BookmarksDataSource {
     // 입력된 id 로 Bookmark 객체를찾아 position 값을 입력된 position 값으로 변경
     void updatePosition(@NonNull String id, int position);
 
+    // 입력된 url 로 bookmark 를 찾는다.
+    void getBookmark(boolean temp,@NonNull String url, @NonNull GetBookmarkCallback callback);
+
 }
