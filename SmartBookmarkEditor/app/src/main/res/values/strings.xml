@@ -26,4 +26,13 @@
     <string name="popup_edit_btn_share">공유</string>
     <string name="edit_delete_questions">아이템을 삭제하시겠습니까?</string>
     <string name="user_title">사용자 정보</string>
+
+
+    <string name="appbar_scrolling_view_behavior" translatable="false">
+        com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior
+    </string>
+    <string name="men_refresh">새로고침</string>
+    <string name="menu_search">검색</string>
+    <string name="menu_close">종료</string>
+
 </resources>

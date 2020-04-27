@@ -17,7 +17,7 @@
 
         <activity
             android:name=".main.MainActivity"
-            android:theme="@style/AppTheme.OverlapSystemBar">
+            android:theme="@style/Base.AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -27,12 +27,17 @@
 
         <activity
             android:name=".itemtouch.ItemTouchEditActivity"
-            android:theme="@style/AppTheme.OverlapSystemBar">
+            android:theme="@style/Base.AppTheme">
 
         </activity>
 
         <activity android:name=".webview.WebViewActivity"
-            android:theme="@style/AppTheme.OverlapSystemBar">
+            android:theme="@style/Base.AppTheme"
+            android:windowSoftInputMode="stateHidden">
+
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
 
         </activity>
 

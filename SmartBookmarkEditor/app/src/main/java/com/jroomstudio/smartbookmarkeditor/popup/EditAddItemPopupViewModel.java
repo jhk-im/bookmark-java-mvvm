@@ -1,8 +1,6 @@
 package com.jroomstudio.smartbookmarkeditor.popup;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
-import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -21,11 +19,6 @@ import com.jroomstudio.smartbookmarkeditor.data.category.Category;
 import com.jroomstudio.smartbookmarkeditor.data.category.source.CategoriesDataSource;
 import com.jroomstudio.smartbookmarkeditor.data.category.source.CategoriesRepository;
 
-import org.jsoup.Connection;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -648,48 +641,6 @@ public class EditAddItemPopupViewModel extends BaseObservable {
             mBookmarksRepository.saveBookmark(updateBookmark);
         }
 
-    }
-
-
-    /**
-     * Jsoup 을 활용해 url 유효성을 확인하는 AsyncTask 객체
-     **/
-    @SuppressLint("StaticFieldLeak")
-    private class HtmlParser extends AsyncTask<Void,Void,Void> {
-        String baseUri = "";
-        boolean urlCheck = false;
-        @Override
-        protected Void doInBackground(Void... voids) {
-            // url 을 입력받아 파싱을 진행한다.
-            // 1. url 의 유효성을 확인한다.
-
-            try {
-                // timeout 체크
-                Connection.Response response = Jsoup.connect(bookmarkUrl.get())
-                        .timeout(2000)
-                        .execute();
-                // Log.e("latency",response.statusMessage());
-                int statusCode = response.statusCode();
-                // 제한시간 안에 응답이 오면
-                if(statusCode == 200){
-                    Document doc = Jsoup.connect(bookmarkUrl.get())
-                            .get();
-                    baseUri = doc.baseUri();
-                    urlCheck = true;
-                }
-
-            } catch (IOException e) {
-                urlCheck = false;
-                isCancelled();
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-        }
     }
 
 }

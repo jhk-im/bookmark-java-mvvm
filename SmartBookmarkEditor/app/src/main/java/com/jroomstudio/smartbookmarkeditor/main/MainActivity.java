@@ -203,8 +203,6 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-
-
     /**
      * 툴바 , 옵션메뉴 셋팅
      **/
