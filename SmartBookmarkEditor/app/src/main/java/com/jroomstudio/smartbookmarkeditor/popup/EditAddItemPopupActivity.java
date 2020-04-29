@@ -1,5 +1,6 @@
 package com.jroomstudio.smartbookmarkeditor.popup;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -8,7 +9,6 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -297,8 +297,13 @@ public class EditAddItemPopupActivity extends AppCompatActivity implements EditA
         // 공유버튼
         Button mShareBtn = (Button) findViewById(R.id.btn_share);
         mShareBtn.setOnClickListener(v -> {
-            Toast.makeText(this,
-                    "공유", Toast.LENGTH_SHORT).show();
+            Intent sendIntent = new Intent();
+            sendIntent.setAction(Intent.ACTION_SEND);
+            sendIntent.putExtra(Intent.EXTRA_TEXT, getIntent().getStringExtra(URL));
+            sendIntent.setType("text/plain");
+
+            Intent shareIntent = Intent.createChooser(sendIntent, null);
+            startActivity(shareIntent);
         });
 
         // 확인버튼

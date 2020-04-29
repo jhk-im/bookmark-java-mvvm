@@ -436,7 +436,7 @@ public class EditAddItemPopupViewModel extends BaseObservable {
         // 1. 입력한 url 의 형식을 검사한다.
         String regex = "^((http|https)://){1}([a-zA-Z0-9]+[.]{1})?([a-zA-Z0-9]+){1}[.]{1}[a-z]+([/]{1}[a-zA-Z0-9]*)*";
         boolean match = Objects.requireNonNull(url).matches(regex);
-        Log.e("regex1", match+"");
+        //Log.e("regex1", match+"");
 
         if(match){
             // 2. 검사를 통과한 url 주소를 http , 도메인, 경로를 각각 추출한다.
@@ -446,7 +446,7 @@ public class EditAddItemPopupViewModel extends BaseObservable {
             if(mc.matches()){
                 // http 와 도메인에 favicon.ico 를 입력하여 url 완성
                 faviconUrl = mc.group(1) + "://" + mc.group(2)+ "/favicon.ico";
-                Log.e("favicon url -> ",faviconUrl);
+                //Log.e("favicon url -> ",faviconUrl);
                 saveBookmark(faviconUrl);
                 //String http = mc.group(1);
                 //String domain = mc.group(2);

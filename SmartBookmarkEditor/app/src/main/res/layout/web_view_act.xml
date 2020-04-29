@@ -30,7 +30,8 @@
                 android:layout_margin="8dp"
                 android:inputType="textUri"
                 android:textColor="?attr/custom_text"
-                android:background="@drawable/web_view_url_round"/>
+                android:background="@drawable/web_view_url_round"
+                android:selectAllOnFocus="true" />
 
         </androidx.appcompat.widget.Toolbar>
 
@@ -39,7 +40,6 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?android:attr/actionBarSize"
-            app:title="loading..."
             android:theme="@style/Toolbar"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
@@ -71,9 +71,7 @@
         <EditText
             android:layout_weight="1"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-
-            />
+            android:layout_height="match_parent" />
 
     </LinearLayout>
 

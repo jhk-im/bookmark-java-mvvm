@@ -120,4 +120,9 @@ public class FakeBookmarksRemoteDataSource implements BookmarksDataSource {
     public void updatePosition(@NonNull String id, int position) {
         // {@link BookmarksRepository} 에서 처리하므로 이곳에서는 필요하지 않다.
     }
+
+    @Override
+    public void getBookmark(boolean temp, @NonNull String url, @NonNull GetBookmarkCallback callback) {
+        //
+    }
 }

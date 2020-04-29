@@ -4,9 +4,12 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -29,7 +32,9 @@ import com.jroomstudio.smartbookmarkeditor.data.bookmark.Bookmark;
 import com.jroomstudio.smartbookmarkeditor.data.bookmark.source.BookmarksDataSource;
 import com.jroomstudio.smartbookmarkeditor.data.bookmark.source.BookmarksRepository;
 
+import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Objects;
 
 public class WebViewActivity extends AppCompatActivity {
 
@@ -55,6 +60,7 @@ public class WebViewActivity extends AppCompatActivity {
     // 현재 ID
     private String id;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,6 +84,7 @@ public class WebViewActivity extends AppCompatActivity {
         // url edit text
         urlEditText = (EditText) findViewById(R.id.et_url);
         urlEditText.setText(getIntent().getStringExtra("bookmarkUrl"));
+        setupUrlEditText();
 
         // 스크롤뷰
         mNestedScrollView = (NestedScrollView) findViewById(R.id.nested_scroll);
@@ -90,7 +97,7 @@ public class WebViewActivity extends AppCompatActivity {
         // 툴바셋팅
         setupToolbar();
 
-        // 웹뷰 셋팅
+        // 웹뷰셋팅
         setupWebView();
 
     }
@@ -98,13 +105,14 @@ public class WebViewActivity extends AppCompatActivity {
     // 웹뷰 셋팅
     @SuppressLint("SetJavaScriptEnabled")
     void setupWebView(){
+        // 웹뷰 셋팅
         // 새창 안뜨도록
         mWebView.setWebViewClient(new webClient());
         // 웹뷰 세부사항 등록
         mWebSettings = mWebView.getSettings();
         mWebSettings.setJavaScriptEnabled(true); // 웹페이지 자바스클비트 허용 여부
-        mWebSettings.setSupportMultipleWindows(false); // 새창 띄우기 허용 여부
-        mWebSettings.setJavaScriptCanOpenWindowsAutomatically(false); // 자바스크립트 새창 띄우기(멀티뷰) 허용 여부
+        mWebSettings.setSupportMultipleWindows(true); // 새창 띄우기 허용 여부
+        mWebSettings.setJavaScriptCanOpenWindowsAutomatically(true); // 자바스크립트 새창 띄우기(멀티뷰) 허용 여부
         mWebSettings.setLoadWithOverviewMode(true); // 메타태그 허용 여부
         mWebSettings.setUseWideViewPort(true); // 화면 사이즈 맞추기 허용 여부
         mWebSettings.setSupportZoom(false); // 화면 줌 허용 여부
@@ -113,8 +121,43 @@ public class WebViewActivity extends AppCompatActivity {
         mWebSettings.setCacheMode(WebSettings.LOAD_NO_CACHE); // 브라우저 캐시 허용 여부
         mWebSettings.setDomStorageEnabled(true); // 로컬저장소 허용 여부
         mWebView.loadUrl(urlEditText.getText().toString());
+        urlEditText.clearFocus();
     }
 
+    // edit text setting
+    void setupUrlEditText(){
+        // key board enter 리스너
+        urlEditText.setOnKeyListener((v, keyCode, event) -> {
+            if((event.getAction() == KeyEvent.ACTION_DOWN) && keyCode == KeyEvent.KEYCODE_ENTER){
+                setupWebView();
+            }
+            return false;
+        });
+
+        // text change 리스너
+        urlEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // 입력되는 텍스트에 변화가 있을 때
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // 입력이 끝났을 때
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                // 입력하기 전에 입력값이 비워져있으면
+                if(urlEditText.getText().toString().equals("")){
+                    // https:// 를 추가한다.
+                    urlEditText.setText(R.string.https);
+                    // 커서 뒤로이동
+                    urlEditText.setSelection(urlEditText.getText().length());
+                }
+            }
+        });
+    }
 
     // 툴바셋팅
     @SuppressLint("SetTextI18n")
@@ -130,7 +173,6 @@ public class WebViewActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         ActionBar ab = getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(true);
-
     }
 
     /**
@@ -163,20 +205,42 @@ public class WebViewActivity extends AppCompatActivity {
                 finish();
                 break;
             case R.id.web_view_menu_refresh : // refresh 버튼
-                setupWebView();
+                if(Objects.equals(mActionBar.getTitle(), "로딩중")){
+                    Toast.makeText(this, "페이지 로딩중 입니다.", Toast.LENGTH_SHORT).show();
+                }else{
+                    // 새로고침
+                    setupWebView();
+                }
                 break;
             case R.id.web_view_menu_bookmark : // 북마크 버튼
-                // 카테고리에 포함된 북마크 url 중복체크 후 저장진행
-                getBookmarksInCategoryOverlapCheck();
+                if(Objects.equals(mActionBar.getTitle(), "로딩중")){
+                    Toast.makeText(this, "페이지 로딩중 입니다.", Toast.LENGTH_SHORT).show();
+                }else{
+                    // 카테고리에 포함된 북마크 url 중복체크 후 저장진행
+                    getBookmarksInCategoryOverlapCheck();
+                }
                 break;
             case R.id.web_view_menu_share : // 공유버튼
-                Toast.makeText(this, "공유", Toast.LENGTH_SHORT).show();
+                if(Objects.equals(mActionBar.getTitle(), "로딩중")){
+                    Toast.makeText(this, "페이지 로딩중 입니다.", Toast.LENGTH_SHORT).show();
+                }else{
+                    Intent sendIntent = new Intent();
+                    sendIntent.setAction(Intent.ACTION_SEND);
+                    sendIntent.putExtra(Intent.EXTRA_TEXT, urlEditText.getText().toString());
+                    sendIntent.setType("text/plain");
+                    Intent shareIntent = Intent.createChooser(sendIntent, null);
+                    startActivity(shareIntent);
+                }
                 break;
         }
 
         return super.onOptionsItemSelected(item);
     }
-    // 북마크 url 중복체크
+
+
+    /**
+     * 현재 카테고리 내부에 추가하려는 url 이 존재하는지 체크한다.
+     **/
     void getBookmarksInCategoryOverlapCheck(){
         mBookmarksRepository.getBookmarks(category,
                 new BookmarksDataSource.LoadBookmarksCallback() {
@@ -201,8 +265,10 @@ public class WebViewActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * 북마크 생성팝업을 띄운다.
+    **/
     void addBookmarkPopup(){
-        //없는경우 팝업이동
         Intent intent = new Intent(WebViewActivity.this,
                 WebAddBookmarkPopupActivity.class);
         intent.putExtra(WebAddBookmarkPopupActivity.ADD_TITLE,mActionBar.getTitle());
@@ -214,16 +280,18 @@ public class WebViewActivity extends AppCompatActivity {
 
     /**
      * web url 접속시 load, start, finish, error 로 나뉘어 상황별로 호출됨
-     * finish에서
+     *
+     * shouldOverrideUrlLoading
+     * - 다른 앱을 열겨나 없을경우 마켓에서 찾는것을 구현
+     * - 이것이 구현되어있지 않으면 웹뷰에서 다른앱을 실행 할 때 에러를 표시하게됨
      **/
     private class webClient extends WebViewClient{
 
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-            Log.e("load",view.getUrl());
-            Log.e("load",view.getTitle());
-            Log.e("load",request.toString());
-            view.refreshDrawableState();
+            //Log.e("load",view.getUrl());
+            //Log.e("load",view.getTitle());
+            //Log.e("load",request.toString());
             return super.shouldOverrideUrlLoading(view, request);
         }
 
@@ -231,6 +299,9 @@ public class WebViewActivity extends AppCompatActivity {
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
             super.onPageStarted(view, url, favicon);
             //Log.e("start",view.getTitle());
+            // 액션바 타이틀 loading...
+            mActionBar = getSupportActionBar();
+            mActionBar.setTitle(R.string.loading);
             urlEditText.setText(view.getUrl());
             view.refreshDrawableState();
         }
@@ -243,11 +314,42 @@ public class WebViewActivity extends AppCompatActivity {
             // 페이지가 에러없이 로드되면 url 과 타이틀 업데이트
             mActionBar = getSupportActionBar();
             mActionBar.setTitle(view.getTitle());
-            view.refreshDrawableState();
             mNestedScrollView.setScrollY(0);
+            view.refreshDrawableState();
         }
 
-
+        // 다른앱을 찾아서 열때 try catch
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            if (url != null && url.startsWith("intent://")) {
+                try {
+                    Intent intent = Intent.parseUri(url, Intent.URI_INTENT_SCHEME);
+                    Intent existPackage = getPackageManager().getLaunchIntentForPackage(intent.getPackage());
+                    if (existPackage != null) {
+                        startActivity(intent);
+                    } else {
+                        Intent marketIntent = new Intent(Intent.ACTION_VIEW);
+                        marketIntent.setData(Uri.parse("market://details?id=" + intent.getPackage()));
+                        startActivity(marketIntent);
+                    }
+                    return true;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else if (url != null && url.startsWith("market://")) {
+                try {
+                    Intent intent = Intent.parseUri(url, Intent.URI_INTENT_SCHEME);
+                    if (intent != null) {
+                        startActivity(intent);
+                    }
+                    return true;
+                } catch (URISyntaxException e) {
+                    e.printStackTrace();
+                }
+            }
+            view.loadUrl(url);
+            return false;
+        }
 
     }
 
