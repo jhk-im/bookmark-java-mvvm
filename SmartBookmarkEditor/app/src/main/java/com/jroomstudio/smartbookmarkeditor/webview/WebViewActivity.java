@@ -9,10 +9,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -120,17 +121,23 @@ public class WebViewActivity extends AppCompatActivity {
         mWebSettings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN); // 컨텐츠 사이즈 맞추기
         mWebSettings.setCacheMode(WebSettings.LOAD_NO_CACHE); // 브라우저 캐시 허용 여부
         mWebSettings.setDomStorageEnabled(true); // 로컬저장소 허용 여부
+        loadURL();
+    }
+    void loadURL(){
         mWebView.loadUrl(urlEditText.getText().toString());
         urlEditText.clearFocus();
     }
 
     // edit text setting
     void setupUrlEditText(){
+        InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
         // key board enter 리스너
-        urlEditText.setOnKeyListener((v, keyCode, event) -> {
-            if((event.getAction() == KeyEvent.ACTION_DOWN) && keyCode == KeyEvent.KEYCODE_ENTER){
-                setupWebView();
-            }
+        urlEditText.setOnEditorActionListener((v, actionId, event) -> {
+           // 키보드의 확인버튼을 누르게 되면
+            if(actionId == EditorInfo.IME_ACTION_DONE){
+               loadURL();
+               imm.hideSoftInputFromWindow(urlEditText.getWindowToken(), 0);
+           }
             return false;
         });
 
@@ -209,7 +216,7 @@ public class WebViewActivity extends AppCompatActivity {
                     Toast.makeText(this, "페이지 로딩중 입니다.", Toast.LENGTH_SHORT).show();
                 }else{
                     // 새로고침
-                    setupWebView();
+                    loadURL();
                 }
                 break;
             case R.id.web_view_menu_bookmark : // 북마크 버튼
