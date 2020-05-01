@@ -15,40 +15,50 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="m">
 
-        <!-- 로그인 액티비티-->
         <activity
-            android:name=".login.TestLoginActivity"
-            android:theme="@style/Base.AppTheme">
+            android:name=".login.InformationActivity"
+            android:theme="@style/Transparent">
+            <!--개인정보처리방침 등의 안내문구 보여주는 액티비티-->
         </activity>
 
-        <!-- 메인 액티비티 -->
+        <activity
+            android:name=".login.LoginActivity"
+            android:theme="@style/Transparent">
+            <!-- 로그인 액티비티 -->
+        </activity>
         <activity
             android:name=".main.MainActivity"
             android:theme="@style/Base.AppTheme">
+            <!-- 메인 액티비티 -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <!-- 아이템 터치 순서변경 액티비티 -->
         <activity
             android:name=".itemtouch.ItemTouchEditActivity"
-            android:theme="@style/Base.AppTheme" />
-        <!-- 웹뷰 액티비티 -->
+            android:theme="@style/Base.AppTheme">
+            <!-- 아이템 터치 순서변경 액티비티 -->
+        </activity>
         <activity
             android:name=".webview.WebViewActivity"
             android:theme="@style/Base.AppTheme"
-            android:windowSoftInputMode="stateHidden" />
-        <!-- 북마크 추가 팝업 -->
+            android:windowSoftInputMode="stateHidden">
+            <!-- 웹뷰 액티비티 -->
+        </activity>
         <activity
             android:name=".webview.WebAddBookmarkPopupActivity"
-            android:theme="@style/AppTheme.Popup" />
-        <!-- 아이템 추가 편집 팝업 -->
+            android:theme="@style/AppTheme.Popup">
+
+            <!-- 북마크 추가 팝업 -->
+        </activity>
         <activity
             android:name=".popup.EditAddItemPopupActivity"
-            android:theme="@style/AppTheme.Popup" />
+            android:theme="@style/AppTheme.Popup">
+
+            <!-- 아이템 추가 편집 팝업 -->
+        </activity>
     </application>
 
 </manifest>

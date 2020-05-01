@@ -32,6 +32,7 @@
         com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior
     </string>
 
+
     <string name="men_refresh">새로고침</string>
     <string name="menu_search">검색</string>
     <string name="menu_close">종료</string>
@@ -45,5 +46,15 @@
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
+    <string name="login_text">로그인</string>
+    <string name="guest_user">Guest User</string>
+    <string name="data_save">데이터를 안전하게 보관하세요.</string>
+    <string name="google_login">구글 로그인</string>
+    <string name="facebook_login">페이스북 로그인</string>
+    <string name="naver_login">네이버 로그인</string>
+    <string name="pipp">개인정보처리방침</string>
+    <string name="tos">이용약관</string>
+    <string name="info_pipp">로그인시 위 내용에 동의한 것으로 간주됩니다.</string>
+    <string name="open_source_license">오픈소스라이선스</string>
 
 </resources>
