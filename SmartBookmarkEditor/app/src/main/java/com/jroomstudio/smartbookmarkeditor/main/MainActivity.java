@@ -2,8 +2,13 @@ package com.jroomstudio.smartbookmarkeditor.main;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.graphics.Paint;
 import android.os.Bundle;
+import android.util.Base64;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -12,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -21,13 +27,14 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.navigation.NavigationView;
 import com.jroomstudio.smartbookmarkeditor.Injection;
 import com.jroomstudio.smartbookmarkeditor.R;
 import com.jroomstudio.smartbookmarkeditor.ViewModelHolder;
 import com.jroomstudio.smartbookmarkeditor.data.bookmark.Bookmark;
 import com.jroomstudio.smartbookmarkeditor.data.category.Category;
-import com.jroomstudio.smartbookmarkeditor.login.InformationActivity;
+import com.jroomstudio.smartbookmarkeditor.information.InformationActivity;
 import com.jroomstudio.smartbookmarkeditor.login.LoginActivity;
 import com.jroomstudio.smartbookmarkeditor.main.home.MainHomeFragment;
 import com.jroomstudio.smartbookmarkeditor.main.home.MainHomeViewModel;
@@ -37,6 +44,8 @@ import com.jroomstudio.smartbookmarkeditor.popup.EditAddItemPopupActivity;
 import com.jroomstudio.smartbookmarkeditor.util.ActivityUtils;
 import com.jroomstudio.smartbookmarkeditor.webview.WebViewActivity;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,10 +54,17 @@ public class MainActivity extends AppCompatActivity
 
     // 액티비티 상태저장 Shared Preferences
     private SharedPreferences spActStatus;
+    // shared  boolean 값
+    boolean dark_mode;
+    boolean guest_user;
 
     // 메인 네비게이션 뷰
     private NavigationView mNavigationView;
     private DrawerLayout mDrawerLayout;
+
+    // Activity request
+    public static int LOGIN_COMPLETE = 1;
+
 
     // 현재 활성화된 프래그먼트
     private Fragment currentFragment;
@@ -76,10 +92,6 @@ public class MainActivity extends AppCompatActivity
     private ImageView ivUser;
     private TextView tvEmail, btnSign, btnPIPP,btnOSL;
 
-
-    // shared  boolean 값
-    boolean dark_mode;
-    boolean guest_user;
 
 
     @Override
@@ -117,7 +129,11 @@ public class MainActivity extends AppCompatActivity
         // 회원일때
         if(!guest_user){
             // 유저 이미지 셋팅
+            Glide.with(this)
+                    .load(spActStatus.getString("user_photo_url",""))
+                    .into(ivUser);
             // 유저 이메일 셋팅
+            tvEmail.setText(spActStatus.getString("user_email",""));
             // 회원정보로 이동
             btnSign.setText("회원정보");
         }
@@ -139,6 +155,8 @@ public class MainActivity extends AppCompatActivity
         fragmentManager= getSupportFragmentManager();
         // 현재 활성화된 프래그먼트 생성
         getSelectedFragment();
+
+        getHashKey();
 
     }
 
@@ -313,7 +331,6 @@ public class MainActivity extends AppCompatActivity
         });
 
     }
-
     // Navigation view 아이콘 색상 셋팅
     private void setupNavigationIconColor(){
         ImageView ivHome, ivNote, ivDarkTheme, ivNotice, ivInfo,ivUser;
@@ -362,10 +379,16 @@ public class MainActivity extends AppCompatActivity
             if(guest_user){
                 // 로그인 activity 로 이동
                 Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-                startActivity(intent);
+                startActivityForResult(intent,LOGIN_COMPLETE);
             }else{
                 // 회원일때
                 // 회원정보로 이동
+                // 임시 로그아웃
+                SharedPreferences.Editor editor = spActStatus.edit();
+                editor.putBoolean("guest_user",true);
+                editor.apply();
+                finish();
+                startActivity(new Intent(this, MainActivity.class));
             }
         });
 
@@ -393,6 +416,22 @@ public class MainActivity extends AppCompatActivity
         editor.apply();
     }
 
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode == LOGIN_COMPLETE){
+            // 유저 이미지 셋팅
+            Glide.with(this)
+                    .load(spActStatus.getString("user_photo_url",""))
+                    .into(ivUser);
+            // 유저 이메일 셋팅
+            tvEmail.setText(spActStatus.getString("user_email",""));
+            // 회원정보로 이동
+            btnSign.setText("회원정보");
+            guest_user = spActStatus.getBoolean("guest_user",true);
+        }
+    }
 
     /**
      * MainHomeNavigator 오버라이드 메소드
@@ -490,5 +529,25 @@ public class MainActivity extends AppCompatActivity
     }
 
 
+    private void getHashKey(){
+        PackageInfo packageInfo = null;
+        try {
+            packageInfo = getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_SIGNATURES);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        if (packageInfo == null)
+            Log.e("KeyHash", "KeyHash:null");
+
+        for (Signature signature : packageInfo.signatures) {
+            try {
+                MessageDigest md = MessageDigest.getInstance("SHA");
+                md.update(signature.toByteArray());
+                Log.d("KeyHash", Base64.encodeToString(md.digest(), Base64.DEFAULT));
+            } catch (NoSuchAlgorithmException e) {
+                Log.e("KeyHash", "Unable to get MessageDigest. signature=" + signature, e);
+            }
+        }
+    }
 
 }

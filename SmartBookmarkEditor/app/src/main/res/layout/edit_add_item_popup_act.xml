@@ -16,7 +16,7 @@
         android:id="@+id/popup_edit_item_linear"
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <!-- 타이틀 (유형 구분) -->
         <LinearLayout
@@ -83,6 +83,8 @@
                 android:textSize="15sp"
                 android:padding="5dp"
                 android:textColor="?attr/custom_text"
+                android:maxLines="1"
+                android:maxLength="20"
                 android:layout_gravity="end"
                 android:layout_weight="8"
                 android:layout_width="wrap_content"

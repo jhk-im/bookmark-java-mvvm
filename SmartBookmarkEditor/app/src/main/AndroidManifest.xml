@@ -16,7 +16,7 @@
         tools:targetApi="m">
 
         <activity
-            android:name=".login.InformationActivity"
+            android:name=".information.InformationActivity"
             android:theme="@style/Transparent">
             <!--개인정보처리방침 등의 안내문구 보여주는 액티비티-->
         </activity>
@@ -26,6 +26,13 @@
             android:theme="@style/Transparent">
             <!-- 로그인 액티비티 -->
         </activity>
+
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_app_id">
+            <!-- 페이스북 메타데이터 -->
+        </meta-data>
+
         <activity
             android:name=".main.MainActivity"
             android:theme="@style/Base.AppTheme">
@@ -59,6 +66,7 @@
 
             <!-- 아이템 추가 편집 팝업 -->
         </activity>
+
     </application>
 
 </manifest>

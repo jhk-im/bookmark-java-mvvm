@@ -57,4 +57,8 @@
     <string name="info_pipp">로그인시 위 내용에 동의한 것으로 간주됩니다.</string>
     <string name="open_source_license">오픈소스라이선스</string>
 
+    <!--facebook-->
+    <string name="facebook_app_id">266660541180254</string>
+    <string name="fb_login_protocol_scheme">fb266660541180254</string>
+
 </resources>
