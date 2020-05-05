@@ -131,7 +131,7 @@
 
             <!-- 네이버로그인 -->
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/btn_naver_login"
+                android:id="@+id/btn_guest"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
@@ -141,23 +141,13 @@
                 android:focusable="true"
                 android:background="@drawable/login_button_box">
 
-                <ImageView
-                    android:id="@+id/iv_naver"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
-                    android:layout_marginEnd="5dp"
-                    android:src="@drawable/logo_naver"
-                    app:layout_constraintBottom_toBottomOf="@+id/tv_naver"
-                    app:layout_constraintEnd_toStartOf="@+id/tv_naver"
-                    app:layout_constraintTop_toTopOf="@+id/tv_naver" />
-
                 <TextView
                     android:id="@+id/tv_naver"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:layout_marginBottom="10dp"
-                    android:text="@string/naver_login"
+                    android:text="@string/guest_user"
                     android:textColor="#fff"
                     android:textSize="15sp"
                     app:layout_constraintBottom_toBottomOf="parent"

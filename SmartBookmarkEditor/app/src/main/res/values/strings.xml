@@ -48,7 +48,7 @@
     <string name="login_failed">"Login failed"</string>
     <string name="login_text">로그인</string>
     <string name="guest_user">Guest User</string>
-    <string name="data_save">데이터를 안전하게 보관하세요.</string>
+    <string name="data_save">로그인 후 데이터를 안전하게 보관하세요.</string>
     <string name="google_login">구글 로그인</string>
     <string name="facebook_login">페이스북 로그인</string>
     <string name="naver_login">네이버 로그인</string>
@@ -60,5 +60,6 @@
     <!--facebook-->
     <string name="facebook_app_id">266660541180254</string>
     <string name="fb_login_protocol_scheme">fb266660541180254</string>
+    <string name="menu_notice">알림</string>
 
 </resources>

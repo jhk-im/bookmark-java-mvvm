@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "168524448189",
+    "firebase_url": "https://smart-bookmark-e-1588224842530.firebaseio.com",
+    "project_id": "smart-bookmark-e-1588224842530",
+    "storage_bucket": "smart-bookmark-e-1588224842530.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:168524448189:android:b5d066248370b403ded2d4",
+        "android_client_info": {
+          "package_name": "com.jroomstudio.smartbookmarkeditor"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "168524448189-5pivojifptkj3tlkflot8o942ph0q3q8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jroomstudio.smartbookmarkeditor",
+            "certificate_hash": "9a79f72714257c42e0ec48de686f2ce0a19a9f11"
+          }
+        },
+        {
+          "client_id": "168524448189-hodo0eug39qrb6fbr8jm90ji4bqstoi0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCTsLHMHx0F1l9wHtaiAXg3NAPHgNKiYmM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "168524448189-hodo0eug39qrb6fbr8jm90ji4bqstoi0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

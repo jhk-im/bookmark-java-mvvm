@@ -14,28 +14,37 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:targetApi="m">
-
+        <activity android:name=".notice.NoticeActivity">
+            <!-- Notification 리스트 보여줄 액티비티 -->
+            <intent-filter>
+                <action android:name="OPEN_ACTIVITY"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
         <activity
             android:name=".information.InformationActivity"
             android:theme="@style/Transparent">
-            <!--개인정보처리방침 등의 안내문구 보여주는 액티비티-->
-        </activity>
 
+            <!-- 개인정보처리방침 등의 안내문구 보여주는 액티비티 -->
+        </activity>
         <activity
             android:name=".login.LoginActivity"
             android:theme="@style/Transparent">
+
             <!-- 로그인 액티비티 -->
         </activity>
 
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id">
+
             <!-- 페이스북 메타데이터 -->
         </meta-data>
 
         <activity
             android:name=".main.MainActivity"
             android:theme="@style/Base.AppTheme">
+
             <!-- 메인 액티비티 -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -46,12 +55,14 @@
         <activity
             android:name=".itemtouch.ItemTouchEditActivity"
             android:theme="@style/Base.AppTheme">
+
             <!-- 아이템 터치 순서변경 액티비티 -->
         </activity>
         <activity
             android:name=".webview.WebViewActivity"
             android:theme="@style/Base.AppTheme"
             android:windowSoftInputMode="stateHidden">
+
             <!-- 웹뷰 액티비티 -->
         </activity>
         <activity
@@ -67,6 +78,18 @@
             <!-- 아이템 추가 편집 팝업 -->
         </activity>
 
+        <service
+            android:name=".util.SbeFirebaseMessagingService"
+            android:stopWithTask="false">
+
+            <!-- FCM -->
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service> <!-- FCM 기본로고 설정 -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/logo" />
     </application>
 
 </manifest>

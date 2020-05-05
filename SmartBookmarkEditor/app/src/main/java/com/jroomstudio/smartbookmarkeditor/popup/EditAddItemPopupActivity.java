@@ -75,7 +75,7 @@ public class EditAddItemPopupActivity extends AppCompatActivity implements EditA
         SharedPreferences.Editor editor = spActStatus.edit();
         editor.apply();
         // 다크모드이면 다크모드로 테마변경
-        if(spActStatus.getBoolean("dark_mode",false)){
+        if(spActStatus.getBoolean("dark_mode",true)){
             setTheme(R.style.DarkAppPopup);
         }
         // 상태바 제거하고 전체화면 모드로

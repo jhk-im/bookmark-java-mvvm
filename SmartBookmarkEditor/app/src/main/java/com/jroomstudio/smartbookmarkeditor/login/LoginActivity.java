@@ -25,6 +25,7 @@ import com.google.android.gms.tasks.Task;
 import com.jroomstudio.smartbookmarkeditor.R;
 import com.jroomstudio.smartbookmarkeditor.information.InformationActivity;
 import com.jroomstudio.smartbookmarkeditor.main.MainActivity;
+import com.jroomstudio.smartbookmarkeditor.util.FacebookLoginCallback;
 
 import java.util.Arrays;
 
@@ -36,7 +37,7 @@ public class LoginActivity extends AppCompatActivity implements LoginNavigator {
     // x 버튼
     private ImageView btnClose;
     // 각각의 로그인버튼
-    private ConstraintLayout btnGoogle,btnNaver,btnFacebook;
+    private ConstraintLayout btnGoogle,btnGusetUser,btnFacebook;
     // 개인정보처리방침, 이용약관 버튼
     private TextView btnPIPP;
 
@@ -72,7 +73,7 @@ public class LoginActivity extends AppCompatActivity implements LoginNavigator {
         // 버튼셋팅
         btnClose = (ImageView) findViewById(R.id.btn_login_close);
         btnGoogle = (ConstraintLayout) findViewById(R.id.btn_google_login);
-        btnNaver = (ConstraintLayout) findViewById(R.id.btn_naver_login);
+        btnGusetUser = (ConstraintLayout) findViewById(R.id.btn_guest);
         btnFacebook = (ConstraintLayout) findViewById(R.id.btn_facebook_login);
 
         // 밑줄있는 개인정보 처리방침 버튼
@@ -97,9 +98,9 @@ public class LoginActivity extends AppCompatActivity implements LoginNavigator {
             setupFacebookLogin();
            // LoginManager.getInstance().logOut();
         });
-        // 네이버로그인
-        btnNaver.setOnClickListener(v -> {
-            Toast.makeText(this, "naver login", Toast.LENGTH_SHORT).show();
+        // 게스트유저
+        btnGusetUser.setOnClickListener(v -> {
+            onBackPressed();
         });
         // 개인정보처리방침
         btnPIPP.setOnClickListener(v -> {
@@ -109,7 +110,6 @@ public class LoginActivity extends AppCompatActivity implements LoginNavigator {
         });
 
     }
-
 
     /**
      * 페이스북 로그인 진행
@@ -123,7 +123,6 @@ public class LoginActivity extends AppCompatActivity implements LoginNavigator {
                 Arrays.asList("public_profile","email"));
         loginManager.registerCallback(mFacebookCallbackManager,mFacebookLoginCallback);
     }
-
 
     /**
      * 구글로그인 진행
@@ -161,46 +160,34 @@ public class LoginActivity extends AppCompatActivity implements LoginNavigator {
 
         }catch (ApiException e){
             // 에러 감지
-            Toast.makeText(this, "등록할수 없습니다.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "로그인되지 않았습니다.", Toast.LENGTH_SHORT).show();
             Log.e("Error","signInResult:failed code="+ e.getStatusCode());
         }
     }
 
     /**
-     * 1. 사용자가 로그인 한 후 GoogleSignInAccount 활동의 onActivityResult 메소드에서
-     * 사용자에 대한 오브젝트를 얻을 수 있다.
+     * 1. 구글로그인
+     * 2. 페이스북 로그인
      **/
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         // 1. 구글로그인
         if(requestCode == GOOGLE_SIGN_IN){
-            Log.e("구글","구글");
-            Log.e("request",requestCode+"");
-            Log.e("result",resultCode+"");
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             handleGoogleSignInResult(task);
         }
         // 2. 페이스북 로그인
         if(requestCode != GOOGLE_SIGN_IN){
-            Log.e("페이스북","페이스북");
-            Log.e("request",requestCode+"");
-            Log.e("result",resultCode+"");
             mFacebookCallbackManager.onActivityResult(requestCode,resultCode,data);
-            LoginManager.getInstance().logOut();
         }
     }
-
 
     /**
      * 로그인 하여 얻게된 유저의 정보를 저장하고 로그인 완료한 후 메인액티비티로 이동한다.
      **/
     @Override
     public void moveToMainActivity(String id, String email, String name, String url) {
-        Log.e("id",id);
-        Log.e("email",email);
-        Log.e("name",name);
-        Log.e("url",url);
         // 게스트유저 false
         SharedPreferences.Editor editor = spActStatus.edit();
         editor.putBoolean("guest_user",false);

@@ -31,7 +31,7 @@ public class ItemTouchEditActivity extends AppCompatActivity implements ItemTouc
         SharedPreferences.Editor editor = spActStatus.edit();
         editor.apply();
         // 다크모드이면 다크모드로 테마변경
-        if(spActStatus.getBoolean("dark_mode",false)){
+        if(spActStatus.getBoolean("dark_mode",true)){
             setTheme(R.style.DarkAppTheme);
         }
 

@@ -72,7 +72,7 @@ public class WebViewActivity extends AppCompatActivity {
         editor.apply();
 
         // 다크모드일 경우 다크모드로 변경
-        if(spActStatus.getBoolean("dark_mode",false)){
+        if(spActStatus.getBoolean("dark_mode",true)){
             setTheme(R.style.DarkAppTheme);
         }
         setContentView(R.layout.web_view_act);

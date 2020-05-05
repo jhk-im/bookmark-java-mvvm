@@ -51,12 +51,12 @@ public class InformationActivity extends AppCompatActivity {
         if(getIntent().getStringExtra("TYPE").equals("OSL")){
             tvInfoTitle.setText(R.string.open_source_license);
             // 오픈소스라이선스 txt 파일 에서 text 가져옴
-            tvPIPP.setText(readTxtfile(getApplicationContext(),R.raw.osl));
+            tvPIPP.setText(readTextfile(getApplicationContext(),R.raw.osl));
         }
         if(getIntent().getStringExtra("TYPE").equals("PIPP")){
             tvInfoTitle.setText(R.string.pipp);
             // 개인정보처리방침 txt 파일 에서 text 가져옴
-            tvPIPP.setText(readTxtfile(getApplicationContext(),R.raw.ppip));
+            tvPIPP.setText(readTextfile(getApplicationContext(),R.raw.ppip));
         }
 
     }
@@ -65,7 +65,7 @@ public class InformationActivity extends AppCompatActivity {
      * @param resId res\raw\파일
      * @return txt내용
      */
-    public String readTxtfile(Context context, int resId) {
+    public String readTextfile(Context context, int resId) {
         String result = "";
         InputStream txtResource = context.getResources().openRawResource(resId);
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();

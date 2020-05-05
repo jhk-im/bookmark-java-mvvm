@@ -29,11 +29,16 @@ import androidx.fragment.app.FragmentManager;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.jroomstudio.smartbookmarkeditor.Injection;
 import com.jroomstudio.smartbookmarkeditor.R;
 import com.jroomstudio.smartbookmarkeditor.ViewModelHolder;
 import com.jroomstudio.smartbookmarkeditor.data.bookmark.Bookmark;
 import com.jroomstudio.smartbookmarkeditor.data.category.Category;
+import com.jroomstudio.smartbookmarkeditor.data.notice.Notice;
+import com.jroomstudio.smartbookmarkeditor.data.notice.NoticeDataSource;
+import com.jroomstudio.smartbookmarkeditor.data.notice.NoticeLocalDataSource;
+import com.jroomstudio.smartbookmarkeditor.data.notice.NoticeLocalDatabase;
 import com.jroomstudio.smartbookmarkeditor.information.InformationActivity;
 import com.jroomstudio.smartbookmarkeditor.login.LoginActivity;
 import com.jroomstudio.smartbookmarkeditor.main.home.MainHomeFragment;
@@ -42,6 +47,7 @@ import com.jroomstudio.smartbookmarkeditor.main.home.item.BookmarkItemNavigator;
 import com.jroomstudio.smartbookmarkeditor.main.home.item.CategoryItemNavigator;
 import com.jroomstudio.smartbookmarkeditor.popup.EditAddItemPopupActivity;
 import com.jroomstudio.smartbookmarkeditor.util.ActivityUtils;
+import com.jroomstudio.smartbookmarkeditor.util.AppExecutors;
 import com.jroomstudio.smartbookmarkeditor.webview.WebViewActivity;
 
 import java.security.MessageDigest;
@@ -52,11 +58,24 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity
         implements MainHomeNavigator, CategoryItemNavigator, BookmarkItemNavigator {
 
+    /**
+     * Main Activity
+     **/
+    // 네비게이션뷰 내부 버튼
+    private ConstraintLayout btnHome, btnNote, btnNotice;
+    // 네비게이션에 include 되는 레이아웃
+    private View includeLayout;
+    // 네비게이션 유저 이미지, email, login, title
+    private ImageView ivUser;
+    private TextView tvEmail, btnSign, tvName;
+    // 개인정보 처리방침, 이용약관
+    private TextView btnPIPP,btnOSL;
+    // 알림이 있을 때 나타나는 red dot, notice count
+    private ImageView ivNoticeRedDot;
+    private TextView tvNoticeCount;
+
     // 액티비티 상태저장 Shared Preferences
     private SharedPreferences spActStatus;
-    // shared  boolean 값
-    boolean dark_mode;
-    boolean guest_user;
 
     // 메인 네비게이션 뷰
     private NavigationView mNavigationView;
@@ -64,12 +83,16 @@ public class MainActivity extends AppCompatActivity
 
     // Activity request
     public static int LOGIN_COMPLETE = 1;
+    public static int NOTICE_READ = 2;
 
 
     // 현재 활성화된 프래그먼트
     private Fragment currentFragment;
     // 프래그먼트 관리할 매니저
     private FragmentManager fragmentManager;
+
+    // notifications  로컬 데이터베이스 소스
+    private NoticeLocalDataSource noticeLocalDataSource;
 
     /**
      * MainHomeFragment
@@ -84,15 +107,6 @@ public class MainActivity extends AppCompatActivity
     private int mSelectCategoryCount;
     // 현재 선택된 카테고리
     private String mSelectCategory;
-    // 네비게이션뷰 내부 버튼
-    private ConstraintLayout btnHome, btnNote;
-    // 네비게이션에 include 되는 레이아웃
-    private View includeLayout;
-    // 네비게이션 유저 이미지, email, login
-    private ImageView ivUser;
-    private TextView tvEmail, btnSign, btnPIPP,btnOSL;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,61 +117,37 @@ public class MainActivity extends AppCompatActivity
         SharedPreferences.Editor editor = spActStatus.edit();
         editor.apply();
 
-        // 다크모드 여부
-        dark_mode = spActStatus.getBoolean("dark_mode",false);
-        // 유저 로그인 여부
-        guest_user = spActStatus.getBoolean("guest_user",true);
-
         // 다크모드일 경우 다크모드로 변경
-        if(dark_mode){
+        if(spActStatus.getBoolean("dark_mode",true)){
             setTheme(R.style.DarkAppTheme);
         }
         setContentView(R.layout.main_act);
 
-        // 네비게이션 뷰에서 버튼을 담고있는 레이아웃
-        includeLayout = findViewById(R.id.drawer_include_layout);
-        // 네비게이션뷰 내부버튼
-        btnHome = (ConstraintLayout) includeLayout.findViewById(R.id.btn_nav_home);
-        btnNote = (ConstraintLayout) includeLayout.findViewById(R.id.btn_nav_note);
-        // 밑줄있는 로그인 or 회원정보 버튼
-        btnSign = (TextView) includeLayout.findViewById(R.id.btn_is_sign);
-        btnSign.setPaintFlags(btnSign.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
-        // 유저 이미지
-        ivUser = (ImageView) includeLayout.findViewById(R.id.iv_profile_image);
-        // 유저 이메일, 로그인 로그아웃 텍스트뷰
-        tvEmail = (TextView) includeLayout.findViewById(R.id.tv_user_email);
-        // 회원일때
-        if(!guest_user){
-            // 유저 이미지 셋팅
-            Glide.with(this)
-                    .load(spActStatus.getString("user_photo_url",""))
-                    .into(ivUser);
-            // 유저 이메일 셋팅
-            tvEmail.setText(spActStatus.getString("user_email",""));
-            // 회원정보로 이동
-            btnSign.setText("회원정보");
+        // firebase 구독 알림 설정
+        if(spActStatus.getBoolean("notice",true)){
+            // fcm 구독추가
+            FirebaseMessaging.getInstance().subscribeToTopic("notice");
+        }else{
+            // fcm 구독 끊기
+            FirebaseMessaging.getInstance().unsubscribeFromTopic("notice");
         }
-        // 개인정보처리방침 버튼
-        btnPIPP = (TextView) includeLayout.findViewById(R.id.btn_nav_pipp);
-        btnPIPP.setPaintFlags(btnPIPP.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
-
-        // 오픈소스라이선스 버튼
-        btnOSL = (TextView) includeLayout.findViewById(R.id.btn_nav_osl);
-        btnOSL.setPaintFlags(btnOSL.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
-
 
         //툴바셋팅
         setupToolbar();
-        //navigation drawer 셋팅
+
+        //navigation layout, drawer 셋팅
+        setupNavigationLayout();
         setupNavigationDrawer();
+
+        // notice 데이터베이스 셋팅
+        // 읽지않은 알림데이터 가져오기
+        setupNoticeLocalDataSource();
+
 
         // 프래그먼트 매니져
         fragmentManager= getSupportFragmentManager();
         // 현재 활성화된 프래그먼트 생성
         getSelectedFragment();
-
-        getHashKey();
-
     }
 
     @Override
@@ -165,6 +155,38 @@ public class MainActivity extends AppCompatActivity
         // 뷰모델의 ItemNavigator null 셋팅
         mViewModel.onActivityDestroyed();
         super.onDestroy();
+    }
+
+    /**
+     * notifications 데이터베이스 셋팅
+     **/
+    void setupNoticeLocalDataSource(){
+        // 알림 메세지 저장하는 룸 데이터베이스 생성
+        NoticeLocalDatabase database = NoticeLocalDatabase.getInstance(this);
+        noticeLocalDataSource = NoticeLocalDataSource.
+                getInstance(new AppExecutors(), database.notificationsDAO());
+
+        // 읽지않은 알림 데이터 가져오기
+        noticeLocalDataSource.getNotifications(
+                false, new NoticeDataSource.LoadNotificationsCallback() {
+            @Override
+            public void onNotificationsLoaded(List<Notice> notifications) {
+                // 비어있지 않은경우
+                Log.e("notice",notifications.toString());
+                ivNoticeRedDot.setVisibility(View.VISIBLE);
+                tvNoticeCount.setVisibility(View.VISIBLE);
+                // 읽지않은 아이템 숫자셋팅
+                tvNoticeCount.setText(String.valueOf(notifications.size()));
+            }
+
+            @Override
+            public void onDataNotAvailable() {
+                // 비어있는경우
+                Log.e("notice","DataNotAvailable");
+                ivNoticeRedDot.setVisibility(View.GONE);
+                tvNoticeCount.setVisibility(View.GONE);
+            }
+        });
     }
 
     /**
@@ -180,7 +202,9 @@ public class MainActivity extends AppCompatActivity
                     fragmentManager.beginTransaction().remove(currentFragment).commit();
                 }
                 btnHome.setSelected(true);
+                btnHome.setEnabled(false);
                 btnNote.setSelected(false);
+                btnNote.setEnabled(true);
                 // 프래그먼트 생성 및 재활용
                 mainHomeFragment = findOrCreateViewFragment();
                 // 프래그먼트의 뷰모델 생성 및 재활용
@@ -199,6 +223,9 @@ public class MainActivity extends AppCompatActivity
                 }
                 btnHome.setSelected(false);
                 btnNote.setSelected(true);
+                btnHome.setEnabled(true);
+                btnNote.setEnabled(false);
+
                 // 생성된 프래그먼트를 현재 프래그먼트로 셋팅
                 // currentFragment = mainHomeFragment;
                 break;
@@ -276,6 +303,48 @@ public class MainActivity extends AppCompatActivity
     /**
      * DrawerLayout Navigation View 관련 메소드
      **/
+    // 네비게이션 뷰에서 버튼을 담고있는 레이아웃 셋팅
+    private void setupNavigationLayout(){
+        includeLayout = findViewById(R.id.drawer_include_layout);
+        // 네비게이션뷰 내부버튼 (홈,노트,로그인,알림)
+        btnHome = (ConstraintLayout) includeLayout.findViewById(R.id.btn_nav_home);
+        btnNote = (ConstraintLayout) includeLayout.findViewById(R.id.btn_nav_note);
+        btnNotice = (ConstraintLayout) includeLayout.findViewById(R.id.btn_nav_notice);
+        // 밑줄있는 로그인 or 회원정보 버튼
+        btnSign = (TextView) includeLayout.findViewById(R.id.btn_is_sign);
+        btnSign.setPaintFlags(btnSign.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+        // 확인안한 알림 있을 때 나타나는 red dot , notice count
+        ivNoticeRedDot = (ImageView) includeLayout.findViewById(R.id.iv_notice_red_dot);
+        tvNoticeCount = (TextView) includeLayout.findViewById(R.id.tv_notice_count);
+        // 유저 이미지
+        ivUser = (ImageView) includeLayout.findViewById(R.id.iv_profile_image);
+        // 유저 이메일, 로그인 로그아웃 텍스트뷰
+        tvEmail = (TextView) includeLayout.findViewById(R.id.tv_user_email);
+        // 유저 Title
+        tvName = (TextView) includeLayout.findViewById(R.id.tv_user_name);
+
+        // 회원일때
+        if(!spActStatus.getBoolean("guest_user",true)){
+            // 유저 이미지 셋팅
+            Glide.with(this)
+                    .load(spActStatus.getString("user_photo_url",""))
+                    .error(R.drawable.logo)
+                    .into(ivUser);
+            // 유저 이메일 셋팅
+            tvEmail.setText(spActStatus.getString("user_email",""));
+            tvName.setText(spActStatus.getString("user_name",""));
+            // 회원정보
+            btnSign.setText("회원정보");
+        }
+
+        // 개인정보처리방침 버튼
+        btnPIPP = (TextView) includeLayout.findViewById(R.id.btn_nav_pipp);
+        btnPIPP.setPaintFlags(btnPIPP.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+
+        // 오픈소스라이선스 버튼
+        btnOSL = (TextView) includeLayout.findViewById(R.id.btn_nav_osl);
+        btnOSL.setPaintFlags(btnOSL.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+    }
     // Navigation Drawer 셋팅 메소드
     private void setupNavigationDrawer(){
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -290,63 +359,29 @@ public class MainActivity extends AppCompatActivity
             setupNavigationButton();
         }
     }
-    // Navigation switch checkedChange Listener
-    private void setupNavigationSwitch(){
-        // 네비게이션 스위치
-        Switch mThemeSwitch, mNoticeSwitch;
-        // 다크테마 switch 리스너 셋팅
-        mThemeSwitch = (Switch) includeLayout.findViewById(R.id.switch_dark_theme);
-        // 로컬에 저장되어있는 switch 상태 정보 가져옴
-        mThemeSwitch.setChecked(dark_mode);
-        mThemeSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            //Toast.makeText(this, "다크테마 -> "+mThemeSwitch.isChecked(), Toast.LENGTH_SHORT).show();
-
-            // dark 모드 상태 업데이트
-            spActStatus = getSharedPreferences("act_status", MODE_PRIVATE);
-            SharedPreferences.Editor editor = spActStatus.edit();
-            editor.putBoolean("dark_mode",isChecked);
-            editor.apply();
-
-            mDrawerLayout.closeDrawers();
-            finish();
-            startActivity(new Intent(this, MainActivity.class));
-        });
-        // 푸쉬알림 switch 리스너 셋팅
-        mNoticeSwitch = (Switch) findViewById(R.id.switch_notice);
-        // 로컬에 저장되어있는 알림 switch 상태정보 가져옴
-        mNoticeSwitch.setChecked(spActStatus.getBoolean("notice",true));
-        mNoticeSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if(spActStatus.getBoolean("notice",true)){
-                Toast.makeText(this, "알림 메세지를 차단합니다.", Toast.LENGTH_SHORT).show();
-            }else{
-                Toast.makeText(this, "알림 메세지를 허용합니다.", Toast.LENGTH_SHORT).show();
-            }
-
-            // 알림 상태 업데이트
-            spActStatus = getSharedPreferences("act_status", MODE_PRIVATE);
-            SharedPreferences.Editor editor = spActStatus.edit();
-            editor.putBoolean("notice",isChecked);
-            editor.apply();
-            mDrawerLayout.closeDrawers();
-        });
-
-    }
     // Navigation view 아이콘 색상 셋팅
     private void setupNavigationIconColor(){
-        ImageView ivHome, ivNote, ivDarkTheme, ivNotice, ivInfo,ivUser;
+        ImageView ivHome, ivNote, ivDarkTheme, ivInfo, ivNotice;
         ivHome = (ImageView) includeLayout.findViewById(R.id.iv_btn_home);
         ivNote = (ImageView) includeLayout.findViewById(R.id.iv_btn_note);
         ivDarkTheme = (ImageView) includeLayout.findViewById(R.id.iv_dark_theme);
         ivNotice = (ImageView) includeLayout.findViewById(R.id.iv_notice);
         ivInfo = (ImageView) includeLayout.findViewById(R.id.iv_info);
         // 다크모드이면
-        if(dark_mode){
+        if(spActStatus.getBoolean("dark_mode",true)){
             ivHome.setImageResource(R.drawable.ic_home);
             ivNote.setImageResource(R.drawable.ic_note);
             ivDarkTheme.setImageResource(R.drawable.ic_dark_theme);
             ivNotice.setImageResource(R.drawable.ic_notice);
             ivInfo.setImageResource(R.drawable.ic_info);
         }
+    }
+    // 네비게이션에서 현재 활성화된 프래그먼트 업데이트
+    void saveNavigationButtonStatus(int id){
+        spActStatus = getSharedPreferences("act_status", MODE_PRIVATE);
+        SharedPreferences.Editor editor = spActStatus.edit();
+        editor.putInt("current_fragment",id);
+        editor.apply();
     }
     // Navigation view 내부 아이템 select listener
     private void setupNavigationButton(){
@@ -361,7 +396,7 @@ public class MainActivity extends AppCompatActivity
         // 노트버튼 온클릭 리스너 (프래그먼트)
         btnNote.setOnClickListener(v -> {
             // 게스트 유저일 때
-            if(guest_user){
+            if(spActStatus.getBoolean("guest_user",true)){
                 // 로그인 activity 로 이동
                 Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                 startActivity(intent);
@@ -376,7 +411,7 @@ public class MainActivity extends AppCompatActivity
         // 로그인
         btnSign.setOnClickListener(v -> {
             // 게스트 유저일 때
-            if(guest_user){
+            if(spActStatus.getBoolean("guest_user",true)){
                 // 로그인 activity 로 이동
                 Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                 startActivityForResult(intent,LOGIN_COMPLETE);
@@ -386,6 +421,10 @@ public class MainActivity extends AppCompatActivity
                 // 임시 로그아웃
                 SharedPreferences.Editor editor = spActStatus.edit();
                 editor.putBoolean("guest_user",true);
+                editor.putString("user_id", "");
+                editor.putString("user_email", "");
+                editor.putString("user_name", "");
+                editor.putString("user_photo_url", "");
                 editor.apply();
                 finish();
                 startActivity(new Intent(this, MainActivity.class));
@@ -406,16 +445,56 @@ public class MainActivity extends AppCompatActivity
             startActivity(intent);
         });
 
+        // 알림 버튼
+        btnNotice.setOnClickListener(v -> {
+            // 알림 액티비티로 이동
+            Toast.makeText(this, "notice 이동", Toast.LENGTH_SHORT).show();
+        });
 
     }
-    // 네비게이션에서 현재 활성화된 프래그먼트 업데이트
-    void saveNavigationButtonStatus(int id){
-        spActStatus = getSharedPreferences("act_status", MODE_PRIVATE);
-        SharedPreferences.Editor editor = spActStatus.edit();
-        editor.putInt("current_fragment",id);
-        editor.apply();
-    }
+    // Navigation switch checkedChange Listener
+    private void setupNavigationSwitch(){
+        // 네비게이션 스위치
+        Switch mThemeSwitch, mNoticeSwitch;
+        // 다크테마 switch 리스너 셋팅
+        mThemeSwitch = (Switch) includeLayout.findViewById(R.id.switch_dark_theme);
+        // 로컬에 저장되어있는 switch 상태 정보 가져옴
+        mThemeSwitch.setChecked(spActStatus.getBoolean("dark_mode",true));
+        mThemeSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            //Toast.makeText(this, "다크테마 -> "+mThemeSwitch.isChecked(), Toast.LENGTH_SHORT).show();
 
+            // dark 모드 상태 업데이트
+            spActStatus = getSharedPreferences("act_status", MODE_PRIVATE);
+            SharedPreferences.Editor editor = spActStatus.edit();
+            editor.putBoolean("dark_mode",isChecked);
+            editor.apply();
+
+            mDrawerLayout.closeDrawers();
+            finish();
+            startActivity(new Intent(this, MainActivity.class));
+        });
+        // 푸쉬알림 switch 리스너 셋팅
+        mNoticeSwitch = (Switch) findViewById(R.id.switch_notice);
+        // 로컬에 저장되어있는 알림 switch 상태정보 가져옴
+        mNoticeSwitch.setChecked(spActStatus.getBoolean("notice",true));
+        mNoticeSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if(isChecked){
+                Toast.makeText(this, "알림 메세지를 허용합니다.", Toast.LENGTH_SHORT).show();
+                FirebaseMessaging.getInstance().subscribeToTopic("notice");
+            }else{
+                Toast.makeText(this, "알림 메세지를 차단합니다.", Toast.LENGTH_SHORT).show();
+                FirebaseMessaging.getInstance().unsubscribeFromTopic("notice");
+            }
+
+            // 알림 상태 업데이트
+            spActStatus = getSharedPreferences("act_status", MODE_PRIVATE);
+            SharedPreferences.Editor editor = spActStatus.edit();
+            editor.putBoolean("notice",isChecked);
+            editor.apply();
+            //mDrawerLayout.closeDrawers();
+        });
+
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -424,12 +503,14 @@ public class MainActivity extends AppCompatActivity
             // 유저 이미지 셋팅
             Glide.with(this)
                     .load(spActStatus.getString("user_photo_url",""))
+                    .error(R.drawable.logo)
                     .into(ivUser);
             // 유저 이메일 셋팅
             tvEmail.setText(spActStatus.getString("user_email",""));
-            // 회원정보로 이동
+            tvName.setText(spActStatus.getString("user_name",""));
+
+            // 회원정보
             btnSign.setText("회원정보");
-            guest_user = spActStatus.getBoolean("guest_user",true);
         }
     }
 
@@ -507,7 +588,6 @@ public class MainActivity extends AppCompatActivity
         return title;
     }
 
-
     /**
      * BookmarkItemNavigator , CategoryItemNavigator 오버라이드 메소드
      **/
@@ -529,6 +609,7 @@ public class MainActivity extends AppCompatActivity
     }
 
 
+    // hash 키 얻기
     private void getHashKey(){
         PackageInfo packageInfo = null;
         try {
