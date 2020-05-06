@@ -26,6 +26,7 @@
     <string name="popup_edit_btn_delete">삭제</string>
     <string name="popup_edit_btn_share">공유</string>
     <string name="edit_delete_questions">아이템을 삭제하시겠습니까?</string>
+    <string name="edit_all_delete_questions">아이템을 모두 삭제하시겠습니까?</string>
     <string name="user_title">사용자 정보</string>
 
     <string name="appbar_scrolling_view_behavior" translatable="false">
@@ -61,5 +62,6 @@
     <string name="facebook_app_id">266660541180254</string>
     <string name="fb_login_protocol_scheme">fb266660541180254</string>
     <string name="menu_notice">알림</string>
+    <string name="delete_all">전체삭제</string>
 
 </resources>

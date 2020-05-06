@@ -41,27 +41,36 @@ public class Notice {
     private final String mDescription;
 
     /**
+     * notice 받은 날짜
+     **/
+    @NonNull
+    @ColumnInfo(name = "date")
+    private final String mDate;
+
+    /**
      * notice 읽었는지 여부
      **/
     @ColumnInfo(name = "read")
     private final boolean mRead;
+
 
     /**
      * (새로운 카테고리 생성)
      *
      **/
     @Ignore
-    public Notice(@NonNull String title, String mDescription){
-        this(UUID.randomUUID().toString(),title,mDescription,false);
+    public Notice(@NonNull String title, String description, String date){
+        this(UUID.randomUUID().toString(),title,description,date,false);
     }
 
     /**
      * 생성자
      **/
-    public Notice(@NonNull String id, String title, String description, boolean read){
+    public Notice(@NonNull String id, String title, String description,String date, boolean read){
         this.mId = id;
         this.mTitle = title;
         this.mDescription = description;
+        this.mDate = date;
         this.mRead = read;
     }
 
@@ -71,6 +80,8 @@ public class Notice {
     public String getTitle() { return mTitle; }
 
     public String getDescription() { return mDescription; }
+
+    public String getDate() { return mDate; }
 
     public boolean isRead() { return mRead; }
 
@@ -82,15 +93,17 @@ public class Notice {
         return  Objects.equal(mId, notice.mId) &&
                 Objects.equal(mTitle, notice.mTitle) &&
                 Objects.equal(mDescription, notice.mDescription) &&
+                Objects.equal(mDate, notice.mDate) &&
                 Objects.equal(mRead,notice.mRead);
     }
 
     @Override
-    public int hashCode() { return Objects.hashCode(mId,mTitle,mDescription,mRead); }
+    public int hashCode() { return Objects.hashCode(mId,mTitle,mDescription,mDate,mRead); }
 
     @NonNull
     @Override
     public String toString() {
-        return mTitle+"\n"+ mDescription+"\n" + mRead+"\n" ; }
+        return mTitle+"\n"+ mDescription+"\n" + mRead+"\n" +mDate+"\n" ;
+    }
 
 }

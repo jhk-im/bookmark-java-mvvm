@@ -8,7 +8,7 @@
         <import type="android.view.View" />
         <variable
             name="view"
-            type="com.jroomstudio.smartbookmarkeditor.popup.EditAddItemPopupActivity" />
+            type="com.jroomstudio.smartbookmarkeditor.popup.EditAddItemPopupFragment" />
         <variable
             name="viewmodel"
             type="com.jroomstudio.smartbookmarkeditor.popup.EditAddItemPopupViewModel" />

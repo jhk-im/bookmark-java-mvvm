@@ -40,7 +40,6 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical">
                 &lt;!&ndash; fragment view &ndash;&gt;
-
             </LinearLayout>-->
 
             <FrameLayout
@@ -57,8 +56,6 @@
                 app:fabSize="normal"
                 app:layout_anchor="@id/content_frame"
                 app:layout_anchorGravity="bottom|right|end" />
-
-
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     </LinearLayout>

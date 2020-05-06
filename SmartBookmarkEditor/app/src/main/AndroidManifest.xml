@@ -14,11 +14,23 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:targetApi="m">
-        <activity android:name=".notice.NoticeActivity">
+        <activity android:name=".notice.NoticeDetailActivity">
+            <!--아이템 디테일-->
+        </activity>
+        <activity
+            android:name=".notice.NoticePopupActivity"
+            android:theme="@style/AppTheme.Popup">
+            <!--아이템 삭제 팝업-->
+        </activity>
+        <activity
+            android:name=".notice.NoticeActivity"
+            android:theme="@style/Base.AppTheme">
+
             <!-- Notification 리스트 보여줄 액티비티 -->
             <intent-filter>
-                <action android:name="OPEN_ACTIVITY"/>
-                <category android:name="android.intent.category.DEFAULT"/>
+                <action android:name="OPEN_ACTIVITY" />
+
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
         <activity

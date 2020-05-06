@@ -45,6 +45,7 @@ import com.jroomstudio.smartbookmarkeditor.main.home.MainHomeFragment;
 import com.jroomstudio.smartbookmarkeditor.main.home.MainHomeViewModel;
 import com.jroomstudio.smartbookmarkeditor.main.home.item.BookmarkItemNavigator;
 import com.jroomstudio.smartbookmarkeditor.main.home.item.CategoryItemNavigator;
+import com.jroomstudio.smartbookmarkeditor.notice.NoticeActivity;
 import com.jroomstudio.smartbookmarkeditor.popup.EditAddItemPopupActivity;
 import com.jroomstudio.smartbookmarkeditor.util.ActivityUtils;
 import com.jroomstudio.smartbookmarkeditor.util.AppExecutors;
@@ -448,7 +449,9 @@ public class MainActivity extends AppCompatActivity
         // 알림 버튼
         btnNotice.setOnClickListener(v -> {
             // 알림 액티비티로 이동
-            Toast.makeText(this, "notice 이동", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, "notice 이동", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(MainActivity.this, NoticeActivity.class);
+            startActivity(intent);
         });
 
     }

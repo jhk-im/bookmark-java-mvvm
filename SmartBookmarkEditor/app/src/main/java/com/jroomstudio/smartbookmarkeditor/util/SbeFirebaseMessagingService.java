@@ -1,9 +1,12 @@
 package com.jroomstudio.smartbookmarkeditor.util;
 
+import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.util.Log;
 
@@ -15,9 +18,10 @@ import com.jroomstudio.smartbookmarkeditor.R;
 import com.jroomstudio.smartbookmarkeditor.data.notice.Notice;
 import com.jroomstudio.smartbookmarkeditor.data.notice.NoticeLocalDataSource;
 import com.jroomstudio.smartbookmarkeditor.data.notice.NoticeLocalDatabase;
+import com.jroomstudio.smartbookmarkeditor.notice.NoticeActivity;
 
-import java.util.Objects;
-
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * FirebaseMessagingService -> 메세지를 수신하기 위해 상속받는 서비스
@@ -53,7 +57,7 @@ public class SbeFirebaseMessagingService extends FirebaseMessagingService {
     @Override
     public void onNewToken(String s) {
         super.onNewToken(s);
-        Log.e("Firebase", "FirebaseInstanceIDService : " + s);
+        //Log.e("Firebase", "FirebaseInstanceIDService : " + s);
     }
 
     /**
@@ -64,45 +68,65 @@ public class SbeFirebaseMessagingService extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
 
+        String title;
+        String body;
+
+        // 알림 도착한 날짜 지정
+        long now = System.currentTimeMillis();
+        Date d = new Date(now);
+        @SuppressLint("SimpleDateFormat")
+        SimpleDateFormat  mFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        String date = mFormat.format(d);
+
+        /*
+        if (remoteMessage.getNotification() != null) {
+             Log.e("RemoteMessage", "Body: " + remoteMessage.getNotification().getBody());
+             Log.e("RemoteMessage", "Title: " + remoteMessage.getNotification().getTitle());
+             Log.e("RemoteMessage", "click: " + remoteMessage.getNotification().getClickAction());
+             //body = remoteMessage.getNotification().getBody();
+             //title = remoteMessage.getNotification().getTitle();
+        }
+        */
         // TODO(developer): Handle FCM messages here.
         // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
         // 메세지가 어디로부터 온 것인지 표시한다.
         // ex ) /topics/notice
         //Log.e("RemoteMessage", "From: " + remoteMessage.getFrom());
-
         // 데이터 알림
         // 백그라운드일 경우 작업표시줄로 전달되고
         // 포그라운드 일 경우 이곳으로 전달된다.
-        if (remoteMessage.getNotification() != null) {
-             Log.e("RemoteMessage", "Body: " + remoteMessage.getNotification().getBody());
-             Log.e("RemoteMessage", "Title: " + remoteMessage.getNotification().getTitle());
-            Log.e("RemoteMessage", "click: " + remoteMessage.getNotification().getClickAction());
-            // 알림저장
-            Notice notice = new Notice(
-                    Objects.requireNonNull(remoteMessage.getNotification().getTitle()),
-                    Objects.requireNonNull(remoteMessage.getNotification().getBody())
-                    );
-            noticeLocalDataSource.saveNotice(notice);
-
-        }
-
         // Check if message contains a data payload.
         if (remoteMessage.getData().size() > 0) {
             Log.e("RemoteMessage", "Message data payload: " + remoteMessage.getData());
 
+            title = remoteMessage.getData().get("title");
+            body = remoteMessage.getData().get("body");
+
+            // 알림저장
+            Notice notice = new Notice(title,body,date);
+            noticeLocalDataSource.saveNotice(notice);
+
             //Notification Chanel 생성
-            setNotificationChanel(remoteMessage);
+            setNotificationChanel(title,body);
         }
+
     }
 
 
     /**
      * 오레오 버전부터는 포그라운드에서 Notification Chanel 이 없으면 푸시가 생성되지 않음
      **/
-    void setNotificationChanel(RemoteMessage remoteMessage){
-        String title = remoteMessage.getData().get("title");
-        String body = remoteMessage.getData().get("body");
-        String click_action = remoteMessage.getData().get("click_action");
+    void setNotificationChanel(String title, String body){
+
+        // click action 지정
+        Intent intent = new Intent(this, NoticeActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent pendingIntent =
+                PendingIntent.getActivity(
+                        this,
+                        0,
+                        intent,
+                        PendingIntent.FLAG_ONE_SHOT);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
@@ -127,6 +151,7 @@ public class SbeFirebaseMessagingService extends FirebaseMessagingService {
                             .setContentText(body)
                             .setChannelId(channel)
                             .setAutoCancel(true)
+                            .setContentIntent(pendingIntent)
                             .setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE);
 
             NotificationManager notificationManager =
@@ -142,6 +167,7 @@ public class SbeFirebaseMessagingService extends FirebaseMessagingService {
                             .setContentTitle(title)
                             .setContentText(body)
                             .setAutoCancel(true)
+                            .setContentIntent(pendingIntent)
                             .setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE);
 
             NotificationManager notificationManager =

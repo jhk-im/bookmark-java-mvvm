@@ -7,7 +7,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:id="@+id/linear_notice_layout"
-    tools:context=".notice.NoticeActivity">
+    android:background="?attr/custom_background"
+    tools:context=".notice.NoticeDetailActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
@@ -24,17 +25,23 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.coordinatorlayout.widget.CoordinatorLayout
-        android:id="@+id/coordinator_layout"
+    <TextView
+        android:id="@+id/tv_date"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:gravity="right"
+        android:text="date"
+        android:textColor="?attr/custom_text"
+        tools:ignore="RtlHardcoded" />
 
-        <!-- fragment 프레임 -->
-        <FrameLayout
-            android:id="@+id/content_frame"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-
-    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+    <TextView
+        android:id="@+id/tv_description"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="5dp"
+        android:scrollbars="vertical"
+        android:text="@string/menu_notice"
+        android:textColor="?attr/custom_text"/>
 
 </LinearLayout>

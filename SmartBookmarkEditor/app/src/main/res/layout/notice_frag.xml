@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <import type="android.view.View" />
+        <variable
+            name="view"
+            type="com.jroomstudio.smartbookmarkeditor.notice.NoticeFragment"/>
+        <variable
+            name="viewmodel"
+            type="com.jroomstudio.smartbookmarkeditor.notice.NoticeViewModel"/>
+    </data>
+
+    <LinearLayout
+        android:id="@+id/notice_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="?attr/custom_background">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_notifications"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:scrollbars="vertical"
+            android:background="?attr/custom_background"
+            app:noticeItems="@{viewmodel.noticeList}"/>
+
+        <Button
+            android:id="@+id/btn_all_delete"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:textColor="#fff"
+            android:text="@string/delete_all"
+            android:onClick="@{()->viewmodel.allDeleteButtonOnClick()}"
+            android:background="?attr/colorPrimary"/>
+
+    </LinearLayout>
+
+</layout>
