@@ -42,7 +42,7 @@ public class NoticeViewModel extends BaseObservable {
     private NoticeLocalDataSource mNoticeLocalDataSource;
 
     /**
-     * Main Activity ViewModel 생성자
+     * Notice Activity ViewModel 생성자
      * @param noticeLocalDataSource - 알림 객체 로컬 데이터 액세스
      * @param context - 응용프로그램 context 를 강제로 사용함
      **/

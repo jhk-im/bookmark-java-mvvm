@@ -19,8 +19,7 @@ public class RecyclerViewItemBinding {
     /**
      * notice 프래그먼트의 알림 객체 리사이클러뷰의 리스트를 관찰한다.
      **/
-    @SuppressWarnings("unchecked")
-    @BindingAdapter("app:noticeItems")
+    @BindingAdapter("noticeItems")
     public static void setNoticeItems(RecyclerView recyclerView, List<Notice> notifications){
         try{
             NoticeRecyclerAdapter noticeAdapter =
@@ -36,11 +35,9 @@ public class RecyclerViewItemBinding {
     /**
      * 메인 프래그먼트의 북마크 리사이클러뷰의 현재 카테고리 북마크 리스트를 관찰한다.
      **/
-    @SuppressWarnings("unchecked")
-    @BindingAdapter("app:bookmarkItems")
+    @BindingAdapter("bookmarkItems")
     public static void setBookmarkItems(RecyclerView recyclerView, List<Bookmark> bookmarks){
         try{
-
             // 메인 프래그먼트 리사이클러뷰
             BookmarkRecyclerAdapter bookmarkAdapter =
                     (BookmarkRecyclerAdapter) recyclerView.getAdapter();
@@ -56,12 +53,10 @@ public class RecyclerViewItemBinding {
     /**
      * 메인 프래그먼트의 카테고리 리사이클러뷰의 카테고리 리스트를 관찰한다.
      **/
-    @SuppressWarnings("unchecked")
-    @BindingAdapter("app:categoryItems")
+    @BindingAdapter("categoryItems")
     public static void setCategoryItems(RecyclerView recyclerView, List<Category> categories){
 
         try{
-
             // 메인 프래그먼트 리사이클러뷰
             CategoriesRecyclerAdapter categoryAdapter =
                     (CategoriesRecyclerAdapter) recyclerView.getAdapter();
@@ -78,12 +73,10 @@ public class RecyclerViewItemBinding {
     /**
      * 메인 프래그먼트의 북마크 리사이클러뷰의 현재 카테고리 북마크 리스트를 관찰한다.
      **/
-    @SuppressWarnings("unchecked")
-    @BindingAdapter("app:bookmarkTouchItems")
+    @BindingAdapter("bookmarkTouchItems")
     public static void setBookmarkTouchItems(RecyclerView recyclerView, List<Bookmark> bookmarks){
 
         try{
-
             // 터치 편집 프래그먼트 리사이클러뷰
             BookmarkItemTouchRecyclerAdapter bookmarkTouchAdapter =
                     (BookmarkItemTouchRecyclerAdapter) recyclerView.getAdapter();
@@ -103,8 +96,7 @@ public class RecyclerViewItemBinding {
     /**
      * 메인 프래그먼트의 카테고리 리사이클러뷰의 카테고리 리스트를 관찰한다.
      **/
-    @SuppressWarnings("unchecked")
-    @BindingAdapter("app:categoryTouchItems")
+    @BindingAdapter("categoryTouchItems")
     public static void setCategoryTouchItems(RecyclerView recyclerView, List<Category> categories){
 
         try{

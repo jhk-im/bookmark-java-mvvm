@@ -69,7 +69,7 @@ public class ItemTouchEditViewModel extends BaseObservable {
 
     // fab 버튼 누르고 편집 종료
     // -> 액티비티에서 종료를 진행한다.
-    void onItemsSaved(){
+    private void onItemsSaved(){
         if(mNavigator != null){
             mNavigator.onItemsSaved();
         }
@@ -81,8 +81,8 @@ public class ItemTouchEditViewModel extends BaseObservable {
      * @param categoriesRepository - 카테고리 로컬, 원격 데이터 액세스
      * @param context - 응용프로그램 context 를 강제로 사용함
      **/
-    public ItemTouchEditViewModel(BookmarksRepository bookmarksRepository,
-                         CategoriesRepository categoriesRepository, Context context){
+    ItemTouchEditViewModel(BookmarksRepository bookmarksRepository,
+                           CategoriesRepository categoriesRepository, Context context){
         mBookmarksRepository = bookmarksRepository;
         mCategoriesRepository = categoriesRepository;
         mContext = context.getApplicationContext();

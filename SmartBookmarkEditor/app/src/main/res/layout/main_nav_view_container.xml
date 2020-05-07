@@ -1,356 +1,377 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<layout
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/linear_nav_container"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <!-- header -->
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="2"
-        android:background="?attr/colorPrimary">
-
-        <ImageView
-            android:id="@+id/imageView"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="10dp"
-            android:src="@mipmap/ic_launcher"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/textView2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
-            android:gravity="center"
-            android:text="@string/navigation_view_header_title"
-            android:textColor="#fff"
-            android:textSize="10sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@+id/imageView"
-            app:layout_constraintStart_toEndOf="@+id/imageView"
-            app:layout_constraintTop_toTopOf="@+id/imageView"/>
-
-        <ImageView
-            android:id="@+id/iv_profile_image"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_marginBottom="10dp"
-            android:contentDescription="@string/user_title"
-            android:foregroundGravity="center"
-            android:src="@drawable/ic_user"
-            app:layout_constraintBottom_toTopOf="@+id/tv_user_name"
-            app:layout_constraintEnd_toEndOf="@+id/tv_user_name"
-            app:layout_constraintStart_toStartOf="@+id/tv_user_name" />
-
-        <TextView
-            android:id="@+id/tv_user_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:gravity="center_vertical"
-            android:text="@string/guest_user"
-            android:textColor="#fff"
-            android:textSize="20sp"
-            app:layout_constraintBottom_toTopOf="@+id/tv_user_email"
-            app:layout_constraintEnd_toEndOf="@+id/tv_user_email"
-            app:layout_constraintStart_toStartOf="@+id/tv_user_email" />
-
-        <TextView
-            android:id="@+id/tv_user_email"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:text="@string/data_save"
-            android:textColor="#fff"
-            android:textSize="10sp"
-            app:layout_constraintBottom_toTopOf="@+id/btn_is_sign"
-            app:layout_constraintEnd_toEndOf="@+id/btn_is_sign"
-            app:layout_constraintStart_toStartOf="@+id/btn_is_sign"
-            tools:ignore="SmallSp" />
-
-        <TextView
-            android:id="@+id/btn_is_sign"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:padding="10dp"
-            android:text="@string/login_text"
-            android:textColor="#fff"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    <!-- data binding -->
+    <data>
+        <import type="android.view.View"/>
+        <variable
+            name="viewmodel"
+            type="com.jroomstudio.smartbookmarkeditor.main.MainNavViewModel" />
+    </data>
 
     <LinearLayout
+        android:id="@+id/linear_nav_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:orientation="vertical"
-        android:background="?attr/custom_background">
+        android:orientation="vertical">
 
-
-        <!-- 홈버튼 -->
+        <!-- header -->
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/btn_nav_home"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/nav_item_touch_feedback"
-            android:clickable="true"
-            android:focusable="true">
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:background="?attr/colorPrimary">
 
             <ImageView
-                android:id="@+id/iv_btn_home"
+                android:id="@+id/imageView"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
-                android:foregroundGravity="center"
                 android:layout_marginStart="10dp"
-                android:src="@drawable/ic_black_home"
-                app:layout_constraintBottom_toBottomOf="@+id/tv_home_title"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/tv_home_title"
-                android:contentDescription="@string/home_title" />
-
-            <TextView
-                android:id="@+id/tv_home_title"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_marginStart="30dp"
                 android:layout_marginTop="10dp"
-                android:layout_marginEnd="10dp"
-                android:layout_marginBottom="10dp"
-                android:text="@string/home_title"
-                android:textColor="?attr/custom_text"
-                android:textSize="18sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/iv_btn_home"
+                android:src="@mipmap/ic_launcher"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <!-- 노트 버튼 -->
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/btn_nav_note"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/nav_item_touch_feedback"
-            android:clickable="true"
-            android:focusable="true">
-
-            <ImageView
-                android:id="@+id/iv_btn_note"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:foregroundGravity="center"
-                android:layout_marginStart="10dp"
-                android:src="@drawable/ic_black_note"
-                app:layout_constraintBottom_toBottomOf="@+id/tv_note_title"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/tv_note_title"
-                android:contentDescription="@string/note_title" />
-
             <TextView
-                android:id="@+id/tv_note_title"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_marginStart="30dp"
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
                 android:layout_marginTop="10dp"
-                android:layout_marginEnd="10dp"
                 android:layout_marginBottom="10dp"
-                android:text="@string/note_title"
-                android:textColor="?attr/custom_text"
-                android:textSize="18sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/iv_btn_note"
-                app:layout_constraintTop_toTopOf="parent" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <!-- 푸시알림 스위치  -->
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/btn_nav_notice"
-            android:clickable="true"
-            android:focusable="true"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <ImageView
-                android:id="@+id/iv_notice"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:foregroundGravity="center"
-                android:layout_marginStart="10dp"
-                android:src="@drawable/ic_black_notice"
-                app:layout_constraintBottom_toBottomOf="@+id/tv_notice_title"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/tv_notice_title"
-                android:contentDescription="@string/notice_title" />
-
-            <ImageView
-                android:id="@+id/iv_notice_red_dot"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_notice_red_dot"
-                app:layout_constraintTop_toTopOf="@+id/iv_notice"
-                app:layout_constraintEnd_toEndOf="@+id/iv_notice"/>
-
-            <TextView
-                android:id="@+id/tv_notice_count"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/navigation_view_header_title"
                 android:textColor="#fff"
                 android:textSize="10sp"
-                app:layout_constraintTop_toTopOf="@+id/iv_notice_red_dot"
-                app:layout_constraintBottom_toBottomOf="@+id/iv_notice_red_dot"
-                app:layout_constraintStart_toStartOf="@+id/iv_notice_red_dot"
-                app:layout_constraintEnd_toEndOf="@+id/iv_notice_red_dot" />
-
-            <TextView
-                android:id="@+id/tv_notice_title"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_marginStart="30dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginEnd="10dp"
-                android:layout_marginBottom="10dp"
-                android:text="@string/notice_title"
-                android:textColor="?attr/custom_text"
-                android:textSize="18sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/switch_notice"
-                app:layout_constraintStart_toEndOf="@+id/iv_notice"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <Switch
-                android:id="@+id/switch_notice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp"
-                app:layout_constraintBottom_toBottomOf="@+id/tv_notice_title"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/tv_notice_title" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <!-- 다크테마 스위치 -->
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/cl_nav_theme"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@+id/imageView"
+                app:layout_constraintStart_toEndOf="@+id/imageView"
+                app:layout_constraintTop_toTopOf="@+id/imageView"/>
 
             <ImageView
-                android:id="@+id/iv_dark_theme"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:id="@+id/iv_profile_image"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginBottom="10dp"
+                android:contentDescription="@string/user_title"
                 android:foregroundGravity="center"
-                android:layout_marginStart="10dp"
-                android:src="@drawable/ic_black_dark_theme"
-                app:layout_constraintBottom_toBottomOf="@+id/tv_dark_theme_title"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/tv_dark_theme_title"
-                android:contentDescription="@string/dark_theme_title" />
+                android:src="@drawable/ic_user"
+                app:layout_constraintBottom_toTopOf="@+id/tv_user_name"
+                app:layout_constraintEnd_toEndOf="@+id/tv_user_name"
+                app:layout_constraintStart_toStartOf="@+id/tv_user_name" />
 
             <TextView
-                android:id="@+id/tv_dark_theme_title"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_marginStart="30dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginEnd="10dp"
-                android:layout_marginBottom="10dp"
-                android:text="@string/dark_theme_title"
-                android:textColor="?attr/custom_text"
-                android:textSize="18sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/switch_dark_theme"
-                app:layout_constraintStart_toEndOf="@+id/iv_dark_theme"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <Switch
-                android:id="@+id/switch_dark_theme"
+                android:id="@+id/tv_user_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp"
-                app:layout_constraintBottom_toBottomOf="@+id/tv_dark_theme_title"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/tv_dark_theme_title" />
-
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-        <!--정보-->
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/cl_nav_info"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <ImageView
-                android:id="@+id/iv_info"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:foregroundGravity="center"
-                android:layout_marginStart="10dp"
-                android:src="@drawable/ic_black_info"
-                app:layout_constraintBottom_toBottomOf="@+id/tv_info_title"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/tv_info_title"
-                android:contentDescription="@string/info_title" />
+                android:layout_marginBottom="10dp"
+                android:gravity="center_vertical"
+                android:text="@string/guest_user"
+                android:textColor="#fff"
+                android:textSize="20sp"
+                app:layout_constraintBottom_toTopOf="@+id/tv_user_email"
+                app:layout_constraintEnd_toEndOf="@+id/tv_user_email"
+                app:layout_constraintStart_toStartOf="@+id/tv_user_email" />
 
             <TextView
-                android:id="@+id/tv_info_title"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="10dp"
-                android:text="@string/info_title"
-                android:textColor="?attr/custom_text"
-                android:textSize="15sp"
+                android:id="@+id/tv_user_email"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:text="@string/data_save"
+                android:textColor="#fff"
+                android:textSize="10sp"
+                app:layout_constraintBottom_toTopOf="@+id/btn_is_sign"
+                app:layout_constraintEnd_toEndOf="@+id/btn_is_sign"
+                app:layout_constraintStart_toStartOf="@+id/btn_is_sign"
+                tools:ignore="SmallSp" />
+
+            <TextView
+                android:id="@+id/btn_is_sign"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="10dp"
+                android:text="@string/login_text"
+                android:textColor="#fff"
+                android:onClick="@{()->viewmodel.onClickLogin()}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/iv_info"
-                app:layout_constraintTop_toTopOf="parent" />
-
+                app:layout_constraintStart_toStartOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <TextView
-            android:id="@+id/btn_nav_pipp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="10dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:text="@string/pipp"
-            android:textColor="?attr/custom_text"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:background="?attr/custom_background">
 
-        <TextView
-            android:id="@+id/btn_nav_osl"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="10dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:text="@string/open_source_license"
-            android:textColor="?attr/custom_text"/>
+
+            <!-- 홈버튼 -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/btn_nav_home"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/nav_item_touch_feedback"
+                android:onClick="@{()->viewmodel.onClickHome()}"
+                android:clickable="@{viewmodel.isHomeSelected ? false : true}"
+                android:focusable="@{viewmodel.isHomeSelected ? false : true}">
+
+                <ImageView
+                    android:id="@+id/iv_btn_home"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:foregroundGravity="center"
+                    android:layout_marginStart="10dp"
+                    android:src="@drawable/ic_black_home"
+                    app:layout_constraintBottom_toBottomOf="@+id/tv_home_title"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/tv_home_title"
+                    android:contentDescription="@string/home_title" />
+
+                <TextView
+                    android:id="@+id/tv_home_title"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:text="@string/home_title"
+                    android:textColor="?attr/custom_text"
+                    android:textSize="18sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/iv_btn_home"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <!-- 노트 버튼 -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/btn_nav_note"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/nav_item_touch_feedback"
+                android:onClick="@{()->viewmodel.onClickNote()}"
+                android:clickable="@{viewmodel.isHomeSelected ? true : false}"
+                android:focusable="@{viewmodel.isHomeSelected ? true : false}">
+
+                <ImageView
+                    android:id="@+id/iv_btn_note"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:foregroundGravity="center"
+                    android:layout_marginStart="10dp"
+                    android:src="@drawable/ic_black_note"
+                    app:layout_constraintBottom_toBottomOf="@+id/tv_note_title"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/tv_note_title"
+                    android:contentDescription="@string/note_title" />
+
+                <TextView
+                    android:id="@+id/tv_note_title"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:text="@string/note_title"
+                    android:textColor="?attr/custom_text"
+                    android:textSize="18sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/iv_btn_note"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <!-- 푸시알림 스위치  -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/btn_nav_notice"
+                android:clickable="true"
+                android:focusable="true"
+                android:onClick="@{()->viewmodel.onClickNotice()}"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/iv_notice"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:foregroundGravity="center"
+                    android:layout_marginStart="10dp"
+                    android:src="@drawable/ic_black_notice"
+                    app:layout_constraintBottom_toBottomOf="@+id/tv_notice_title"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/tv_notice_title"
+                    android:contentDescription="@string/notice_title" />
+
+                <ImageView
+                    android:id="@+id/iv_notice_red_dot"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_notice_red_dot"
+                    android:visibility="@{viewmodel.notReadCountVisible ? View.VISIBLE : View.GONE}"
+                    app:layout_constraintTop_toTopOf="@+id/iv_notice"
+                    app:layout_constraintEnd_toEndOf="@+id/iv_notice"/>
+
+                <TextView
+                    android:id="@+id/tv_notice_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#fff"
+                    android:textSize="10sp"
+                    android:text="@{viewmodel.notReadNoticeCount}"
+                    android:visibility="@{viewmodel.notReadCountVisible ? View.VISIBLE : View.GONE}"
+                    app:layout_constraintTop_toTopOf="@+id/iv_notice_red_dot"
+                    app:layout_constraintBottom_toBottomOf="@+id/iv_notice_red_dot"
+                    app:layout_constraintStart_toStartOf="@+id/iv_notice_red_dot"
+                    app:layout_constraintEnd_toEndOf="@+id/iv_notice_red_dot" />
+
+                <TextView
+                    android:id="@+id/tv_notice_title"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:text="@string/notice_title"
+                    android:textColor="?attr/custom_text"
+                    android:textSize="18sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/switch_notice"
+                    app:layout_constraintStart_toEndOf="@+id/iv_notice"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <Switch
+                    android:id="@+id/switch_notice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/tv_notice_title"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/tv_notice_title" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <!-- 다크테마 스위치 -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cl_nav_theme"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/iv_dark_theme"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:foregroundGravity="center"
+                    android:layout_marginStart="10dp"
+                    android:src="@drawable/ic_black_dark_theme"
+                    app:layout_constraintBottom_toBottomOf="@+id/tv_dark_theme_title"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/tv_dark_theme_title"
+                    android:contentDescription="@string/dark_theme_title" />
+
+                <TextView
+                    android:id="@+id/tv_dark_theme_title"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:text="@string/dark_theme_title"
+                    android:textColor="?attr/custom_text"
+                    android:textSize="18sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/switch_dark_theme"
+                    app:layout_constraintStart_toEndOf="@+id/iv_dark_theme"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <Switch
+                    android:id="@+id/switch_dark_theme"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/tv_dark_theme_title"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/tv_dark_theme_title" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+            <!--정보-->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cl_nav_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/iv_info"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:foregroundGravity="center"
+                    android:layout_marginStart="10dp"
+                    android:src="@drawable/ic_black_info"
+                    app:layout_constraintBottom_toBottomOf="@+id/tv_info_title"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/tv_info_title"
+                    android:contentDescription="@string/info_title" />
+
+                <TextView
+                    android:id="@+id/tv_info_title"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/info_title"
+                    android:textColor="?attr/custom_text"
+                    android:textSize="15sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/iv_info"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <TextView
+                android:id="@+id/btn_nav_pipp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:onClick="@{()->viewmodel.onClickPIPP()}"
+                android:text="@string/pipp"
+                android:textColor="?attr/custom_text"/>
+
+            <TextView
+                android:id="@+id/btn_nav_osl"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:onClick="@{()->viewmodel.onClickOSL()}"
+                android:text="@string/open_source_license"
+                android:textColor="?attr/custom_text"/>
+
+        </LinearLayout>
 
     </LinearLayout>
 
-</LinearLayout>
+</layout>

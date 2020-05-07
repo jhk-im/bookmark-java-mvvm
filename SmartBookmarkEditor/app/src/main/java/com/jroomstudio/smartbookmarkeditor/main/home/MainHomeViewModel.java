@@ -43,8 +43,6 @@ public class MainHomeViewModel extends BaseObservable {
     // 현재 선택된 카테고리 옵저버블 변수
     public final ObservableField<Category> currentCategory = new ObservableField<>();
 
-
-
     /**
      * - 해당 뷰모델과 연결될 액티비티,프래그먼트 의 Context
      * - leak 을 피하려면 응용 프로그램 context 여야 한다.

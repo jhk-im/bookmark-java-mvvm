@@ -178,6 +178,4 @@ public class SbeFirebaseMessagingService extends FirebaseMessagingService {
         }
     }
 
-
-
 }

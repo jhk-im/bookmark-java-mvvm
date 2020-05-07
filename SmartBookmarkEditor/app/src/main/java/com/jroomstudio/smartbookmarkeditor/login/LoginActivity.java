@@ -100,7 +100,7 @@ public class LoginActivity extends AppCompatActivity implements LoginNavigator {
         });
         // 게스트유저
         btnGusetUser.setOnClickListener(v -> {
-            onBackPressed();
+            finish();
         });
         // 개인정보처리방침
         btnPIPP.setOnClickListener(v -> {
