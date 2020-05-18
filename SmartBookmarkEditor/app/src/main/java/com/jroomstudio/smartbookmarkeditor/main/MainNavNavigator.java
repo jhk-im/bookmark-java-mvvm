@@ -4,8 +4,9 @@ public interface MainNavNavigator {
 
     void onClickLogin();
     void onClickHome();
-    void onClickNote();
     void onClickNotice();
     void onClickPIPP();
     void onClickOSL();
+    void loginCompleted(boolean refresh);
+    void loginFailed(boolean logout);
 }

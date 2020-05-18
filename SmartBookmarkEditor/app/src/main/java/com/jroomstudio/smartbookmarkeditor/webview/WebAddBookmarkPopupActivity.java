@@ -43,13 +43,22 @@ public class WebAddBookmarkPopupActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         // dark 모드 상태 가져오기
-        SharedPreferences spActStatus = getSharedPreferences("act_status", MODE_PRIVATE);
+        SharedPreferences spActStatus = getSharedPreferences("user_data", MODE_PRIVATE);
         SharedPreferences.Editor editor = spActStatus.edit();
         editor.apply();
-        // 다크모드이면 다크모드로 테마변경
-        if(spActStatus.getBoolean("dark_mode",true)){
-            setTheme(R.style.DarkAppPopup);
+
+        // 멤버, 게스트 구분
+        if(spActStatus.getBoolean("login_status",false)){
+            // 로그인 멤버
+
+        }else{
+            // 게스트 유저
+            // 다크모드이면 다크모드로 테마변경
+            if(spActStatus.getBoolean("dark_theme",true)){
+                setTheme(R.style.DarkAppPopup);
+            }
         }
+
         // 상태바 제거하고 전체화면 모드로
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);

@@ -1,5 +1,7 @@
 package com.jroomstudio.smartbookmarkeditor.main;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import androidx.databinding.BaseObservable;
@@ -8,11 +10,16 @@ import androidx.databinding.ObservableBoolean;
 import androidx.databinding.ObservableField;
 
 import com.jroomstudio.smartbookmarkeditor.BR;
+import com.jroomstudio.smartbookmarkeditor.data.member.JwtToken;
+import com.jroomstudio.smartbookmarkeditor.data.member.Member;
+import com.jroomstudio.smartbookmarkeditor.data.member.source.MemberDataSource;
+import com.jroomstudio.smartbookmarkeditor.data.member.source.MemberRepository;
 import com.jroomstudio.smartbookmarkeditor.data.notice.Notice;
 import com.jroomstudio.smartbookmarkeditor.data.notice.NoticeDataSource;
 import com.jroomstudio.smartbookmarkeditor.data.notice.NoticeLocalDataSource;
 
 import java.util.List;
+import java.util.Objects;
 
 
 /**
@@ -28,17 +35,16 @@ public class MainNavViewModel extends BaseObservable {
      * 해당 뷰모델과 연결된 액티비티의 UI 를 관찰하고 컨트롤한다.
      **/
 
-    // Home 버튼과 Note 버튼 구분
-    public ObservableBoolean isHomeSelected = new ObservableBoolean();
-
     // 읽지않은 알림 카운트
     public ObservableField<String> notReadNoticeCount = new ObservableField<>();
     public ObservableBoolean isNotReadCount = new ObservableBoolean();
+
     // 읽지않은 알림이 있는지 여부
     @Bindable
     public boolean isNotReadCountVisible() {
         return isNotReadCount.get();
     }
+
 
     // 알림 객체 로컬 데이터 소스
     private NoticeLocalDataSource mNoticeLocalDataSource;
@@ -46,25 +52,34 @@ public class MainNavViewModel extends BaseObservable {
     // 액티비티 네비게이터
     private MainNavNavigator mNavigator;
 
+    // 회원 원격 데이터베이스
+    private MemberRepository mMemberRepository;
+
+    // 액티비티 상태저장 Shared Preferences
+    private SharedPreferences spActStatus;
+
+    private Context mContext;
+
     /**
      * Main Nav Activity ViewModel 생성자
      * @param noticeLocalDataSource - 알림 객체 로컬 데이터 액세스
      **/
     public MainNavViewModel(NoticeLocalDataSource noticeLocalDataSource,
-                            MainNavNavigator navNavigator){
+                            MainNavNavigator navNavigator,
+                            MemberRepository memberRepository,
+                            SharedPreferences sharedPreferences,
+                            Context context){
         mNoticeLocalDataSource = noticeLocalDataSource;
         mNavigator = navNavigator;
+        mMemberRepository = memberRepository;
+        spActStatus = sharedPreferences;
+        mContext = context;
     }
-
 
     /**
      * 첫 시작점
      **/
     public void onLoaded(){
-        // 첫 시작은 항상 Home 으로
-        isHomeSelected.set(true);
-        notifyPropertyChanged(BR._all);
-
         // notification 상태
         setupNoticeLocalDataSource();
     }
@@ -97,6 +112,63 @@ public class MainNavViewModel extends BaseObservable {
     }
 
     /**
+     * 로그인 하여 jwt 토큰을 가져온다.
+     * Main Activity 에서 호출
+     **/
+    void getTokenRemoteRepository(){
+        // 로그인하고 토큰 받아오기
+        mMemberRepository.getToken(
+                Objects.requireNonNull(spActStatus.getString("member_email", "")),
+                Objects.requireNonNull(spActStatus.getString("auto_password", "")),
+                spActStatus.getInt("login_type", 0),
+                new MemberDataSource.LoadTokenCallback() {
+                    @Override
+                    public void onTokenLoaded(JwtToken token) {
+                        // 토큰 저장
+                        // 로그인 성공
+                        SharedPreferences.Editor editor = spActStatus.edit();
+                        editor.putBoolean("login_status",true);
+                        editor.putString("jwt",token.getJwt());
+                        editor.apply();
+                        mNavigator.loginCompleted(true);
+                    }
+
+                    @Override
+                    public void onTokenNotAvailable() {
+                        // 토큰이 오지않으면
+                        // 회원가입이라고 판단하여 데이터베이스에 저장
+                        Member newMember = new Member(
+                                Objects.requireNonNull(spActStatus.getString("member_email", "")),
+                                Objects.requireNonNull(spActStatus.getString("member_name", "")),
+                                Objects.requireNonNull(spActStatus.getString("photo_url", "")),
+                                Objects.requireNonNull(spActStatus.getString("auto_password", "")),
+                                true,
+                                true,
+                                spActStatus.getInt("login_type", 0),
+                                true
+                        );
+                        // 회원가입
+                        mMemberRepository.saveMember(newMember);
+                        SharedPreferences.Editor editor = spActStatus.edit();
+                        editor.putBoolean("login_status",false);
+                        editor.putString("jwt","");
+                        editor.apply();
+                        getTokenRemoteRepository();
+                    }
+
+                    @Override
+                    public void onLoginFailed() {
+                        // 회원가입할수 없는 유저
+                        // ex ) 구글로 이미 가입한 이메일주소와 같은걸로 페이스북 회원가입 시도할 때
+                        // 로그아웃 처리하고 리셋
+                        // 로그아웃
+                        mNavigator.loginFailed(false);
+                    }
+                });
+    }
+
+
+    /**
      * 클릭메소드
      **/
     public void onClickLogin(){
@@ -107,26 +179,11 @@ public class MainNavViewModel extends BaseObservable {
 
     // 홈버튼 클릭
     public void onClickHome(){
-        isHomeSelected.set(true);
-        notifyPropertyChanged(BR._all);
         if(mNavigator!=null){
             mNavigator.onClickHome();
         }
     }
-    // 노트버튼 클릭
-    public void onClickNote(){
-        isHomeSelected.set(false);
-        notifyPropertyChanged(BR._all);
-        if(mNavigator!=null){
-            mNavigator.onClickNote();
-        }
-    }
 
-    // 버튼 재설정
-    void replaceHomeButton(boolean status){
-        isHomeSelected.set(status);
-        notifyPropertyChanged(BR._all);
-    }
     // 알림버튼 클릭
     public void onClickNotice(){
         if(mNavigator!=null){

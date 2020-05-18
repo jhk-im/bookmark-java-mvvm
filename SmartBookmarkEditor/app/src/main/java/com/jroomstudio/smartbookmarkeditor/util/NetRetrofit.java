@@ -19,7 +19,7 @@ public class NetRetrofit {
     private static NetRetrofit INSTANCE = null;
 
     // 연결할 URL
-    public static String mBaseUrl;
+    private String mBaseUrl;
 
     // 인스턴스 리턴
     public static NetRetrofit getInstance(String url) {
@@ -41,10 +41,9 @@ public class NetRetrofit {
     Retrofit retrofit = new Retrofit.Builder()
             .baseUrl(mBaseUrl)
             .addConverterFactory(GsonConverterFactory.create())
-            //.client(client) --> 클라이언트 추가
             .build();
 
-    NetRetrofitService service = retrofit.create(NetRetrofitService.class);
+    private NetRetrofitService service = retrofit.create(NetRetrofitService.class);
 
     public NetRetrofitService getService() {
         return service;

@@ -15,7 +15,7 @@ import com.jroomstudio.smartbookmarkeditor.data.member.Member;
 public interface MemberDao {
 
     // 멤버객체 가져오기
-    @Query("SELECT * FROM member WHERE email = :email")
+    @Query("SELECT * FROM member WHERE member_email = :email")
     Member getMemberByEmail(String email);
 
     // Member 객체 저장 혹은 업데이트
@@ -31,7 +31,7 @@ public interface MemberDao {
     void updatePushNotice(boolean pushNotice);
 
     // 로그인 상태 업데이트
-    @Query("UPDATE member SET login_satus = :loginStatus")
+    @Query("UPDATE member SET login_status = :loginStatus")
     void updateLoginStatus(boolean loginStatus);
 
     // 멤버 삭제

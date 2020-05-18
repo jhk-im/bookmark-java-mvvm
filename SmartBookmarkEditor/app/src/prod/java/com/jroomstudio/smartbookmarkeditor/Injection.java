@@ -1,6 +1,7 @@
 package com.jroomstudio.smartbookmarkeditor;
 
 import android.content.Context;
+
 import androidx.annotation.NonNull;
 
 import com.jroomstudio.smartbookmarkeditor.data.bookmark.source.BookmarksRepository;
@@ -11,6 +12,8 @@ import com.jroomstudio.smartbookmarkeditor.data.category.source.CategoriesReposi
 import com.jroomstudio.smartbookmarkeditor.data.category.source.local.CategoriesLocalDataSource;
 import com.jroomstudio.smartbookmarkeditor.data.category.source.local.CategoriesLocalDatabase;
 import com.jroomstudio.smartbookmarkeditor.data.category.source.remote.CategoriesRemoteDataSource;
+import com.jroomstudio.smartbookmarkeditor.data.member.source.MemberRepository;
+import com.jroomstudio.smartbookmarkeditor.data.member.source.remote.MemberRemoteDataSource;
 import com.jroomstudio.smartbookmarkeditor.util.AppExecutors;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -41,5 +44,15 @@ public class Injection {
         );
     }
 
+    public static MemberRepository provideMemberRepository(@NonNull Context context){
+        checkNotNull(context);
+
+        // 로컬 데이터베이스 생성
+        // MemberDatabase database = MemberDatabase.getInstance(context);
+
+        return MemberRepository.getInstance(
+                MemberRemoteDataSource.getInstance(new AppExecutors())
+        );
+    }
 
 }

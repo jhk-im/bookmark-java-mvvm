@@ -43,8 +43,8 @@ public class MemberLocalDataSource implements MemberDataSource {
 
     // 로컬에서 Member 객체 찾기
     @Override
-    public void getMember(@NonNull String email, @NonNull String password,
-                          @NonNull LoadDataCallback callback) {
+    public void getToken(@NonNull String email, @NonNull String password,
+                          int loginType,@NonNull LoadTokenCallback callback) {
         checkNotNull(email);
         checkNotNull(password);
         checkNotNull(callback);
@@ -52,9 +52,9 @@ public class MemberLocalDataSource implements MemberDataSource {
             final Member member = mMemberDao.getMemberByEmail(email);
             mAppExecutors.getMainThread().execute(() ->{
                 if(member != null){
-                    callback.onDataLoaded(member);
+                    //
                 }else{
-                    callback.onDataNotAvailable();
+                    callback.onTokenNotAvailable();
                 }
             });
         };

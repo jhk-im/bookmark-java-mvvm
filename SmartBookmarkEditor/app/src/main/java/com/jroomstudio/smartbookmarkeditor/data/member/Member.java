@@ -5,8 +5,15 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.Ignore;
+import androidx.room.PrimaryKey;
 
-import com.google.common.base.Objects;
+import com.google.android.gms.common.internal.Objects;
+import com.google.gson.annotations.SerializedName;
+
+import java.util.UUID;
+
+import javax.annotation.Nonnull;
 
 /**
  * 회원가입을 위한 Member 불변 모델클래스
@@ -15,17 +22,27 @@ import com.google.common.base.Objects;
 public class Member {
 
     /**
+     * notice 프라이머리 키
+     **/
+    @PrimaryKey
+    @NonNull
+    @ColumnInfo(name = "id")
+    private final String mId;
+
+    /**
      * 원격 데이터베이스에서 id로 사용될 중복될 수 없는 값
      **/
     @NonNull
-    @ColumnInfo(name = "email")
+    @ColumnInfo(name = "member_email")
+    @SerializedName("member_email")
     private final String mEmail;
 
     /**
      * 사용자의 이름
      **/
     @NonNull
-    @ColumnInfo(name = "name")
+    @ColumnInfo(name = "member_name")
+    @SerializedName("member_name")
     private final String mName;
 
     /**
@@ -33,6 +50,7 @@ public class Member {
      **/
     @NonNull
     @ColumnInfo(name = "photo_url")
+    @SerializedName("photo_url")
     private final String mPhotoUrl;
 
     /**
@@ -41,54 +59,88 @@ public class Member {
      **/
     @NonNull
     @ColumnInfo(name = "auto_password")
+    @SerializedName("auto_password")
     private final String mAutoPassword;
 
     /**
      * 다크테마 상태
      **/
     @ColumnInfo(name = "dark_theme")
+    @SerializedName("dark_theme")
     private final boolean mDarkTheme;
 
     /**
      * 푸쉬 알림 상태
      **/
     @ColumnInfo(name = "push_notice")
+    @SerializedName("push_notice")
     private final boolean mPushNotice;
-
-    /**
-     * 푸쉬 알림 상태
-     **/
-    @ColumnInfo(name = "login_satus")
-    private final boolean mLoginStatus;
 
     /**
      * 로그인 타입 (1 페이스북 / 0 구글 )
      **/
     @ColumnInfo(name = "login_type")
+    @SerializedName("login_type")
     private final int mLoginType;
 
+    /**
+     * 푸쉬 알림 상태
+     **/
+    @ColumnInfo(name = "login_status")
+    @SerializedName("login_status")
+    private final boolean mLoginStatus;
 
+
+    /**
+     * (새로운 카테고리 생성)
+     *
+     **/
+
+    @Ignore
+    public Member(@Nonnull String email,
+                  @Nonnull String name,
+                  @Nonnull String photoUrl,
+                  @Nonnull String autoPassword,
+                  boolean darkTheme,
+                  boolean pushNotice,
+                  int loginType,
+                  boolean loginStatus){
+        this(UUID.randomUUID().toString(),
+                email,
+                name,
+                photoUrl,
+                autoPassword,
+                darkTheme,
+                pushNotice,
+                loginType,
+                loginStatus);
+    }
 
     /**
      * 생성자
      **/
-    public Member(@NonNull String email,
+    public Member(@Nonnull String id,
+                  @NonNull String email,
                   @NonNull String name,
                   @NonNull String photoUrl,
                   @NonNull String autoPassword,
                   boolean darkTheme,
                   boolean pushNotice,
-                  boolean loginStatus,
-                  int loginType){
+                  int loginType,
+                  boolean loginStatus){
+        this.mId = id;
         this.mEmail = email;
         this.mName = name;
         this.mPhotoUrl = photoUrl;
         this.mAutoPassword = autoPassword;
         this.mDarkTheme = darkTheme;
         this.mPushNotice = pushNotice;
-        this.mLoginStatus = loginStatus;
         this.mLoginType = loginType;
+        this.mLoginStatus = loginStatus;
     }
+
+    @Nonnull
+    public String getId() { return mId; }
 
     @NonNull
     public String getEmail() { return mEmail; }
@@ -115,14 +167,15 @@ public class Member {
         if(this == obj) return true;
         if(obj == null || getClass() != obj.getClass()) return false;
         Member member = (Member) obj;
-        return  Objects.equal(mEmail, member.getEmail()) &&
-                Objects.equal(mName, member.getName()) &&
-                Objects.equal(mPhotoUrl, member.getPhotoUrl()) &&
-                Objects.equal(mAutoPassword, member.getAutoPassword()) &&
-                Objects.equal(mDarkTheme, member.isDarkTheme()) &&
-                Objects.equal(mPushNotice, member.isPushNotice()) &&
-                Objects.equal(mLoginStatus, member.isLoginStatus()) &&
-                Objects.equal(mLoginType, member.getLoginType());
+        return  com.google.android.gms.common.internal.Objects.equal(mId, member.getId()) &&
+                com.google.android.gms.common.internal.Objects.equal(mEmail, member.getEmail()) &&
+                com.google.android.gms.common.internal.Objects.equal(mName, member.getName()) &&
+                com.google.android.gms.common.internal.Objects.equal(mPhotoUrl, member.getPhotoUrl()) &&
+                com.google.android.gms.common.internal.Objects.equal(mAutoPassword, member.getAutoPassword()) &&
+                com.google.android.gms.common.internal.Objects.equal(mDarkTheme, member.isDarkTheme()) &&
+                com.google.android.gms.common.internal.Objects.equal(mPushNotice, member.isPushNotice()) &&
+                com.google.android.gms.common.internal.Objects.equal(mLoginStatus, member.isLoginStatus()) &&
+                com.google.android.gms.common.internal.Objects.equal(mLoginType, member.getLoginType());
     }
 
     @Override
@@ -131,13 +184,13 @@ public class Member {
     @NonNull
     @Override
     public String toString() {
-        return mEmail+"\n"+
-                mName+"\n" +
-                mPhotoUrl+"\n" +
-                mAutoPassword+"\n" +
-                "DarkTheme : "+mDarkTheme+"\n" +
-                "Notice : "+mPushNotice+"\n" +
-                "Login Status : "+mLoginStatus+"\n" +
-                "LoginType : "+mLoginType+"\n"; }
-
+        return  "member_email : "+ mEmail+"\n"+
+                "member_name : "+mName+"\n" +
+                "photo_url : "+mPhotoUrl+"\n" +
+                "auto_password : "+mAutoPassword+"\n" +
+                "dark_theme : "+mDarkTheme+"\n" +
+                "push_notice : "+mPushNotice+"\n" +
+                "login_status : "+mLoginStatus+"\n" +
+                "login_type : "+mLoginType+"\n";
+    }
 }

@@ -28,6 +28,7 @@ import com.jroomstudio.smartbookmarkeditor.main.MainActivity;
 import com.jroomstudio.smartbookmarkeditor.util.FacebookLoginCallback;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 public class LoginActivity extends AppCompatActivity implements LoginNavigator {
 
@@ -37,7 +38,7 @@ public class LoginActivity extends AppCompatActivity implements LoginNavigator {
     // x 버튼
     private ImageView btnClose;
     // 각각의 로그인버튼
-    private ConstraintLayout btnGoogle,btnGusetUser,btnFacebook;
+    private ConstraintLayout btnGoogle,btnGuestUser,btnFacebook;
     // 개인정보처리방침, 이용약관 버튼
     private TextView btnPIPP;
 
@@ -56,12 +57,13 @@ public class LoginActivity extends AppCompatActivity implements LoginNavigator {
     private FacebookLoginCallback mFacebookLoginCallback;
     private CallbackManager mFacebookCallbackManager;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_act);
         // 액티비티 상태 가져오기
-        spActStatus = getSharedPreferences("act_status", MODE_PRIVATE);
+        spActStatus = getSharedPreferences("user_data", MODE_PRIVATE);
         SharedPreferences.Editor editor = spActStatus.edit();
         editor.apply();
 
@@ -70,10 +72,11 @@ public class LoginActivity extends AppCompatActivity implements LoginNavigator {
         assert actionBar != null;
         actionBar.hide();
 
+
         // 버튼셋팅
         btnClose = (ImageView) findViewById(R.id.btn_login_close);
         btnGoogle = (ConstraintLayout) findViewById(R.id.btn_google_login);
-        btnGusetUser = (ConstraintLayout) findViewById(R.id.btn_guest);
+        btnGuestUser = (ConstraintLayout) findViewById(R.id.btn_guest);
         btnFacebook = (ConstraintLayout) findViewById(R.id.btn_facebook_login);
 
         // 밑줄있는 개인정보 처리방침 버튼
@@ -99,7 +102,7 @@ public class LoginActivity extends AppCompatActivity implements LoginNavigator {
            // LoginManager.getInstance().logOut();
         });
         // 게스트유저
-        btnGusetUser.setOnClickListener(v -> {
+        btnGuestUser.setOnClickListener(v -> {
             finish();
         });
         // 개인정보처리방침
@@ -148,13 +151,13 @@ public class LoginActivity extends AppCompatActivity implements LoginNavigator {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
             //Log.e("email",account.getEmail());
             //Log.e("photoUrl",account.getPhotoUrl()+"");
-            //Log.e("name",account.getDisplayName());
+            //Log.e("id",account.getId());
             // 메인 액티비티로 이동하고 로그인 완료
             moveToMainActivity(
-                    account.getId(),
+                    Objects.requireNonNull(account).getId(),
                     account.getEmail(),
                     account.getDisplayName(),
-                    String.valueOf(account.getPhotoUrl()));
+                    String.valueOf(account.getPhotoUrl()),0);
             // 받아오는데 성공하면 로그아웃
             mGoogleSignInClient.signOut();
 
@@ -179,7 +182,7 @@ public class LoginActivity extends AppCompatActivity implements LoginNavigator {
         }
         // 2. 페이스북 로그인
         if(requestCode != GOOGLE_SIGN_IN){
-            mFacebookCallbackManager.onActivityResult(requestCode,resultCode,data);
+;            mFacebookCallbackManager.onActivityResult(requestCode,resultCode,data);
         }
     }
 
@@ -187,14 +190,15 @@ public class LoginActivity extends AppCompatActivity implements LoginNavigator {
      * 로그인 하여 얻게된 유저의 정보를 저장하고 로그인 완료한 후 메인액티비티로 이동한다.
      **/
     @Override
-    public void moveToMainActivity(String id, String email, String name, String url) {
-        // 게스트유저 false
+    public void moveToMainActivity(String id, String email, String name, String url,int type) {
+        // 로그인 true
         SharedPreferences.Editor editor = spActStatus.edit();
-        editor.putBoolean("guest_user",false);
-        editor.putString("user_id",id);
-        editor.putString("user_email",email);
-        editor.putString("user_name",name);
-        editor.putString("user_photo_url",url);
+        editor.putBoolean("login_status",false);
+        editor.putString("auto_password",id);
+        editor.putString("member_email",email);
+        editor.putString("member_name",name);
+        editor.putString("photo_url",url);
+        editor.putInt("login_type",type);
         editor.apply();
         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
         setResult(MainActivity.LOGIN_COMPLETE, intent);

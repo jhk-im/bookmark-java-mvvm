@@ -78,7 +78,7 @@ public class FacebookLoginCallback implements FacebookCallback<LoginResult> {
         }
         if(mNavigator != null){
             LoginManager.getInstance().logOut();
-            mNavigator.moveToMainActivity(mId,mEmail,mName,mUrl);
+            mNavigator.moveToMainActivity(mId,mEmail,mName,mUrl,1);
         }
     }
 }

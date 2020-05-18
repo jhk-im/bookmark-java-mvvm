@@ -3,6 +3,7 @@ package com.jroomstudio.smartbookmarkeditor.data.member.source;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.jroomstudio.smartbookmarkeditor.data.member.JwtToken;
 import com.jroomstudio.smartbookmarkeditor.data.member.Member;
 
 import java.util.LinkedHashMap;
@@ -16,11 +17,10 @@ public class MemberRepository implements MemberDataSource {
     private static MemberRepository INSTANCE = null;
 
     // 로컬 데이터베이스
-    private final MemberDataSource mLocalDataSource;
+    //private final MemberDataSource mLocalDataSource;
 
     // 원격 데이터베이스
     private final MemberDataSource mRemoteDataSource;
-
     /**
      * 로컬과 원격 사이에서 중간역할
      * 데이터의 변경이 없을 시 이곳에서 꺼내 쓰게된다.
@@ -33,23 +33,23 @@ public class MemberRepository implements MemberDataSource {
     boolean mCacheDirty = false;
 
     // 다이렉트 인스턴스 방지
-    private MemberRepository(@NonNull MemberDataSource localDataSource,
+    private MemberRepository(//@NonNull MemberDataSource localDataSource,
                              @NonNull MemberDataSource remoteDataSource){
-        mLocalDataSource = localDataSource;
+        //mLocalDataSource = localDataSource;
         mRemoteDataSource = remoteDataSource;
     }
 
     /**
      * 싱글턴 인스턴스를 생성
      *
-     * @param localDataSource 로컬데이터 소스
      * @param remoteDataSource 원격 데이터 소스
      * @return the {@link MemberRepository} instance
      */
-    public static MemberRepository getInstance(MemberDataSource localDataSource,
+    public static MemberRepository getInstance(//MemberDataSource localDataSource,
                                                MemberDataSource remoteDataSource){
         if(INSTANCE == null){
-            INSTANCE = new MemberRepository(localDataSource,remoteDataSource);
+            INSTANCE = new MemberRepository(//localDataSource,
+                    remoteDataSource);
         }
         return INSTANCE;
     }
@@ -79,56 +79,39 @@ public class MemberRepository implements MemberDataSource {
         mCacheDirty = false;
     }
 
-    // 멤버 정보 가져오기
+    // 이메일과 패스워드로 토큰 받기
     @Override
-    public void getMember(@NonNull String email,
+    public void getToken(@NonNull String email,
                           @NonNull String password,
-                          @NonNull LoadDataCallback callback) {
+                          int loginType,
+                          @NonNull LoadTokenCallback callback) {
         checkNotNull(email);
         checkNotNull(password);
         checkNotNull(callback);
 
-        Member cachedMember = getMemberWithEmail(email);
-
-        // 캐시 메모리 멤버 객체가 null 이 아니고 변화가 없으면 바로 콜백
-        if(mCached != null && !mCacheDirty){
-            callback.onDataLoaded(cachedMember);
-        }
-
-        //1. 로컬 데이터베이스에 저장되어 있는지 확인한다. ( = 회원가입이 되어있는지 구분)
-        mLocalDataSource.getMember("", "", new LoadDataCallback() {
-            @Override
-            public void onDataLoaded(Member member) {
-                // 로컬에 저장된 email 과 password 로 원격에 로그인한다.
-                mRemoteDataSource.getMember(member.getEmail(), member.getAutoPassword(),
-                        new LoadDataCallback() {
+        // 로컬에 저장된 email 과 password 로 원격에 로그인한다.
+        mRemoteDataSource.getToken(email, password,loginType,
+                new LoadTokenCallback() {
                     @Override
-                    public void onDataLoaded(Member member) {
+                    public void onTokenLoaded(JwtToken token) {
                         // 멤버 정보 가져오기 성공
-                        refreshCache(member);
-                        callback.onDataLoaded(member);
+                        callback.onTokenLoaded(token);
                     }
 
                     @Override
-                    public void onDataNotAvailable() {
+                    public void onTokenNotAvailable() {
                         // 데이터가 없다면
                         // 1. 첫 회원가입
-                        // 2. 로그인 타입 (구글, 페이스북) 이 다름
-                        // 3. 네트워크 에러
-                        // 3가지로 구분하여 원격 데이터 소스에서 진행
+                        callback.onTokenNotAvailable();
+                    }
+
+                    @Override
+                    public void onLoginFailed() {
+                        // 비밀번호가 다를경우
+                        // 이미 가입되어있는 아이디이다.
+                        callback.onLoginFailed();
                     }
                 });
-            }
-
-            @Override
-            public void onDataNotAvailable() {
-                //2. 로컬에 없다면 게스트 유저이다.
-                // 다시 로그인을 한 후 로컬에 추가 하거나 게스트유저로 계속 사용하거나 선택
-                callback.onDataNotAvailable();
-            }
-        });
-
-
     }
 
     // 회원 탈퇴
@@ -136,7 +119,7 @@ public class MemberRepository implements MemberDataSource {
     public void deleteMember(@NonNull String email, @NonNull String password) {
         checkNotNull(email);
         checkNotNull(password);
-        mLocalDataSource.deleteMember(email,password);
+        //mLocalDataSource.deleteMember(email,password);
         mRemoteDataSource.deleteMember(email,password);
         // 멤버 정보 가져오기 성공
         if(mCached == null){
@@ -150,14 +133,14 @@ public class MemberRepository implements MemberDataSource {
     public void updateDarkTheme(@NonNull String email, @NonNull String password, boolean darkTheme) {
         checkNotNull(email);
         checkNotNull(password);
-        mLocalDataSource.updateDarkTheme("","",darkTheme);
+        //mLocalDataSource.updateDarkTheme("","",darkTheme);
         mRemoteDataSource.updateDarkTheme(email,password,darkTheme);
 
         Member cachedMember = getMemberWithEmail(email);
         Member updateMember = new Member(
                 email, cachedMember.getName(),
                 cachedMember.getPhotoUrl(), password, darkTheme,
-                cachedMember.isPushNotice(), cachedMember.isLoginStatus(), cachedMember.getLoginType());
+                cachedMember.isPushNotice(), cachedMember.getLoginType(),cachedMember.isLoginStatus());
 
         // 멤버 정보 가져오기 성공
         if(mCached == null){
@@ -172,14 +155,14 @@ public class MemberRepository implements MemberDataSource {
     public void updatePushNotice(@NonNull String email, @NonNull String password, boolean pushNotice) {
         checkNotNull(email);
         checkNotNull(password);
-        mLocalDataSource.updatePushNotice("","",pushNotice);
         mRemoteDataSource.updatePushNotice(email,password,pushNotice);
 
         Member cachedMember = getMemberWithEmail(email);
         Member updateMember = new Member(
                 email, cachedMember.getName(),
                 cachedMember.getPhotoUrl(), password, cachedMember.isDarkTheme(),
-                pushNotice, cachedMember.isLoginStatus(), cachedMember.getLoginType());
+                pushNotice, cachedMember.getLoginType(),cachedMember.isLoginStatus()
+        );
 
         // 멤버 정보 가져오기 성공
         if(mCached == null){
@@ -194,14 +177,14 @@ public class MemberRepository implements MemberDataSource {
     public void updateLoginStatus(@NonNull String email, @NonNull String password, boolean loginStatus) {
         checkNotNull(email);
         checkNotNull(password);
-        mLocalDataSource.updateLoginStatus("","",loginStatus);
+        //mLocalDataSource.updateLoginStatus("","",loginStatus);
         mRemoteDataSource.updateLoginStatus(email,password,loginStatus);
 
         Member cachedMember = getMemberWithEmail(email);
         Member updateMember = new Member(
                 email, cachedMember.getName(),
                 cachedMember.getPhotoUrl(), password, cachedMember.isDarkTheme(),
-                cachedMember.isPushNotice(), loginStatus, cachedMember.getLoginType());
+                cachedMember.isPushNotice(),cachedMember.getLoginType(),loginStatus);
 
         // 멤버 정보 가져오기 성공
         if(mCached == null){
@@ -214,7 +197,7 @@ public class MemberRepository implements MemberDataSource {
     @Override
     public void saveMember(@NonNull Member member) {
         checkNotNull(member);
-        mLocalDataSource.saveMember(member);
+        //mLocalDataSource.saveMember(member);
         mRemoteDataSource.saveMember(member);
         // 멤버 정보 가져오기 성공
         if(mCached == null){
@@ -228,5 +211,6 @@ public class MemberRepository implements MemberDataSource {
     public void refresh() {
         mCacheDirty = true;
     }
+
 
 }

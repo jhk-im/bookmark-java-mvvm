@@ -121,8 +121,8 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/nav_item_touch_feedback"
                 android:onClick="@{()->viewmodel.onClickHome()}"
-                android:clickable="@{viewmodel.isHomeSelected ? false : true}"
-                android:focusable="@{viewmodel.isHomeSelected ? false : true}">
+                android:clickable="true"
+                android:focusable="true">
 
                 <ImageView
                     android:id="@+id/iv_btn_home"
@@ -154,51 +154,12 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <!-- 노트 버튼 -->
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/btn_nav_note"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/nav_item_touch_feedback"
-                android:onClick="@{()->viewmodel.onClickNote()}"
-                android:clickable="@{viewmodel.isHomeSelected ? true : false}"
-                android:focusable="@{viewmodel.isHomeSelected ? true : false}">
-
-                <ImageView
-                    android:id="@+id/iv_btn_note"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:foregroundGravity="center"
-                    android:layout_marginStart="10dp"
-                    android:src="@drawable/ic_black_note"
-                    app:layout_constraintBottom_toBottomOf="@+id/tv_note_title"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/tv_note_title"
-                    android:contentDescription="@string/note_title" />
-
-                <TextView
-                    android:id="@+id/tv_note_title"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_marginStart="30dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginEnd="10dp"
-                    android:layout_marginBottom="10dp"
-                    android:text="@string/note_title"
-                    android:textColor="?attr/custom_text"
-                    android:textSize="18sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/iv_btn_note"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
             <!-- 푸시알림 스위치  -->
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/btn_nav_notice"
                 android:clickable="true"
                 android:focusable="true"
+                android:background="@drawable/nav_item_touch_feedback"
                 android:onClick="@{()->viewmodel.onClickNotice()}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">

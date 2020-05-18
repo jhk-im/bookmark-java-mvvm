@@ -67,14 +67,22 @@ public class WebViewActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         // dark 모드 상태 가져오기
-        spActStatus = getSharedPreferences("act_status", MODE_PRIVATE);
+        spActStatus = getSharedPreferences("user_data", MODE_PRIVATE);
         SharedPreferences.Editor editor = spActStatus.edit();
         editor.apply();
 
-        // 다크모드일 경우 다크모드로 변경
-        if(spActStatus.getBoolean("dark_mode",true)){
-            setTheme(R.style.DarkAppTheme);
+        // 멤버, 게스트 구분
+        if(spActStatus.getBoolean("login_status",false)){
+            // 로그인 멤버
+
+        }else{
+            // 게스트 유저
+            // 다크모드일 경우 다크모드로 변경
+            if(spActStatus.getBoolean("dark_theme",true)){
+                setTheme(R.style.DarkAppTheme);
+            }
         }
+
         setContentView(R.layout.web_view_act);
 
         // 북마크 데이터 레포지토리 접근

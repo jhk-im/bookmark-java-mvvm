@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Paint;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
@@ -27,6 +26,7 @@ import com.jroomstudio.smartbookmarkeditor.R;
 import com.jroomstudio.smartbookmarkeditor.ViewModelHolder;
 import com.jroomstudio.smartbookmarkeditor.data.bookmark.Bookmark;
 import com.jroomstudio.smartbookmarkeditor.data.category.Category;
+import com.jroomstudio.smartbookmarkeditor.data.member.source.MemberRepository;
 import com.jroomstudio.smartbookmarkeditor.data.notice.NoticeLocalDataSource;
 import com.jroomstudio.smartbookmarkeditor.data.notice.NoticeLocalDatabase;
 import com.jroomstudio.smartbookmarkeditor.databinding.MainNavViewContainerBinding;
@@ -88,29 +88,37 @@ public class MainActivity extends AppCompatActivity
     // 데이터 바이딩
     private MainNavViewContainerBinding mNavDataBinding;
 
+    /**
+     * 로그인 여부
+     **/
+    private MemberRepository mMemberRepository;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // dark 모드 상태 가져오기
-        spActStatus = getSharedPreferences("act_status", MODE_PRIVATE);
+        // 사용자 데이터 가져오기
+        spActStatus = getSharedPreferences("user_data", MODE_PRIVATE);
         SharedPreferences.Editor editor = spActStatus.edit();
         editor.apply();
+        // 게스트일때
+        if(!spActStatus.getBoolean("login_status",false)){
+            // 게스트
+            // 다크모드일 경우 다크모드로 변경
+            if(spActStatus.getBoolean("dark_theme",true)){
+                setTheme(R.style.DarkAppTheme);
+            }
 
-        // 다크모드일 경우 다크모드로 변경
-        if(spActStatus.getBoolean("dark_mode",true)){
-            setTheme(R.style.DarkAppTheme);
+            // firebase 구독 알림 설정
+            if(spActStatus.getBoolean("push_notice",true)){
+                // fcm 구독추가
+                FirebaseMessaging.getInstance().subscribeToTopic("notice");
+            }else{
+                // fcm 구독 끊기
+                FirebaseMessaging.getInstance().unsubscribeFromTopic("notice");
+            }
         }
         setContentView(R.layout.main_act);
-
-        // firebase 구독 알림 설정
-        if(spActStatus.getBoolean("notice",true)){
-            // fcm 구독추가
-            FirebaseMessaging.getInstance().subscribeToTopic("notice");
-        }else{
-            // fcm 구독 끊기
-            FirebaseMessaging.getInstance().unsubscribeFromTopic("notice");
-        }
 
         //툴바셋팅
         setupToolbar();
@@ -126,11 +134,9 @@ public class MainActivity extends AppCompatActivity
         setupNavigationDrawer();
         setupNavigationLayout();
 
+        //홈 프래그먼트 생성
+        getSelectedHome();
 
-        // 프래그먼트 매니져
-        fragmentManager= getSupportFragmentManager();
-        // 현재 활성화된 프래그먼트 생성
-        getSelectedFragment();
     }
 
     @Override
@@ -140,44 +146,6 @@ public class MainActivity extends AppCompatActivity
         super.onDestroy();
     }
 
-    /**
-     * Home, Note, User 각각의 프래그먼트를 구분하여 관리
-     **/
-    // 네비게이션 현재 활성화된 프래그먼트 가져오기
-    void getSelectedFragment(){
-        int id = spActStatus.getInt("current_fragment",R.id.btn_nav_home);
-        switch (id){
-            case R.id.btn_nav_home :
-                // 현재 프래그먼트 삭제
-                if(currentFragment!=null){
-                    fragmentManager.beginTransaction().remove(currentFragment).commit();
-                }
-                mNavDataBinding.btnNavHome.setSelected(true);
-                mNavDataBinding.btnNavNote.setSelected(false);
-                // 프래그먼트 생성 및 재활용
-                mainHomeFragment = findOrCreateViewFragment();
-                // 프래그먼트의 뷰모델 생성 및 재활용
-                mViewModel = findOrCreateViewModel();
-                // 네비게이터 셋팅
-                mViewModel.setNavigator(this);
-                // 프래그먼트와 뷰모델 연결
-                mainHomeFragment.setMainViewModel(mViewModel);
-                // 생성된 프래그먼트를 현재 프래그먼트로 셋팅
-                currentFragment = mainHomeFragment;
-                break;
-            case R.id.btn_nav_note :
-                // 현재 프래그먼트 삭제
-                if(currentFragment!=null){
-                    fragmentManager.beginTransaction().remove(currentFragment).commit();
-                }
-                mNavDataBinding.btnNavHome.setSelected(false);
-                mNavDataBinding.btnNavNote.setSelected(true);
-
-                // 생성된 프래그먼트를 현재 프래그먼트로 셋팅
-                // currentFragment = mainHomeFragment;
-                break;
-        }
-    }
 
     /**
      * Nav container 뷰모델
@@ -199,7 +167,13 @@ public class MainActivity extends AppCompatActivity
             NoticeLocalDatabase database = NoticeLocalDatabase.getInstance(this);
             NoticeLocalDataSource noticeLocalDataSource = NoticeLocalDataSource.
                     getInstance(new AppExecutors(), database.notificationsDAO());
-            MainNavViewModel viewModel = new MainNavViewModel(noticeLocalDataSource,this);
+            MainNavViewModel viewModel = new MainNavViewModel(
+                    noticeLocalDataSource,
+                    this,
+                    mMemberRepository = Injection.provideMemberRepository(getApplication()),
+                    spActStatus,
+                    getApplicationContext()
+                    );
             // ViewModelHolder(UI 없는 Fragment) 생성
             ActivityUtils.addFragmentToActivity(
                     getSupportFragmentManager(),
@@ -213,6 +187,19 @@ public class MainActivity extends AppCompatActivity
     /**
      * Home 프래그먼트 , 뷰모델 생성 메소드
      **/
+    //Home 프래그먼트 생성
+    void getSelectedHome(){
+        // 프래그먼트 매니져
+        fragmentManager= getSupportFragmentManager();
+        // 프래그먼트 생성 및 재활용
+        mainHomeFragment = findOrCreateViewFragment();
+        // 프래그먼트의 뷰모델 생성 및 재활용
+        mViewModel = findOrCreateViewModel();
+        // 네비게이터 셋팅
+        mViewModel.setNavigator(this);
+        // 프래그먼트와 뷰모델 연결
+        mainHomeFragment.setMainViewModel(mViewModel);
+    }
     // 홈 프래그먼트 생성 또는 재활용
     @NonNull
     private MainHomeFragment findOrCreateViewFragment() {
@@ -283,21 +270,10 @@ public class MainActivity extends AppCompatActivity
      **/
     // 네비게이션 뷰에서 버튼을 담고있는 레이아웃 셋팅
     private void setupNavigationLayout(){
-        // 회원일때
-        if(!spActStatus.getBoolean("guest_user",true)){
-            // 유저 이미지 셋팅
-            Glide.with(this)
-                    .load(spActStatus.getString("user_photo_url",""))
-                    .error(R.drawable.logo)
-                    .into(mNavDataBinding.ivProfileImage);
-            // 유저 이메일 셋팅
-            mNavDataBinding.tvUserEmail.setText(spActStatus.getString("user_email",""));
-            // 유저 네임 셋팅
-            mNavDataBinding.tvUserName.setText(spActStatus.getString("user_name",""));
-            // 회원정보
-            mNavDataBinding.btnIsSign.setText("회원정보");
+        // 로그인 되어있던 회원일때
+        if(spActStatus.getBoolean("login_status",false)){
+           loginCompleted(false);
         }
-
         // 개인정보처리방침 버튼 밑줄
         mNavDataBinding.btnNavPipp.setPaintFlags(
                 mNavDataBinding.btnNavPipp.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG
@@ -316,51 +292,62 @@ public class MainActivity extends AppCompatActivity
         if(mNavigationView != null){
             // 스위치 셋팅
             setupNavigationSwitch();
-            // 다크모드일 경우 아이콘 이미지 변경
-            if(spActStatus.getBoolean("dark_mode",true)){
-                mNavDataBinding.ivBtnHome.setImageResource(R.drawable.ic_home);
-                mNavDataBinding.ivBtnNote.setImageResource(R.drawable.ic_note);
-                mNavDataBinding.ivDarkTheme.setImageResource(R.drawable.ic_dark_theme);
-                mNavDataBinding.ivNotice.setImageResource(R.drawable.ic_notice);
-                mNavDataBinding.ivInfo.setImageResource(R.drawable.ic_info);
+            if(!spActStatus.getBoolean("login_status",false)){
+                // 게스트 일 경우
+                if(spActStatus.getBoolean("dark_theme",true)){
+                    mNavDataBinding.ivBtnHome.setImageResource(R.drawable.ic_home);
+                    mNavDataBinding.ivDarkTheme.setImageResource(R.drawable.ic_dark_theme);
+                    mNavDataBinding.ivNotice.setImageResource(R.drawable.ic_notice);
+                    mNavDataBinding.ivInfo.setImageResource(R.drawable.ic_info);
+                }
             }
         }
     }
     // Navigation 스위치 checkedChange Listener
     private void setupNavigationSwitch(){
-        // 로컬에 저장되어있는 switch 상태 정보 가져옴
-        mNavDataBinding.switchDarkTheme.setChecked(spActStatus.getBoolean("dark_mode",true));
-        mNavDataBinding.switchDarkTheme.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            //Toast.makeText(this, "다크테마 -> "+mThemeSwitch.isChecked(), Toast.LENGTH_SHORT).show();
 
-            // dark 모드 상태 업데이트
-            spActStatus = getSharedPreferences("act_status", MODE_PRIVATE);
-            SharedPreferences.Editor editor = spActStatus.edit();
-            editor.putBoolean("dark_mode",isChecked);
-            editor.apply();
+        // 멤버, 게스트 구분
+        if(spActStatus.getBoolean("login_status",false)){
+            // 로그인 멤버
 
-            mDrawerLayout.closeDrawers();
-            finish();
-            startActivity(new Intent(this, MainActivity.class));
-        });
-        // 로컬에 저장되어있는 알림 switch 상태정보 가져옴
-        mNavDataBinding.switchNotice.setChecked(spActStatus.getBoolean("notice",true));
-        mNavDataBinding.switchNotice.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if(isChecked){
-                Toast.makeText(this, "알림 메세지를 허용합니다.", Toast.LENGTH_SHORT).show();
-                FirebaseMessaging.getInstance().subscribeToTopic("notice");
-            }else{
-                Toast.makeText(this, "알림 메세지를 차단합니다.", Toast.LENGTH_SHORT).show();
-                FirebaseMessaging.getInstance().unsubscribeFromTopic("notice");
-            }
+        }else{
+            // 게스트
+            // 로컬에 저장되어있는 switch 상태 정보 가져옴
+            mNavDataBinding.switchDarkTheme.setChecked(spActStatus.getBoolean("dark_theme",true));
+            mNavDataBinding.switchDarkTheme.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                //Toast.makeText(this, "다크테마 -> "+mThemeSwitch.isChecked(), Toast.LENGTH_SHORT).show();
 
-            // 알림 상태 업데이트
-            spActStatus = getSharedPreferences("act_status", MODE_PRIVATE);
-            SharedPreferences.Editor editor = spActStatus.edit();
-            editor.putBoolean("notice",isChecked);
-            editor.apply();
-            //mDrawerLayout.closeDrawers();
-        });
+                // dark 모드 상태 업데이트
+                spActStatus = getSharedPreferences("user_data", MODE_PRIVATE);
+                SharedPreferences.Editor editor = spActStatus.edit();
+                editor.putBoolean("dark_theme",isChecked);
+                editor.apply();
+
+                mDrawerLayout.closeDrawers();
+                finish();
+                startActivity(new Intent(this, MainActivity.class));
+            });
+
+            // 로컬에 저장되어있는 알림 switch 상태정보 가져옴
+            mNavDataBinding.switchNotice.setChecked(spActStatus.getBoolean("push_notice",true));
+            mNavDataBinding.switchNotice.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                if(isChecked){
+                    Toast.makeText(this, "알림 메세지를 허용합니다.", Toast.LENGTH_SHORT).show();
+                    FirebaseMessaging.getInstance().subscribeToTopic("notice");
+                }else{
+                    Toast.makeText(this, "알림 메세지를 차단합니다.", Toast.LENGTH_SHORT).show();
+                    FirebaseMessaging.getInstance().unsubscribeFromTopic("notice");
+                }
+
+                // 알림 상태 업데이트
+                spActStatus = getSharedPreferences("user_data", MODE_PRIVATE);
+                SharedPreferences.Editor editor = spActStatus.edit();
+                editor.putBoolean("push_notice",isChecked);
+                editor.apply();
+                //mDrawerLayout.closeDrawers();
+            });
+
+        }
 
     }
 
@@ -369,16 +356,7 @@ public class MainActivity extends AppCompatActivity
         super.onActivityResult(requestCode, resultCode, data);
         // 로그인 성공 후
         if(resultCode == LOGIN_COMPLETE){
-            // 유저 이미지 셋팅
-            Glide.with(this)
-                    .load(spActStatus.getString("user_photo_url",""))
-                    .error(R.drawable.logo)
-                    .into(mNavDataBinding.ivProfileImage);
-            // 유저 이메일 셋팅
-            mNavDataBinding.tvUserEmail.setText(spActStatus.getString("user_email",""));
-            mNavDataBinding.tvUserName.setText(spActStatus.getString("user_name",""));
-            // 회원정보
-            mNavDataBinding.btnIsSign.setText("회원정보");
+            mNavViewModel.getTokenRemoteRepository();
         }
     }
 
@@ -483,50 +461,24 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onClickLogin() {
         // 게스트 유저일 때
-        if(spActStatus.getBoolean("guest_user",true)){
+        if(!spActStatus.getBoolean("login_status",false)){
             // 로그인 activity 로 이동
             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
             startActivityForResult(intent,LOGIN_COMPLETE);
         }else{
             // 회원일때
-            // 회원정보로 이동
-            // 임시 로그아웃
-            SharedPreferences.Editor editor = spActStatus.edit();
-            editor.putBoolean("guest_user",true);
-            editor.putString("user_id", "");
-            editor.putString("user_email", "");
-            editor.putString("user_name", "");
-            editor.putString("user_photo_url", "");
-            editor.apply();
-            finish();
-            startActivity(new Intent(this, MainActivity.class));
+            // 로그아웃
+            Toast.makeText(this, "로그아웃 하였습니다.", Toast.LENGTH_SHORT).show();
+            loginFailed(true);
         }
     }
+
     // 홈 버튼
     @Override
     public void onClickHome() {
         // 홈 프래그먼트
-        saveNavigationButtonStatus(mNavDataBinding.btnNavHome.getId());
-        getSelectedFragment();
+        getSelectedHome();
         mDrawerLayout.closeDrawers();
-    }
-    // 노트버튼
-    @Override
-    public void onClickNote() {
-        // 게스트 유저일 때
-        if(spActStatus.getBoolean("guest_user",true)){
-            Log.e("씨발","놈아");
-            // 노트 선택 취소
-            mNavViewModel.replaceHomeButton(true);
-            // 로그인 activity 로 이동
-            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-            startActivity(intent);
-        }else{
-            // 노트 프래그먼트
-            saveNavigationButtonStatus(mNavDataBinding.btnNavNote.getId());
-            getSelectedFragment();
-            mDrawerLayout.closeDrawers();
-        }
     }
     //알림 버튼
     @Override
@@ -550,35 +502,44 @@ public class MainActivity extends AppCompatActivity
         startActivity(intent);
     }
 
-    // 네비게이션에서 현재 활성화된 프래그먼트 업데이트
-    void saveNavigationButtonStatus(int id){
-        spActStatus = getSharedPreferences("act_status", MODE_PRIVATE);
+    // 로그인 성공
+    @Override
+    public void loginCompleted(boolean refresh) {
+        // 유저 이미지 셋팅
+        Glide.with(this)
+                .load(spActStatus.getString("photo_url",""))
+                .error(R.drawable.logo)
+                .into(mNavDataBinding.ivProfileImage);
+        // 유저 이메일 셋팅
+        mNavDataBinding.tvUserEmail.setText(spActStatus.getString("member_email",""));
+        mNavDataBinding.tvUserName.setText(spActStatus.getString("member_name",""));
+        // 로그아웃
+        mNavDataBinding.btnIsSign.setText(getString(R.string.logout_text));
+        if(refresh){
+            Toast.makeText(this, "로그인에 성공하였습니다.", Toast.LENGTH_SHORT).show();
+            finish();
+            startActivity(new Intent(this, MainActivity.class));
+        }else{
+
+        }
+    }
+
+    // 로그인 실패
+    @Override
+    public void loginFailed(boolean logout) {
         SharedPreferences.Editor editor = spActStatus.edit();
-        editor.putInt("current_fragment",id);
+        editor.putBoolean("login_status",false);
+        editor.putString("auto_password", "");
+        editor.putString("member_email", "");
+        editor.putString("member_name", "");
+        editor.putString("photo_url", "");
+        editor.putString("jwt","");
         editor.apply();
-    }
-
-    // hash 키 얻기
-    /*
-    private void getHashKey(){
-        PackageInfo packageInfo = null;
-        try {
-            packageInfo = getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_SIGNATURES);
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
-        if (packageInfo == null)
-            Log.e("KeyHash", "KeyHash:null");
-
-        for (Signature signature : packageInfo.signatures) {
-            try {
-                MessageDigest md = MessageDigest.getInstance("SHA");
-                md.update(signature.toByteArray());
-                Log.d("KeyHash", Base64.encodeToString(md.digest(), Base64.DEFAULT));
-            } catch (NoSuchAlgorithmException e) {
-                Log.e("KeyHash", "Unable to get MessageDigest. signature=" + signature, e);
-            }
+        finish();
+        startActivity(new Intent(this, MainActivity.class));
+        if(!logout){
+            Toast.makeText(this, "중복된 이메일 입니다.", Toast.LENGTH_SHORT).show();
         }
     }
-    */
+
 }
