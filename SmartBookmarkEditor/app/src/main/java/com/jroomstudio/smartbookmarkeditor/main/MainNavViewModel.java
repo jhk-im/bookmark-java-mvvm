@@ -3,6 +3,7 @@ package com.jroomstudio.smartbookmarkeditor.main;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.databinding.BaseObservable;
 import androidx.databinding.Bindable;
@@ -125,12 +126,15 @@ public class MainNavViewModel extends BaseObservable {
                     @Override
                     public void onTokenLoaded(JwtToken token) {
                         // 토큰 저장
-                        // 로그인 성공
                         SharedPreferences.Editor editor = spActStatus.edit();
                         editor.putBoolean("login_status",true);
                         editor.putString("jwt",token.getJwt());
                         editor.apply();
-                        mNavigator.loginCompleted(true);
+                        //mNavigator.loginCompleted();
+                        Toast.makeText(mContext.getApplicationContext(),
+                                "로그인에 성공하였습니다.", Toast.LENGTH_SHORT).show();
+                        // 해당 토큰으로 유저 정보를 받아온다.
+                        getUserDataRepository();
                     }
 
                     @Override
@@ -153,6 +157,7 @@ public class MainNavViewModel extends BaseObservable {
                         editor.putBoolean("login_status",false);
                         editor.putString("jwt","");
                         editor.apply();
+                        // 회원가입을 한 후 토큰 발행받기
                         getTokenRemoteRepository();
                     }
 
@@ -162,11 +167,107 @@ public class MainNavViewModel extends BaseObservable {
                         // ex ) 구글로 이미 가입한 이메일주소와 같은걸로 페이스북 회원가입 시도할 때
                         // 로그아웃 처리하고 리셋
                         // 로그아웃
-                        mNavigator.loginFailed(false);
+                        mNavigator.loginOut(false);
                     }
                 });
     }
 
+    /**
+     * 로그인 후 데이터 가져오기
+     **/
+    private void getUserDataRepository(){
+        Member postMember = new Member(
+                Objects.requireNonNull(spActStatus.getString("member_email", "")),
+                Objects.requireNonNull(spActStatus.getString("member_name", "")),
+                Objects.requireNonNull(spActStatus.getString("photo_url", "")),
+                Objects.requireNonNull(spActStatus.getString("auto_password", "")),
+                true,
+                true,
+                spActStatus.getInt("login_type", 0),
+                true
+        );
+        mMemberRepository.getData(postMember,
+                new MemberDataSource.LoadDataCallback() {
+
+                    @Override
+                    public void onDataLoaded(Member member) {
+                        // 로그인 성공
+                        mNavigator.loginCompleted(member,true);
+                    }
+
+                    @Override
+                    public void onDataNotAvailable() {
+
+                    }
+                });
+    }
+
+    /**
+     * 유저 데이터 업데이트
+     **/
+    void updateUserDataRepository(boolean darkTheme,
+                                  boolean pushNotice,
+                                  boolean loginStatus,
+                                  boolean isDarkTheme){
+        Member updateMember = new Member(
+                Objects.requireNonNull(spActStatus.getString("member_email", "")),
+                Objects.requireNonNull(spActStatus.getString("member_name", "")),
+                Objects.requireNonNull(spActStatus.getString("photo_url", "")),
+                Objects.requireNonNull(spActStatus.getString("auto_password", "")),
+                darkTheme,
+                pushNotice,
+                spActStatus.getInt("login_type", 0),
+                loginStatus
+        );
+        mMemberRepository.updateUserData(updateMember, new MemberDataSource.UpdateDataCallback() {
+            @Override
+            public void updateCompleted(Member member) {
+                Log.e("update","성공");
+                //Log.e("member",member.toString()+"");
+                mNavigator.updateRemoteData(member,isDarkTheme);
+            }
+
+            @Override
+            public void tokenExpiration() {
+                Log.e("update","실패");
+                refreshTokenRemoteRepository(darkTheme,pushNotice,loginStatus,isDarkTheme);
+            }
+        });
+    }
+
+    /**
+     * 토큰 재발급
+    * */
+    private void refreshTokenRemoteRepository(boolean darkTheme,
+                                              boolean pushNotice,
+                                              boolean loginStatus,
+                                              boolean isDarkTheme){
+        mMemberRepository.refreshToken(
+                Objects.requireNonNull(spActStatus.getString("member_email", "")),
+                Objects.requireNonNull(spActStatus.getString("auto_password", "")),
+                new MemberDataSource.LoadTokenCallback() {
+                    @Override
+                    public void onTokenLoaded(JwtToken token) {
+                        Log.e("Token refresh","성공");
+                        // 토큰저장
+                        SharedPreferences.Editor editor = spActStatus.edit();
+                        editor.putString("jwt",token.getJwt());
+                        editor.apply();
+                        // 다시실행
+                        updateUserDataRepository(darkTheme,pushNotice,loginStatus,isDarkTheme);
+                    }
+
+                    @Override
+                    public void onTokenNotAvailable() {
+                        // 사용안함
+                    }
+
+                    @Override
+                    public void onLoginFailed() {
+                        // 사용안함
+                    }
+                });
+    }
 
     /**
      * 클릭메소드

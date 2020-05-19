@@ -1,6 +1,7 @@
 package com.jroomstudio.smartbookmarkeditor;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
 
@@ -44,14 +45,15 @@ public class Injection {
         );
     }
 
-    public static MemberRepository provideMemberRepository(@NonNull Context context){
+    public static MemberRepository provideMemberRepository(@NonNull Context context,
+                                                           @NonNull SharedPreferences sharedPreferences){
         checkNotNull(context);
 
         // 로컬 데이터베이스 생성
         // MemberDatabase database = MemberDatabase.getInstance(context);
 
         return MemberRepository.getInstance(
-                MemberRemoteDataSource.getInstance(new AppExecutors())
+                MemberRemoteDataSource.getInstance(new AppExecutors(),sharedPreferences)
         );
     }
 

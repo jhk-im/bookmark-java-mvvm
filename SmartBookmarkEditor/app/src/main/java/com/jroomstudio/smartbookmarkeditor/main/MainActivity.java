@@ -15,7 +15,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.bumptech.glide.Glide;
@@ -26,6 +25,7 @@ import com.jroomstudio.smartbookmarkeditor.R;
 import com.jroomstudio.smartbookmarkeditor.ViewModelHolder;
 import com.jroomstudio.smartbookmarkeditor.data.bookmark.Bookmark;
 import com.jroomstudio.smartbookmarkeditor.data.category.Category;
+import com.jroomstudio.smartbookmarkeditor.data.member.Member;
 import com.jroomstudio.smartbookmarkeditor.data.member.source.MemberRepository;
 import com.jroomstudio.smartbookmarkeditor.data.notice.NoticeLocalDataSource;
 import com.jroomstudio.smartbookmarkeditor.data.notice.NoticeLocalDatabase;
@@ -57,10 +57,7 @@ public class MainActivity extends AppCompatActivity
 
     // Activity request
     public static int LOGIN_COMPLETE = 1;
-    public static int LOGIN_FAILED = 2;
 
-    // 현재 활성화된 프래그먼트
-    private Fragment currentFragment;
     // 프래그먼트 관리할 매니저
     private FragmentManager fragmentManager;
 
@@ -101,23 +98,14 @@ public class MainActivity extends AppCompatActivity
         spActStatus = getSharedPreferences("user_data", MODE_PRIVATE);
         SharedPreferences.Editor editor = spActStatus.edit();
         editor.apply();
-        // 게스트일때
         if(!spActStatus.getBoolean("login_status",false)){
             // 게스트
-            // 다크모드일 경우 다크모드로 변경
-            if(spActStatus.getBoolean("dark_theme",true)){
-                setTheme(R.style.DarkAppTheme);
-            }
-
-            // firebase 구독 알림 설정
-            if(spActStatus.getBoolean("push_notice",true)){
-                // fcm 구독추가
-                FirebaseMessaging.getInstance().subscribeToTopic("notice");
-            }else{
-                // fcm 구독 끊기
-                FirebaseMessaging.getInstance().unsubscribeFromTopic("notice");
-            }
+            setupDarkTheme("dark_theme","push_notice");
+        }else{
+            // 회원일때
+            setupDarkTheme("member_dark_theme","member_push_notice");
         }
+
         setContentView(R.layout.main_act);
 
         //툴바셋팅
@@ -130,13 +118,25 @@ public class MainActivity extends AppCompatActivity
         mNavViewModel = findOrCreateNavViewModel();
         mNavDataBinding.setViewmodel(mNavViewModel);
         mNavViewModel.onLoaded();
-        //navigation layout, drawer 셋팅
+        //navigation drawer 셋팅
         setupNavigationDrawer();
-        setupNavigationLayout();
 
         //홈 프래그먼트 생성
         getSelectedHome();
 
+        // 로그인 되어있는 유저의 경우
+        if(spActStatus.getBoolean("login_status",false)){
+            loginCompleted(
+                    new Member("",
+                            "",
+                            "",
+                            "",
+                            false,
+                            false,
+                            0,
+                            false),
+                    false);
+        }
     }
 
     @Override
@@ -146,6 +146,22 @@ public class MainActivity extends AppCompatActivity
         super.onDestroy();
     }
 
+    /**
+     * 다크테마 셋팅
+    **/
+    void setupDarkTheme(String darkThemeKey, String noticeKey){
+        if(spActStatus.getBoolean(darkThemeKey,true)){
+            setTheme(R.style.DarkAppTheme);
+        }
+        // firebase 구독 알림 설정
+        if(spActStatus.getBoolean(noticeKey,true)){
+            // fcm 구독추가
+            FirebaseMessaging.getInstance().subscribeToTopic("notice");
+        }else{
+            // fcm 구독 끊기
+            FirebaseMessaging.getInstance().unsubscribeFromTopic("notice");
+        }
+    }
 
     /**
      * Nav container 뷰모델
@@ -170,7 +186,7 @@ public class MainActivity extends AppCompatActivity
             MainNavViewModel viewModel = new MainNavViewModel(
                     noticeLocalDataSource,
                     this,
-                    mMemberRepository = Injection.provideMemberRepository(getApplication()),
+                    mMemberRepository = Injection.provideMemberRepository(getApplication(),spActStatus),
                     spActStatus,
                     getApplicationContext()
                     );
@@ -183,7 +199,6 @@ public class MainActivity extends AppCompatActivity
             return viewModel;
         }
     }
-
     /**
      * Home 프래그먼트 , 뷰모델 생성 메소드
      **/
@@ -268,86 +283,89 @@ public class MainActivity extends AppCompatActivity
     /**
      * DrawerLayout Navigation View 관련 메소드
      **/
-    // 네비게이션 뷰에서 버튼을 담고있는 레이아웃 셋팅
-    private void setupNavigationLayout(){
-        // 로그인 되어있던 회원일때
-        if(spActStatus.getBoolean("login_status",false)){
-           loginCompleted(false);
-        }
-        // 개인정보처리방침 버튼 밑줄
-        mNavDataBinding.btnNavPipp.setPaintFlags(
-                mNavDataBinding.btnNavPipp.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG
-        );
-
-        // 오픈소스라이선스 버튼 밑줄
-        mNavDataBinding.btnNavOsl.setPaintFlags(
-                mNavDataBinding.btnNavOsl.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG
-        );
-    }
     // Navigation Drawer 셋팅 메소드
     private void setupNavigationDrawer(){
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerLayout.setStatusBarBackground(R.color.colorPrimary);
+        // 개인정보처리방침 버튼 밑줄
+        mNavDataBinding.btnNavPipp.setPaintFlags(
+                mNavDataBinding.btnNavPipp.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG
+        );
+        // 오픈소스라이선스 버튼 밑줄
+        mNavDataBinding.btnNavOsl.setPaintFlags(
+                mNavDataBinding.btnNavOsl.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG
+        );
         mNavigationView = (NavigationView) findViewById(R.id.navigation_view);
         if(mNavigationView != null){
-            // 스위치 셋팅
-            setupNavigationSwitch();
             if(!spActStatus.getBoolean("login_status",false)){
-                // 게스트 일 경우
-                if(spActStatus.getBoolean("dark_theme",true)){
-                    mNavDataBinding.ivBtnHome.setImageResource(R.drawable.ic_home);
-                    mNavDataBinding.ivDarkTheme.setImageResource(R.drawable.ic_dark_theme);
-                    mNavDataBinding.ivNotice.setImageResource(R.drawable.ic_notice);
-                    mNavDataBinding.ivInfo.setImageResource(R.drawable.ic_info);
-                }
+                // 게스트
+                setupNavigationSwitch("dark_theme",
+                        "push_notice",false);
+            }else{
+                // 회원
+                setupNavigationSwitch("member_dark_theme",
+                        "member_push_notice",true);
             }
         }
     }
     // Navigation 스위치 checkedChange Listener
-    private void setupNavigationSwitch(){
+    private void setupNavigationSwitch(String darkThemeKey, String noticeKey,boolean isLoginUser){
 
-        // 멤버, 게스트 구분
-        if(spActStatus.getBoolean("login_status",false)){
-            // 로그인 멤버
+        // 다크테마 셋팅
+        if(spActStatus.getBoolean(darkThemeKey,true)){
+            mNavDataBinding.ivBtnHome.setImageResource(R.drawable.ic_home);
+            mNavDataBinding.ivDarkTheme.setImageResource(R.drawable.ic_dark_theme);
+            mNavDataBinding.ivNotice.setImageResource(R.drawable.ic_notice);
+            mNavDataBinding.ivInfo.setImageResource(R.drawable.ic_info);
+        }
 
-        }else{
-            // 게스트
-            // 로컬에 저장되어있는 switch 상태 정보 가져옴
-            mNavDataBinding.switchDarkTheme.setChecked(spActStatus.getBoolean("dark_theme",true));
-            mNavDataBinding.switchDarkTheme.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                //Toast.makeText(this, "다크테마 -> "+mThemeSwitch.isChecked(), Toast.LENGTH_SHORT).show();
+        // 게스트
+        // 로컬에 저장되어있는 switch 상태 정보 가져옴
+        mNavDataBinding.switchDarkTheme.setChecked(spActStatus.getBoolean(darkThemeKey,true));
+        mNavDataBinding.switchDarkTheme.setOnCheckedChangeListener((buttonView, isChecked) -> {
 
+            if(isLoginUser){
+                // 다크테마 원격 업데이트
+                mNavViewModel.updateUserDataRepository(isChecked,
+                        spActStatus.getBoolean(noticeKey,true),
+                        spActStatus.getBoolean("login_status",false),true);
+            }else{
                 // dark 모드 상태 업데이트
                 spActStatus = getSharedPreferences("user_data", MODE_PRIVATE);
                 SharedPreferences.Editor editor = spActStatus.edit();
-                editor.putBoolean("dark_theme",isChecked);
+                editor.putBoolean(darkThemeKey,isChecked);
                 editor.apply();
-
                 mDrawerLayout.closeDrawers();
                 finish();
                 startActivity(new Intent(this, MainActivity.class));
-            });
+            }
+        });
 
-            // 로컬에 저장되어있는 알림 switch 상태정보 가져옴
-            mNavDataBinding.switchNotice.setChecked(spActStatus.getBoolean("push_notice",true));
-            mNavDataBinding.switchNotice.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                if(isChecked){
-                    Toast.makeText(this, "알림 메세지를 허용합니다.", Toast.LENGTH_SHORT).show();
-                    FirebaseMessaging.getInstance().subscribeToTopic("notice");
-                }else{
-                    Toast.makeText(this, "알림 메세지를 차단합니다.", Toast.LENGTH_SHORT).show();
-                    FirebaseMessaging.getInstance().unsubscribeFromTopic("notice");
-                }
+        // 로컬에 저장되어있는 알림 switch 상태정보 가져옴
+        mNavDataBinding.switchNotice.setChecked(spActStatus.getBoolean(noticeKey,true));
+        mNavDataBinding.switchNotice.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if(isChecked){
+                Toast.makeText(this, "알림 메세지를 허용합니다.", Toast.LENGTH_SHORT).show();
+                FirebaseMessaging.getInstance().subscribeToTopic("notice");
+            }else{
+                Toast.makeText(this, "알림 메세지를 차단합니다.", Toast.LENGTH_SHORT).show();
+                FirebaseMessaging.getInstance().unsubscribeFromTopic("notice");
+            }
 
+            if(isLoginUser) {
+                // 푸쉬노트 원격 업데이트
+                mNavViewModel.updateUserDataRepository(
+                        spActStatus.getBoolean(darkThemeKey,true),
+                        isChecked,
+                        spActStatus.getBoolean("login_status",false),false);
+            }else{
                 // 알림 상태 업데이트
                 spActStatus = getSharedPreferences("user_data", MODE_PRIVATE);
                 SharedPreferences.Editor editor = spActStatus.edit();
-                editor.putBoolean("push_notice",isChecked);
+                editor.putBoolean(noticeKey,isChecked);
                 editor.apply();
-                //mDrawerLayout.closeDrawers();
-            });
-
-        }
+            }
+        });
 
     }
 
@@ -356,6 +374,7 @@ public class MainActivity extends AppCompatActivity
         super.onActivityResult(requestCode, resultCode, data);
         // 로그인 성공 후
         if(resultCode == LOGIN_COMPLETE){
+            // 토큰발행받기
             mNavViewModel.getTokenRemoteRepository();
         }
     }
@@ -467,9 +486,7 @@ public class MainActivity extends AppCompatActivity
             startActivityForResult(intent,LOGIN_COMPLETE);
         }else{
             // 회원일때
-            // 로그아웃
-            Toast.makeText(this, "로그아웃 하였습니다.", Toast.LENGTH_SHORT).show();
-            loginFailed(true);
+            loginOut(true);
         }
     }
 
@@ -504,42 +521,65 @@ public class MainActivity extends AppCompatActivity
 
     // 로그인 성공
     @Override
-    public void loginCompleted(boolean refresh) {
-        // 유저 이미지 셋팅
-        Glide.with(this)
-                .load(spActStatus.getString("photo_url",""))
-                .error(R.drawable.logo)
-                .into(mNavDataBinding.ivProfileImage);
-        // 유저 이메일 셋팅
-        mNavDataBinding.tvUserEmail.setText(spActStatus.getString("member_email",""));
-        mNavDataBinding.tvUserName.setText(spActStatus.getString("member_name",""));
-        // 로그아웃
-        mNavDataBinding.btnIsSign.setText(getString(R.string.logout_text));
+    public void loginCompleted(Member member, boolean refresh) {
+
         if(refresh){
-            Toast.makeText(this, "로그인에 성공하였습니다.", Toast.LENGTH_SHORT).show();
+            SharedPreferences.Editor editor = spActStatus.edit();
+            editor.putBoolean("member_dark_theme",member.isDarkTheme());
+            editor.putBoolean("member_push_notice",member.isPushNotice());
+            editor.apply();
             finish();
             startActivity(new Intent(this, MainActivity.class));
         }else{
-
+            // 유저 이미지 셋팅
+            Glide.with(this)
+                    .load(spActStatus.getString("photo_url",""))
+                    .error(R.drawable.logo)
+                    .into(mNavDataBinding.ivProfileImage);
+            // 유저 이메일 셋팅
+            mNavDataBinding.tvUserEmail.setText(spActStatus.getString("member_email",""));
+            mNavDataBinding.tvUserName.setText(spActStatus.getString("member_name",""));
+            // 로그아웃
+            mNavDataBinding.btnIsSign.setText(getString(R.string.logout_text));
         }
     }
 
     // 로그인 실패
     @Override
-    public void loginFailed(boolean logout) {
+    public void loginOut(boolean logout) {
         SharedPreferences.Editor editor = spActStatus.edit();
         editor.putBoolean("login_status",false);
         editor.putString("auto_password", "");
         editor.putString("member_email", "");
         editor.putString("member_name", "");
         editor.putString("photo_url", "");
+        editor.putBoolean("member_dark_theme",false);
+        editor.putBoolean("member_push_notice",false);
         editor.putString("jwt","");
         editor.apply();
         finish();
         startActivity(new Intent(this, MainActivity.class));
         if(!logout){
             Toast.makeText(this, "중복된 이메일 입니다.", Toast.LENGTH_SHORT).show();
+        }else{
+            Toast.makeText(this, "로그아웃 하였습니다.", Toast.LENGTH_SHORT).show();
         }
     }
+
+    // 원격 데이터 업데이트 성공 시
+    @Override
+    public void updateRemoteData(Member member,boolean isDarkTheme) {
+        // 알림 상태 업데이트
+        spActStatus = getSharedPreferences("user_data", MODE_PRIVATE);
+        SharedPreferences.Editor editor = spActStatus.edit();
+        editor.putBoolean("member_dark_theme",member.isDarkTheme());
+        editor.putBoolean("member_push_notice",member.isPushNotice());
+        editor.apply();
+        if(isDarkTheme){
+            finish();
+            startActivity(new Intent(this, MainActivity.class));
+        }
+    }
+
 
 }

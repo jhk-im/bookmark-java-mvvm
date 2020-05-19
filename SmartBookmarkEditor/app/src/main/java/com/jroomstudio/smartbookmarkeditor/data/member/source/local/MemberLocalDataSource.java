@@ -61,6 +61,17 @@ public class MemberLocalDataSource implements MemberDataSource {
         mAppExecutors.getDiskIO().execute(runnable);
     }
 
+    @Override
+    public void refreshToken(@NonNull String email, @NonNull String password,
+                             @NonNull LoadTokenCallback callback) {
+
+    }
+
+    @Override
+    public void getData(@NonNull Member member, @NonNull LoadDataCallback callback) {
+
+    }
+
     // Member 삭제
     @Override
     public void deleteMember(@NonNull String email, @NonNull String password) {
@@ -70,38 +81,12 @@ public class MemberLocalDataSource implements MemberDataSource {
         mAppExecutors.getDiskIO().execute(runnable);
     }
 
-    // 다크테마 업데이트
+    // Member update
     @Override
-    public void updateDarkTheme(@NonNull String email, @NonNull String password,
-                                boolean darkTheme) {
-        checkNotNull(email);
-        checkNotNull(password);
-        Runnable runnable = () -> {
-          mMemberDao.updateDarkTheme(darkTheme);
-        };
+    public void updateUserData(@NonNull Member member, @NonNull UpdateDataCallback callback) {
+
     }
 
-    // 푸시알림 업데이트
-    @Override
-    public void updatePushNotice(@NonNull String email, @NonNull String password,
-                                 boolean pushNotice) {
-        checkNotNull(email);
-        checkNotNull(password);
-        Runnable runnable = () -> {
-            mMemberDao.updatePushNotice(pushNotice);
-        };
-    }
-
-    // 로그인상태 업데이트
-    @Override
-    public void updateLoginStatus(@NonNull String email, @NonNull String password,
-                                  boolean loginStatus) {
-        checkNotNull(email);
-        checkNotNull(password);
-        Runnable runnable = () -> {
-            mMemberDao.updateLoginStatus(loginStatus);
-        };
-    }
 
     // Member 저장
     @Override

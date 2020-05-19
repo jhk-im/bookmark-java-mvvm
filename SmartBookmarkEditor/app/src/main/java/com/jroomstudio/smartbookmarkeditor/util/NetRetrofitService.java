@@ -1,7 +1,7 @@
 package com.jroomstudio.smartbookmarkeditor.util;
 
-import com.jroomstudio.smartbookmarkeditor.data.member.Member;
 import com.jroomstudio.smartbookmarkeditor.data.member.JwtToken;
+import com.jroomstudio.smartbookmarkeditor.data.member.Member;
 
 import java.util.HashMap;
 
@@ -30,6 +30,41 @@ public interface NetRetrofitService {
 
     String SERVER_URL = "http://115.68.221.104";
 
+    // json 으로 데이터 넘기기 (회원가입)
+    @POST("member/api/register.php")
+    Call<Void> postData(
+            @Header("Content-Type") String contentType,
+            @Body Member param);
+
+    // Json 으로 넘기고 jwt 콜백
+    @POST("member/api/login.php")
+    Call<JwtToken> postTokenCallback(
+            @Header("Content-Type") String contentType,
+            @Body Member param);
+
+    // Json 으로 넘기고 해당 유저 데이터 콜백
+    @POST("member/api/userData.php")
+    Call<Member> postDataCallback(
+            @Header("Authorization") String auth,
+            @Header("Content-Type") String contentType,
+            @Body Member param);
+
+    @POST("member/api/updateUserData.php")
+    Call<Member> updateDataCallback(
+            @Header("Authorization") String auth,
+            @Header("Content-Type") String contentType,
+            @Body Member param
+    );
+
+    @POST("member/api/login.php")
+    Call<JwtToken> refreshTokenCallback(
+            @Header("Content-Type") String contentType,
+            @Body Member param);
+
+
+
+
+
     /**
      * GET 방식, URL/member/{userEmail} 호출.
      * Member Type 의 JSON 을 통신을 통해 받음.
@@ -44,8 +79,6 @@ public interface NetRetrofitService {
     @GET("member/php_retrofit_test/get_response.php")
     Call<Member> getDataCallback(@Query("member_email") String memberEmail,
                                  @Query("auto_password") String autoPassword);
-
-
     /**
      * POST 방식
      * Field 형식을 통해 넘겨주는 값들이 여러 개일 때 FieldMap 을 사용함.
@@ -54,6 +87,7 @@ public interface NetRetrofitService {
      * Field 형식은 POST 방식에서만 사용가능.
      * @return Data 객체를 JSON 형태로 반환.
      */
+
 
     // Field 로 하나하나 입력해서 넘기기
     @FormUrlEncoded
@@ -67,19 +101,6 @@ public interface NetRetrofitService {
                                 @Field("login_type") int loginType,
                                 @Field("login_status") boolean loginStatus
     );
-
-
-    // json 으로 데이터 넘기기 (회원가입)
-    @POST("member/api/register.php")
-    Call<Void> postData(
-            @Header("Content-Type") String contentType,
-            @Body Member param);
-
-    // Json 으로 넘기고 jwt 콜백
-    @POST("member/api/login.php")
-    Call<JwtToken> postDataCallback(
-            @Header("Content-Type") String contentType,
-            @Body Member param);
 
     // HashMap 으로 넘기고 콜백 받기 (로그인)
     @FormUrlEncoded

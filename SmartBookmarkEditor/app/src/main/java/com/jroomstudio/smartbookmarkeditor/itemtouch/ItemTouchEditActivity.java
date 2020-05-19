@@ -22,17 +22,23 @@ public class ItemTouchEditActivity extends AppCompatActivity implements ItemTouc
     // 프래그먼트 뷰모델
     private ItemTouchEditViewModel mViewModel;
 
+    // 액티비티 상태저장 Shared Preferences
+    private SharedPreferences spActStatus;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         // dark 모드 상태 가져오기
-        SharedPreferences spActStatus = getSharedPreferences("act_status", MODE_PRIVATE);
+        spActStatus = getSharedPreferences("user_data", MODE_PRIVATE);
         SharedPreferences.Editor editor = spActStatus.edit();
         editor.apply();
-        // 다크모드이면 다크모드로 테마변경
-        if(spActStatus.getBoolean("dark_mode",true)){
-            setTheme(R.style.DarkAppTheme);
+        if(!spActStatus.getBoolean("login_status",false)){
+            // 게스트
+            setupDarkTheme("dark_theme");
+        }else{
+            // 회원일때
+            setupDarkTheme("member_dark_theme");
         }
 
         setContentView(R.layout.item_touch_edit_act);
@@ -55,6 +61,15 @@ public class ItemTouchEditActivity extends AppCompatActivity implements ItemTouc
     protected void onDestroy() {
         mViewModel.onActivityDestroyed();
         super.onDestroy();
+    }
+
+    /**
+     * 다크테마 셋팅
+     **/
+    void setupDarkTheme(String darkThemeKey){
+        if(spActStatus.getBoolean(darkThemeKey,true)){
+            setTheme(R.style.DarkAppTheme);
+        }
     }
 
     // 프래그먼트 뷰 생성 또는 재활용

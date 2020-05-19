@@ -66,25 +66,24 @@ public class EditAddItemPopupActivity extends AppCompatActivity implements EditA
     // 삭제하려는 아이템이 카테고리인지 북마크인지 구분
     private String mDeleteItemType;
 
+    // 액티비티 상태저장 Shared Preferences
+    private SharedPreferences spActStatus;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         // dark 모드 상태 가져오기
-        SharedPreferences spActStatus = getSharedPreferences("user_data", MODE_PRIVATE);
+        spActStatus = getSharedPreferences("user_data", MODE_PRIVATE);
         SharedPreferences.Editor editor = spActStatus.edit();
         editor.apply();
 
-        // 멤버, 게스트 구분
-        if(spActStatus.getBoolean("login_status",false)){
-            // 로그인 멤버
-
+        if(!spActStatus.getBoolean("login_status",false)){
+            // 게스트
+            setupDarkTheme("dark_theme");
         }else{
-            // 게스트 유저
-            // 다크모드이면 다크모드로 테마변경
-            if(spActStatus.getBoolean("dark_theme",true)){
-                setTheme(R.style.DarkAppPopup);
-            }
+            // 회원일때
+            setupDarkTheme("member_dark_theme");
         }
 
         // 상태바 제거하고 전체화면 모드로
@@ -113,6 +112,15 @@ public class EditAddItemPopupActivity extends AppCompatActivity implements EditA
             mViewModel.onActivityDestroyed();
         }
         super.onDestroy();
+    }
+
+    /**
+     * 다크테마 셋팅
+     **/
+    void setupDarkTheme(String darkThemeKey){
+        if(spActStatus.getBoolean(darkThemeKey,true)){
+            setTheme(R.style.DarkAppPopup);
+        }
     }
 
     /**

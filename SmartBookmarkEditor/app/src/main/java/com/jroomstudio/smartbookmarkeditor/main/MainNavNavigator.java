@@ -1,5 +1,7 @@
 package com.jroomstudio.smartbookmarkeditor.main;
 
+import com.jroomstudio.smartbookmarkeditor.data.member.Member;
+
 public interface MainNavNavigator {
 
     void onClickLogin();
@@ -7,6 +9,8 @@ public interface MainNavNavigator {
     void onClickNotice();
     void onClickPIPP();
     void onClickOSL();
-    void loginCompleted(boolean refresh);
-    void loginFailed(boolean logout);
+    void loginCompleted(Member member,boolean refresh);
+    void loginOut(boolean logout);
+    void updateRemoteData(Member member,boolean isDarkTheme);
+
 }

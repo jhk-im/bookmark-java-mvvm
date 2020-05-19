@@ -30,26 +30,23 @@ public class NoticeActivity extends AppCompatActivity implements NoticeNavigator
     // 뷰모델 태그
     public static final String NOTICE_VM_TAG = "NOTICE_VM_TAG";
 
+    // 액티비티 상태저장 Shared Preferences
+    private SharedPreferences spActStatus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         // dark 모드 상태 가져오기
-        SharedPreferences spActStatus = getSharedPreferences("user_data", MODE_PRIVATE);
+        spActStatus = getSharedPreferences("user_data", MODE_PRIVATE);
         SharedPreferences.Editor editor = spActStatus.edit();
         editor.apply();
-
-        // 멤버, 게스트 구분
-        if(spActStatus.getBoolean("login_status",false)){
-            // 로그인 멤버
-
+        if(!spActStatus.getBoolean("login_status",false)){
+            // 게스트
+            setupDarkTheme("dark_theme");
         }else{
-            // 게스트유저
-            // 다크모드이면 다크모드로 테마변경
-            if(spActStatus.getBoolean("dark_theme",true)){
-                setTheme(R.style.DarkAppTheme);
-            }
+            // 회원일때
+            setupDarkTheme("member_dark_theme");
         }
         setContentView(R.layout.notice_act);
 
@@ -68,6 +65,15 @@ public class NoticeActivity extends AppCompatActivity implements NoticeNavigator
     protected void onDestroy() {
         super.onDestroy();
         mViewModel.onActivityDestroyed();
+    }
+
+    /**
+     * 다크테마 셋팅
+     **/
+    void setupDarkTheme(String darkThemeKey){
+        if(spActStatus.getBoolean(darkThemeKey,true)){
+            setTheme(R.style.DarkAppTheme);
+        }
     }
 
     /**

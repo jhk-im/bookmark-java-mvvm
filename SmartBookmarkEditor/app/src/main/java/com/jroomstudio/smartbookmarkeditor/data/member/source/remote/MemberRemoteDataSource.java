@@ -1,6 +1,7 @@
 package com.jroomstudio.smartbookmarkeditor.data.member.source.remote;
 
 
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -32,13 +33,17 @@ public class MemberRemoteDataSource implements MemberDataSource {
     // 쓰레드
     private AppExecutors mAppExecutors;
 
+    // 액티비티 상태저장 Shared Preferences
+    private SharedPreferences spActStatus;
 
     // 통신 레이턴시
     //private static final int LATENCY_IN_MILLIS = 2000;
 
     // 다이렉트 인스턴스 방지
-    private MemberRemoteDataSource(@NonNull AppExecutors appExecutors){
+    private MemberRemoteDataSource(@NonNull AppExecutors appExecutors,
+                                   @NonNull SharedPreferences sharedPreferences){
         mAppExecutors = appExecutors;
+        spActStatus = sharedPreferences;
         // 레트로핏 인스턴스 생성
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(NetRetrofitService.SERVER_URL)
@@ -48,9 +53,10 @@ public class MemberRemoteDataSource implements MemberDataSource {
     }
 
     // 싱글턴 인스턴스 생성
-    public static MemberRemoteDataSource getInstance(@NonNull AppExecutors appExecutors){
+    public static MemberRemoteDataSource getInstance(@NonNull AppExecutors appExecutors,
+                                                     @NonNull SharedPreferences sharedPreferences){
         if(INSTANCE == null){
-            INSTANCE = new MemberRemoteDataSource(appExecutors);
+            INSTANCE = new MemberRemoteDataSource(appExecutors,sharedPreferences);
         }
         return INSTANCE;
     }
@@ -65,12 +71,12 @@ public class MemberRemoteDataSource implements MemberDataSource {
                     password,false,false,
                     loginType,false
             );
-            mNetRetrofitService.postDataCallback("application/json",member)
+            mNetRetrofitService.postTokenCallback("application/json",member)
                     .enqueue(new Callback<JwtToken>() {
                         @Override
                         public void onResponse(Call<JwtToken> call, Response<JwtToken> response) {
                             // JWT 콜백
-                            Log.e("message",response.code()+"");
+                            Log.e("Get JWT",response.code()+"");
                             if(response.code()==200){
                                 // 로그인 성공
                                 // 토큰을 전달하여 저장한다.
@@ -87,8 +93,66 @@ public class MemberRemoteDataSource implements MemberDataSource {
                         public void onFailure(Call<JwtToken> call, Throwable t) {
                             // 아무런 응답이 없을 시
                             // 등록된 회원이 없다고 판단
-                            Log.e("onFailure",t.getMessage());
+                            //Log.e("jwt 콜백","실패");
+                            Log.e("Get JWT onFailure",t.getMessage());
                             callback.onTokenNotAvailable();
+                        }
+                    });
+        };
+        mAppExecutors.getNetworkIO().execute(runnable);
+    }
+
+    @Override
+    public void refreshToken(@NonNull String email, @NonNull String password,
+                             @NonNull LoadTokenCallback callback) {
+        Runnable runnable = () -> {
+            Member member = new Member(
+                    email,"","",
+                    password,false,false,
+                    0,false
+            );
+            mNetRetrofitService.refreshTokenCallback("application/json",member)
+                    .enqueue(new Callback<JwtToken>() {
+                        @Override
+                        public void onResponse(Call<JwtToken> call, Response<JwtToken> response) {
+                            // JWT 콜백
+                            //Log.e("jwt 리프래쉬","성공");
+                            Log.e("JWT Refresh",response.code()+"");
+                            if(response.code()==200){
+                                // 로그인 성공
+                                // 토큰을 전달하여 저장한다.
+                                callback.onTokenLoaded(response.body());
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<JwtToken> call, Throwable t) {
+                            // 사용안함
+                        }
+                    });
+        };
+        mAppExecutors.getNetworkIO().execute(runnable);
+    }
+
+    // 회원 데이터 가져오기
+    @Override
+    public void getData(@NonNull Member member,
+                        @NonNull LoadDataCallback callback) {
+        Runnable runnable = () -> {
+            String jwt = spActStatus.getString("jwt","");
+            mNetRetrofitService.postDataCallback("Bearer "+jwt, "application/json", member)
+                    .enqueue(new Callback<Member>() {
+                        @Override
+                        public void onResponse(Call<Member> call, Response<Member> response) {
+                            //Log.e("body", response.body()+"");
+                            Log.e("Get user data",response.code()+"");
+                            callback.onDataLoaded(response.body());
+                        }
+
+                        @Override
+                        public void onFailure(Call<Member> call, Throwable t) {
+                            Log.e("Get user data onFailure",t.getMessage());
+                            callback.onDataNotAvailable();
                         }
                     });
         };
@@ -100,27 +164,37 @@ public class MemberRemoteDataSource implements MemberDataSource {
     public void deleteMember(@NonNull String email, @NonNull String password) {
 
     }
-
-    // 다크테마 변경
+    // 유저 정보 업데이트
     @Override
-    public void updateDarkTheme(@NonNull String email, @NonNull String password,
-                                boolean darkTheme) {
+    public void updateUserData(@NonNull Member member, @NonNull UpdateDataCallback callback) {
+        Runnable runnable = () -> {
+            String jwt = spActStatus.getString("jwt","");
+            mNetRetrofitService.updateDataCallback("Bearer "+jwt,"application/json",member)
+                    .enqueue(new Callback<Member>() {
+                        @Override
+                        public void onResponse(Call<Member> call, Response<Member> response) {
+                            if(response.code()==200){
+                                //Log.e("header", response.headers()+"");
+                                //Log.e("body", response.body()+"");
+                                Log.e("Update Data",response.code()+"");
+                                callback.updateCompleted(response.body());
+                            } else if(response.code()==401){
+                                // 실패시 jwt 재발급 받고 다시시도
+                                callback.tokenExpiration();
+                            }
+                        }
 
+                        @Override
+                        public void onFailure(Call<Member> call, Throwable t) {
+                            Log.e("Update onFailure",t.getMessage());
+                            // 실패시 jwt 재발급 받고 다시시도
+                            callback.tokenExpiration();
+                        }
+                    });
+        };
+        mAppExecutors.getNetworkIO().execute(runnable);
     }
 
-    // 푸시알림 변경
-    @Override
-    public void updatePushNotice(@NonNull String email, @NonNull String password,
-                                 boolean pushNotice) {
-
-    }
-
-    // 로그인 상태 변경 (로그인, 로그아웃)
-    @Override
-    public void updateLoginStatus(@NonNull String email, @NonNull String password,
-                                  boolean loginStatus) {
-
-    }
 
     // 첫 회원가입
     @Override
@@ -131,16 +205,14 @@ public class MemberRemoteDataSource implements MemberDataSource {
                     .enqueue(new Callback<Void>() {
                         @Override
                         public void onResponse(Call<Void> call, Response<Void> response) {
-                            if (response.isSuccessful()) {
-                                Log.e("response", response.toString());
-                                Log.e("body", response.raw().body()+"");
-                                Log.e("header", response.headers()+"");
-                            }
+                            //Log.e("response", response.toString());
+                            //Log.e("body", response.raw().body()+"");
+                            Log.e("Insert User", response.code()+"");
                         }
 
                         @Override
                         public void onFailure(Call<Void> call, Throwable t) {
-                            Log.e("onFailure",t.getMessage());
+                            Log.e("Insert User onFailure",t.getMessage());
                         }
                     });
         };

@@ -89,7 +89,7 @@ public class MemberRepository implements MemberDataSource {
         checkNotNull(password);
         checkNotNull(callback);
 
-        // 로컬에 저장된 email 과 password 로 원격에 로그인한다.
+        // 입력된 email 과 password 로 원격에 로그인한다.
         mRemoteDataSource.getToken(email, password,loginType,
                 new LoadTokenCallback() {
                     @Override
@@ -114,6 +114,56 @@ public class MemberRepository implements MemberDataSource {
                 });
     }
 
+    @Override
+    public void refreshToken(@NonNull String email, @NonNull String password,
+                             @NonNull LoadTokenCallback callback) {
+        checkNotNull(email);
+        checkNotNull(password);
+        checkNotNull(callback);
+        mRemoteDataSource.refreshToken(email, password,
+                new LoadTokenCallback() {
+                    @Override
+                    public void onTokenLoaded(JwtToken token) {
+                        // 토큰재발급 성공
+                        callback.onTokenLoaded(token);
+                    }
+
+                    @Override
+                    public void onTokenNotAvailable() {
+                        // 사용안함
+                    }
+
+                    @Override
+                    public void onLoginFailed() {
+                        // 사용안함
+                    }
+                });
+    }
+
+
+
+    // 회원 데이터 가져오기
+    @Override
+    public void getData(@NonNull Member member, @NonNull LoadDataCallback callback) {
+        checkNotNull(member);
+        checkNotNull(callback);
+
+        mRemoteDataSource.getData(member, new LoadDataCallback() {
+            @Override
+            public void onDataLoaded(Member member) {
+                // 데이터 가져오기 성공
+                callback.onDataLoaded(member);
+            }
+
+            @Override
+            public void onDataNotAvailable() {
+                // 데이터 없음
+                callback.onDataNotAvailable();
+            }
+        });
+
+    }
+
     // 회원 탈퇴
     @Override
     public void deleteMember(@NonNull String email, @NonNull String password) {
@@ -128,70 +178,26 @@ public class MemberRepository implements MemberDataSource {
         mCached.clear();
     }
 
-    // 다크테마 변경
     @Override
-    public void updateDarkTheme(@NonNull String email, @NonNull String password, boolean darkTheme) {
-        checkNotNull(email);
-        checkNotNull(password);
-        //mLocalDataSource.updateDarkTheme("","",darkTheme);
-        mRemoteDataSource.updateDarkTheme(email,password,darkTheme);
+    public void updateUserData(@NonNull Member member, @NonNull UpdateDataCallback callback) {
+        checkNotNull(member);
+        checkNotNull(callback);
 
-        Member cachedMember = getMemberWithEmail(email);
-        Member updateMember = new Member(
-                email, cachedMember.getName(),
-                cachedMember.getPhotoUrl(), password, darkTheme,
-                cachedMember.isPushNotice(), cachedMember.getLoginType(),cachedMember.isLoginStatus());
+        mRemoteDataSource.updateUserData(member, new UpdateDataCallback() {
+            @Override
+            public void updateCompleted(Member member) {
+                // 데이터 업데이트 성공
+                callback.updateCompleted(member);
+            }
 
-        // 멤버 정보 가져오기 성공
-        if(mCached == null){
-            mCached = new LinkedHashMap<>();
-        }
-        mCached.put(email,updateMember);
-
+            @Override
+            public void tokenExpiration() {
+                // 데이터 없음
+                callback.tokenExpiration();
+            }
+        });
     }
 
-    // 푸쉬알림 변경
-    @Override
-    public void updatePushNotice(@NonNull String email, @NonNull String password, boolean pushNotice) {
-        checkNotNull(email);
-        checkNotNull(password);
-        mRemoteDataSource.updatePushNotice(email,password,pushNotice);
-
-        Member cachedMember = getMemberWithEmail(email);
-        Member updateMember = new Member(
-                email, cachedMember.getName(),
-                cachedMember.getPhotoUrl(), password, cachedMember.isDarkTheme(),
-                pushNotice, cachedMember.getLoginType(),cachedMember.isLoginStatus()
-        );
-
-        // 멤버 정보 가져오기 성공
-        if(mCached == null){
-            mCached = new LinkedHashMap<>();
-        }
-        mCached.put(email,updateMember);
-
-    }
-
-    // 로그인 로그아웃 상태 변경
-    @Override
-    public void updateLoginStatus(@NonNull String email, @NonNull String password, boolean loginStatus) {
-        checkNotNull(email);
-        checkNotNull(password);
-        //mLocalDataSource.updateLoginStatus("","",loginStatus);
-        mRemoteDataSource.updateLoginStatus(email,password,loginStatus);
-
-        Member cachedMember = getMemberWithEmail(email);
-        Member updateMember = new Member(
-                email, cachedMember.getName(),
-                cachedMember.getPhotoUrl(), password, cachedMember.isDarkTheme(),
-                cachedMember.isPushNotice(),cachedMember.getLoginType(),loginStatus);
-
-        // 멤버 정보 가져오기 성공
-        if(mCached == null){
-            mCached = new LinkedHashMap<>();
-        }
-        mCached.put(email,updateMember);
-    }
 
     // 첫 회원가입
     @Override

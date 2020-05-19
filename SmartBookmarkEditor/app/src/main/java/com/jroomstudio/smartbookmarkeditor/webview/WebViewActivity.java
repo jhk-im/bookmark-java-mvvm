@@ -70,17 +70,12 @@ public class WebViewActivity extends AppCompatActivity {
         spActStatus = getSharedPreferences("user_data", MODE_PRIVATE);
         SharedPreferences.Editor editor = spActStatus.edit();
         editor.apply();
-
-        // 멤버, 게스트 구분
-        if(spActStatus.getBoolean("login_status",false)){
-            // 로그인 멤버
-
+        if(!spActStatus.getBoolean("login_status",false)){
+            // 게스트
+            setupDarkTheme("dark_theme");
         }else{
-            // 게스트 유저
-            // 다크모드일 경우 다크모드로 변경
-            if(spActStatus.getBoolean("dark_theme",true)){
-                setTheme(R.style.DarkAppTheme);
-            }
+            // 회원일때
+            setupDarkTheme("member_dark_theme");
         }
 
         setContentView(R.layout.web_view_act);
@@ -110,7 +105,14 @@ public class WebViewActivity extends AppCompatActivity {
         setupWebView();
 
     }
-
+    /**
+     * 다크테마 셋팅
+     **/
+    void setupDarkTheme(String darkThemeKey){
+        if(spActStatus.getBoolean(darkThemeKey,true)){
+            setTheme(R.style.DarkAppTheme);
+        }
+    }
     // 웹뷰 셋팅
     @SuppressLint("SetJavaScriptEnabled")
     void setupWebView(){
