@@ -16,7 +16,7 @@ import java.util.UUID;
  * - notice 의 상태를 room 데이터베이스에 저장하고 관리할 모델클래스
 **/
 @Entity(tableName = "notifications")
-public class Notice {
+public final class Notice {
 
     /**
      * notice 프라이머리 키

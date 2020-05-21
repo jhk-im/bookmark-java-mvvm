@@ -9,6 +9,7 @@ import androidx.room.PrimaryKey;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Strings;
+import com.google.gson.annotations.SerializedName;
 
 import java.util.UUID;
 
@@ -27,6 +28,7 @@ public final class Category {
     @PrimaryKey
     @NonNull
     @ColumnInfo(name = "id")
+    @SerializedName("category_id")
     private final String mId;
 
     /**
@@ -36,6 +38,7 @@ public final class Category {
      **/
     @NonNull
     @ColumnInfo(name = "title")
+    @SerializedName("category_title")
     private final String mTitle;
 
 
@@ -43,12 +46,14 @@ public final class Category {
      * - categories 테이블에서의 객체 위치
      */
     @ColumnInfo(name = "position")
+    @SerializedName("category_position")
     private final int mPosition;
 
     /**
      * - category 가 현재 선택된 카테고리인지 구분
      **/
     @ColumnInfo(name = "selected")
+    @SerializedName("category_selected")
     private final boolean mSelected;
 
     /**

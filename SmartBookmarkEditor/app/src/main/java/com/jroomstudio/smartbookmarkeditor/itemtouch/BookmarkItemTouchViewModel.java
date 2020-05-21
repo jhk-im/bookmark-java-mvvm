@@ -5,9 +5,9 @@ import android.content.Context;
 import androidx.annotation.Nullable;
 
 import com.jroomstudio.smartbookmarkeditor.BookmarkViewModel;
-import com.jroomstudio.smartbookmarkeditor.data.bookmark.source.BookmarksRepository;
-import com.jroomstudio.smartbookmarkeditor.main.home.item.BookmarkItemNavigator;
+import com.jroomstudio.smartbookmarkeditor.data.bookmark.source.local.BookmarksLocalRepository;
 import com.jroomstudio.smartbookmarkeditor.main.home.MainHomeFragment;
+import com.jroomstudio.smartbookmarkeditor.main.home.item.BookmarkItemNavigator;
 
 import java.lang.ref.WeakReference;
 
@@ -24,8 +24,9 @@ public class BookmarkItemTouchViewModel extends BookmarkViewModel {
     @Nullable
     private WeakReference<BookmarkItemNavigator> mNavigator;
 
-    public BookmarkItemTouchViewModel(Context context, BookmarksRepository bookmarksRepository) {
-        super(context, bookmarksRepository);
+    public BookmarkItemTouchViewModel(Context context,
+                                      BookmarksLocalRepository bookmarksLocalRepository) {
+        super(context, bookmarksLocalRepository);
     }
 
     public void setNavigator(BookmarkItemNavigator navigator) {

@@ -1,9 +1,6 @@
-package com.jroomstudio.smartbookmarkeditor.data.member.source;
+package com.jroomstudio.smartbookmarkeditor.data.member;
 
 import androidx.annotation.NonNull;
-
-import com.jroomstudio.smartbookmarkeditor.data.member.JwtToken;
-import com.jroomstudio.smartbookmarkeditor.data.member.Member;
 
 public interface MemberDataSource {
 
@@ -12,7 +9,7 @@ public interface MemberDataSource {
         void onDataNotAvailable();
     }
     interface LoadTokenCallback {
-        void onTokenLoaded(JwtToken token);
+        void onTokenLoaded(JsonWebToken token);
         void onTokenNotAvailable();
         void onLoginFailed();
     }
@@ -42,7 +39,5 @@ public interface MemberDataSource {
 
     // 최초 로그인 후 저장
     void saveMember(@NonNull Member member);
-
-    void refresh();
 
 }

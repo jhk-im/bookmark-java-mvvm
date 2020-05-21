@@ -10,7 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.jroomstudio.smartbookmarkeditor.R;
-import com.jroomstudio.smartbookmarkeditor.data.notice.NoticeLocalDataSource;
+import com.jroomstudio.smartbookmarkeditor.data.notice.NoticeLocalRepository;
 import com.jroomstudio.smartbookmarkeditor.data.notice.NoticeLocalDatabase;
 import com.jroomstudio.smartbookmarkeditor.util.AppExecutors;
 
@@ -47,10 +47,10 @@ public class NoticeDetailActivity extends AppCompatActivity {
 
         // 로컬 데이터베이스 소스 생성
         NoticeLocalDatabase database = NoticeLocalDatabase.getInstance(this);
-        NoticeLocalDataSource noticeLocalDataSource = NoticeLocalDataSource.
+        NoticeLocalRepository noticeLocalRepository = NoticeLocalRepository.
                 getInstance(new AppExecutors(), database.notificationsDAO());
 
-        noticeLocalDataSource.updateRead(getIntent().getStringExtra("id"),true);
+        noticeLocalRepository.updateRead(getIntent().getStringExtra("id"),true);
 
     }
 

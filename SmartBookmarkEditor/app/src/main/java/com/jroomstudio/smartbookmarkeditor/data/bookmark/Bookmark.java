@@ -9,6 +9,7 @@ import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import com.google.common.base.Objects;
+import com.google.gson.annotations.SerializedName;
 
 import java.util.UUID;
 
@@ -27,6 +28,7 @@ public final class Bookmark {
     @PrimaryKey
     @NonNull
     @ColumnInfo(name = "id")
+    @SerializedName("bookmark_id")
     private final String mId;
 
     /**
@@ -36,6 +38,7 @@ public final class Bookmark {
      **/
     @NonNull
     @ColumnInfo(name = "title")
+    @SerializedName("bookmark_title")
     private final String mTitle;
 
     /**
@@ -45,6 +48,7 @@ public final class Bookmark {
      **/
     @NonNull
     @ColumnInfo(name = "url")
+    @SerializedName("bookmark_url")
     private final String mUrl;
 
     /**
@@ -55,6 +59,7 @@ public final class Bookmark {
      **/
     @NonNull
     @ColumnInfo(name = "action")
+    @SerializedName("bookmark_action")
     private final String mAction;
 
     /**
@@ -64,12 +69,14 @@ public final class Bookmark {
      **/
     @NonNull
     @ColumnInfo(name = "category")
+    @SerializedName("bookmark_category")
     private final String mCategory;
 
     /**
      * - bookmark 의 카테고리 상의 순서
      */
     @ColumnInfo(name = "position")
+    @SerializedName("bookmark_position")
     private final int mPosition;
 
     /**
@@ -77,6 +84,7 @@ public final class Bookmark {
      **/
     @NonNull
     @ColumnInfo(name = "faviconUrl")
+    @SerializedName("bookmark_favicon")
     private final String mFaviconUrl;
 
     /**

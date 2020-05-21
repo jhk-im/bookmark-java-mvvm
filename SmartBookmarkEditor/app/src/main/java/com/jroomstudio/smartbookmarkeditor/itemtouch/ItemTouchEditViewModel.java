@@ -1,6 +1,7 @@
 package com.jroomstudio.smartbookmarkeditor.itemtouch;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.widget.Toast;
 
 import androidx.databinding.BaseObservable;
@@ -10,11 +11,11 @@ import androidx.databinding.ObservableList;
 
 import com.jroomstudio.smartbookmarkeditor.BR;
 import com.jroomstudio.smartbookmarkeditor.data.bookmark.Bookmark;
-import com.jroomstudio.smartbookmarkeditor.data.bookmark.source.BookmarksDataSource;
-import com.jroomstudio.smartbookmarkeditor.data.bookmark.source.BookmarksRepository;
+import com.jroomstudio.smartbookmarkeditor.data.bookmark.source.local.BookmarksLocalDataSource;
+import com.jroomstudio.smartbookmarkeditor.data.bookmark.source.local.BookmarksLocalRepository;
 import com.jroomstudio.smartbookmarkeditor.data.category.Category;
-import com.jroomstudio.smartbookmarkeditor.data.category.source.CategoriesDataSource;
-import com.jroomstudio.smartbookmarkeditor.data.category.source.CategoriesRepository;
+import com.jroomstudio.smartbookmarkeditor.data.category.source.local.CategoriesLocalDataSource;
+import com.jroomstudio.smartbookmarkeditor.data.category.source.local.CategoriesLocalRepository;
 
 import java.util.Collections;
 import java.util.List;
@@ -50,14 +51,15 @@ public class ItemTouchEditViewModel extends BaseObservable {
      * - 로컬 , 원격에서 데이터를 액세스
      **/
     // 북마크
-    private BookmarksRepository mBookmarksRepository;
+    private BookmarksLocalRepository mBookmarksLocalRepository;
     // 카테고리
-    private CategoriesRepository mCategoriesRepository;
+    private CategoriesLocalRepository mCategoriesRepository;
     // 네비게이터
     private ItemTouchEditNavigator mNavigator;
     // 네비게이터 셋팅 - 프래그먼트와 뷰모델 생성시
     void setNavigator(ItemTouchEditNavigator navigator){ mNavigator = navigator; }
-
+    // 액티비티 상태저장 Shared Preferences
+    private SharedPreferences spActStatus;
     /**
      * mNavigator  메소드
      **/
@@ -77,21 +79,28 @@ public class ItemTouchEditViewModel extends BaseObservable {
 
     /**
      * ItemTouchEditViewModel 생성자
-     * @param bookmarksRepository - 북마크 로컬, 원격 데이터 액세스
+     * @param bookmarksLocalRepository - 북마크 로컬 데이터 액세스
      * @param categoriesRepository - 카테고리 로컬, 원격 데이터 액세스
      * @param context - 응용프로그램 context 를 강제로 사용함
      **/
-    ItemTouchEditViewModel(BookmarksRepository bookmarksRepository,
-                           CategoriesRepository categoriesRepository, Context context){
-        mBookmarksRepository = bookmarksRepository;
+    ItemTouchEditViewModel(BookmarksLocalRepository bookmarksLocalRepository,
+                           CategoriesLocalRepository categoriesRepository, Context context,
+                           SharedPreferences sharedPreferences){
+        mBookmarksLocalRepository = bookmarksLocalRepository;
         mCategoriesRepository = categoriesRepository;
         mContext = context.getApplicationContext();
+        spActStatus = sharedPreferences;
     }
 
     // 프래그먼트 onResume 에서 실행
     void start() {
         Toast.makeText(mContext, "롱클릭으로 아이템 순서변경", Toast.LENGTH_SHORT).show();
-        loadCategories();
+        if(!spActStatus.getBoolean("login_status",false)){
+            // 게스트 유저
+            loadCategories();
+        }else{
+            // 회원 유저
+        }
     }
 
     // 포지션 변경후 fab 버튼 누르고 종료
@@ -99,7 +108,7 @@ public class ItemTouchEditViewModel extends BaseObservable {
         // 북마크 포지션 값 변경
         for(Bookmark bookmark : bookmarkItems){
             // 포지션값 변경
-            mBookmarksRepository.updatePosition(bookmark,bookmarkItems.indexOf(bookmark));
+            mBookmarksLocalRepository.updatePosition(bookmark,bookmarkItems.indexOf(bookmark));
         }
         // 카테고리 포지션값 변경
         for(Category category : categoryItems){
@@ -121,7 +130,7 @@ public class ItemTouchEditViewModel extends BaseObservable {
     {
         // 카테고리
         mCategoriesRepository.refreshCategories();
-        mCategoriesRepository.getCategories(new CategoriesDataSource.LoadCategoriesCallback() {
+        mCategoriesRepository.getCategories(new CategoriesLocalDataSource.LoadCategoriesCallback() {
             @Override
             public void onCategoriesLoaded(List<Category> categories) {
 
@@ -149,9 +158,9 @@ public class ItemTouchEditViewModel extends BaseObservable {
     // 데이터베이스에서 북마크 로드
     private void loadBookmarks(){
         // 현재 선택된 카테고리 북마크 가져오기
-        mBookmarksRepository.refreshBookmarks();
-        mBookmarksRepository.getBookmarks(Objects.requireNonNull(currentCategory.get().getTitle()),
-                new BookmarksDataSource.LoadBookmarksCallback() {
+        //mBookmarksLocalRepository.refreshBookmarks();
+        mBookmarksLocalRepository.getBookmarks(Objects.requireNonNull(currentCategory.get().getTitle()),
+                new BookmarksLocalDataSource.LoadBookmarksCallback() {
                     @Override
                     public void onBookmarksLoaded(List<Bookmark> bookmarks) {
                         // 옵저버블 리스트에 추가

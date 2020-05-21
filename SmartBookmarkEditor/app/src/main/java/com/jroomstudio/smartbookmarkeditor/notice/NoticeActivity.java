@@ -13,7 +13,7 @@ import androidx.appcompat.widget.Toolbar;
 import com.jroomstudio.smartbookmarkeditor.R;
 import com.jroomstudio.smartbookmarkeditor.ViewModelHolder;
 import com.jroomstudio.smartbookmarkeditor.data.notice.Notice;
-import com.jroomstudio.smartbookmarkeditor.data.notice.NoticeLocalDataSource;
+import com.jroomstudio.smartbookmarkeditor.data.notice.NoticeLocalRepository;
 import com.jroomstudio.smartbookmarkeditor.data.notice.NoticeLocalDatabase;
 import com.jroomstudio.smartbookmarkeditor.main.MainActivity;
 import com.jroomstudio.smartbookmarkeditor.util.ActivityUtils;
@@ -110,10 +110,10 @@ public class NoticeActivity extends AppCompatActivity implements NoticeNavigator
             // 입력한 TAG 의 뷰모델이 없다면 뷰모델을 생성하고 ViewModelHolder 에 추가한다.
             // 로컬 데이터소스 생성액티비티 context 입력
             NoticeLocalDatabase database = NoticeLocalDatabase.getInstance(this);
-            NoticeLocalDataSource noticeLocalDataSource = NoticeLocalDataSource.
+            NoticeLocalRepository noticeLocalRepository = NoticeLocalRepository.
                     getInstance(new AppExecutors(), database.notificationsDAO());
             // 알림 메세지 저장하는 룸 데이터베이스 생성
-            NoticeViewModel viewModel = new NoticeViewModel(noticeLocalDataSource,this);
+            NoticeViewModel viewModel = new NoticeViewModel(noticeLocalRepository,this);
             // ViewModelHolder(UI 없는 Fragment) 생성
             ActivityUtils.addFragmentToActivity(
                     getSupportFragmentManager(),

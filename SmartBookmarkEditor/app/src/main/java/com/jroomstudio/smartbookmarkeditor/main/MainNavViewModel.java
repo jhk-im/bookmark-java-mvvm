@@ -11,13 +11,13 @@ import androidx.databinding.ObservableBoolean;
 import androidx.databinding.ObservableField;
 
 import com.jroomstudio.smartbookmarkeditor.BR;
-import com.jroomstudio.smartbookmarkeditor.data.member.JwtToken;
+import com.jroomstudio.smartbookmarkeditor.data.member.JsonWebToken;
 import com.jroomstudio.smartbookmarkeditor.data.member.Member;
-import com.jroomstudio.smartbookmarkeditor.data.member.source.MemberDataSource;
-import com.jroomstudio.smartbookmarkeditor.data.member.source.MemberRepository;
+import com.jroomstudio.smartbookmarkeditor.data.member.MemberDataSource;
+import com.jroomstudio.smartbookmarkeditor.data.member.MemberRemoteRepository;
 import com.jroomstudio.smartbookmarkeditor.data.notice.Notice;
-import com.jroomstudio.smartbookmarkeditor.data.notice.NoticeDataSource;
 import com.jroomstudio.smartbookmarkeditor.data.notice.NoticeLocalDataSource;
+import com.jroomstudio.smartbookmarkeditor.data.notice.NoticeLocalRepository;
 
 import java.util.List;
 import java.util.Objects;
@@ -48,13 +48,13 @@ public class MainNavViewModel extends BaseObservable {
 
 
     // 알림 객체 로컬 데이터 소스
-    private NoticeLocalDataSource mNoticeLocalDataSource;
+    private NoticeLocalRepository mNoticeLocalRepository;
 
     // 액티비티 네비게이터
     private MainNavNavigator mNavigator;
 
     // 회원 원격 데이터베이스
-    private MemberRepository mMemberRepository;
+    private MemberRemoteRepository mMemberRepository;
 
     // 액티비티 상태저장 Shared Preferences
     private SharedPreferences spActStatus;
@@ -63,14 +63,14 @@ public class MainNavViewModel extends BaseObservable {
 
     /**
      * Main Nav Activity ViewModel 생성자
-     * @param noticeLocalDataSource - 알림 객체 로컬 데이터 액세스
+     * @param noticeLocalRepository - 알림 객체 로컬 데이터 액세스
      **/
-    public MainNavViewModel(NoticeLocalDataSource noticeLocalDataSource,
+    public MainNavViewModel(NoticeLocalRepository noticeLocalRepository,
                             MainNavNavigator navNavigator,
-                            MemberRepository memberRepository,
+                            MemberRemoteRepository memberRepository,
                             SharedPreferences sharedPreferences,
                             Context context){
-        mNoticeLocalDataSource = noticeLocalDataSource;
+        mNoticeLocalRepository = noticeLocalRepository;
         mNavigator = navNavigator;
         mMemberRepository = memberRepository;
         spActStatus = sharedPreferences;
@@ -90,8 +90,8 @@ public class MainNavViewModel extends BaseObservable {
      **/
     private void setupNoticeLocalDataSource(){
         // 읽지않은 알림 데이터 가져오기
-        mNoticeLocalDataSource.getNotifications(
-                false, new NoticeDataSource.LoadNotificationsCallback() {
+        mNoticeLocalRepository.getNotifications(
+                false, new NoticeLocalDataSource.LoadNotificationsCallback() {
                     @Override
                     public void onNotificationsLoaded(List<Notice> notifications) {
                         // 비어있지 않은경우
@@ -124,7 +124,7 @@ public class MainNavViewModel extends BaseObservable {
                 spActStatus.getInt("login_type", 0),
                 new MemberDataSource.LoadTokenCallback() {
                     @Override
-                    public void onTokenLoaded(JwtToken token) {
+                    public void onTokenLoaded(JsonWebToken token) {
                         // 토큰 저장
                         SharedPreferences.Editor editor = spActStatus.edit();
                         editor.putBoolean("login_status",true);
@@ -148,8 +148,7 @@ public class MainNavViewModel extends BaseObservable {
                                 Objects.requireNonNull(spActStatus.getString("auto_password", "")),
                                 true,
                                 true,
-                                spActStatus.getInt("login_type", 0),
-                                true
+                                spActStatus.getInt("login_type", 0)
                         );
                         // 회원가입
                         mMemberRepository.saveMember(newMember);
@@ -183,8 +182,7 @@ public class MainNavViewModel extends BaseObservable {
                 Objects.requireNonNull(spActStatus.getString("auto_password", "")),
                 true,
                 true,
-                spActStatus.getInt("login_type", 0),
-                true
+                spActStatus.getInt("login_type", 0)
         );
         mMemberRepository.getData(postMember,
                 new MemberDataSource.LoadDataCallback() {
@@ -197,7 +195,7 @@ public class MainNavViewModel extends BaseObservable {
 
                     @Override
                     public void onDataNotAvailable() {
-
+                        // 사용안함
                     }
                 });
     }
@@ -216,8 +214,7 @@ public class MainNavViewModel extends BaseObservable {
                 Objects.requireNonNull(spActStatus.getString("auto_password", "")),
                 darkTheme,
                 pushNotice,
-                spActStatus.getInt("login_type", 0),
-                loginStatus
+                spActStatus.getInt("login_type", 0)
         );
         mMemberRepository.updateUserData(updateMember, new MemberDataSource.UpdateDataCallback() {
             @Override
@@ -247,7 +244,7 @@ public class MainNavViewModel extends BaseObservable {
                 Objects.requireNonNull(spActStatus.getString("auto_password", "")),
                 new MemberDataSource.LoadTokenCallback() {
                     @Override
-                    public void onTokenLoaded(JwtToken token) {
+                    public void onTokenLoaded(JsonWebToken token) {
                         Log.e("Token refresh","성공");
                         // 토큰저장
                         SharedPreferences.Editor editor = spActStatus.edit();

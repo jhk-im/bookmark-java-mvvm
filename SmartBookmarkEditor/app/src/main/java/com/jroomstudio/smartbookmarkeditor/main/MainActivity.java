@@ -26,9 +26,9 @@ import com.jroomstudio.smartbookmarkeditor.ViewModelHolder;
 import com.jroomstudio.smartbookmarkeditor.data.bookmark.Bookmark;
 import com.jroomstudio.smartbookmarkeditor.data.category.Category;
 import com.jroomstudio.smartbookmarkeditor.data.member.Member;
-import com.jroomstudio.smartbookmarkeditor.data.member.source.MemberRepository;
-import com.jroomstudio.smartbookmarkeditor.data.notice.NoticeLocalDataSource;
+import com.jroomstudio.smartbookmarkeditor.data.member.MemberRemoteRepository;
 import com.jroomstudio.smartbookmarkeditor.data.notice.NoticeLocalDatabase;
+import com.jroomstudio.smartbookmarkeditor.data.notice.NoticeLocalRepository;
 import com.jroomstudio.smartbookmarkeditor.databinding.MainNavViewContainerBinding;
 import com.jroomstudio.smartbookmarkeditor.information.InformationActivity;
 import com.jroomstudio.smartbookmarkeditor.login.LoginActivity;
@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity
     /**
      * 로그인 여부
      **/
-    private MemberRepository mMemberRepository;
+    private MemberRemoteRepository mMemberRemoteRepository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -133,8 +133,7 @@ public class MainActivity extends AppCompatActivity
                             "",
                             false,
                             false,
-                            0,
-                            false),
+                            0),
                     false);
         }
     }
@@ -181,12 +180,12 @@ public class MainActivity extends AppCompatActivity
             // 입력한 TAG 의 뷰모델이 없다면 뷰모델을 생성하고 ViewModelHolder 에 추가한다.
             // 로컬 데이터소스 생성, 액티비티 context 입력
             NoticeLocalDatabase database = NoticeLocalDatabase.getInstance(this);
-            NoticeLocalDataSource noticeLocalDataSource = NoticeLocalDataSource.
+            NoticeLocalRepository noticeLocalRepository = NoticeLocalRepository.
                     getInstance(new AppExecutors(), database.notificationsDAO());
             MainNavViewModel viewModel = new MainNavViewModel(
-                    noticeLocalDataSource,
+                    noticeLocalRepository,
                     this,
-                    mMemberRepository = Injection.provideMemberRepository(getApplication(),spActStatus),
+                    mMemberRemoteRepository = Injection.provideMemberRepository(spActStatus),
                     spActStatus,
                     getApplicationContext()
                     );
@@ -247,7 +246,7 @@ public class MainActivity extends AppCompatActivity
             MainHomeViewModel viewModel = new MainHomeViewModel(
                     Injection.provideBookmarksRepository(getApplicationContext()),
                     Injection.provideCategoriesRepository(getApplicationContext()),
-                    getApplicationContext()
+                    getApplicationContext(),spActStatus
             );
             // ViewModelHolder(UI 없는 Fragment) 생성
             ActivityUtils.addFragmentToActivity(

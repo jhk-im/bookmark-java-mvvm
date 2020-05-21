@@ -1,4 +1,4 @@
-package com.jroomstudio.smartbookmarkeditor.data.member.source.remote;
+package com.jroomstudio.smartbookmarkeditor.data.member;
 
 
 import android.content.SharedPreferences;
@@ -6,9 +6,6 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.jroomstudio.smartbookmarkeditor.data.member.JwtToken;
-import com.jroomstudio.smartbookmarkeditor.data.member.Member;
-import com.jroomstudio.smartbookmarkeditor.data.member.source.MemberDataSource;
 import com.jroomstudio.smartbookmarkeditor.util.AppExecutors;
 import com.jroomstudio.smartbookmarkeditor.util.NetRetrofitService;
 
@@ -21,10 +18,10 @@ import retrofit2.converter.gson.GsonConverterFactory;
 /**
  * 회원정보 원격 데이터 소스
  **/
-public class MemberRemoteDataSource implements MemberDataSource {
+public class MemberRemoteRepository implements MemberDataSource {
 
     // 싱글턴 인스턴스
-    private static MemberRemoteDataSource INSTANCE;
+    private static MemberRemoteRepository INSTANCE;
 
     // 레트로핏 인스턴스
     // private NetRetrofit mNetRetrofit;
@@ -40,7 +37,7 @@ public class MemberRemoteDataSource implements MemberDataSource {
     //private static final int LATENCY_IN_MILLIS = 2000;
 
     // 다이렉트 인스턴스 방지
-    private MemberRemoteDataSource(@NonNull AppExecutors appExecutors,
+    private MemberRemoteRepository(@NonNull AppExecutors appExecutors,
                                    @NonNull SharedPreferences sharedPreferences){
         mAppExecutors = appExecutors;
         spActStatus = sharedPreferences;
@@ -53,10 +50,10 @@ public class MemberRemoteDataSource implements MemberDataSource {
     }
 
     // 싱글턴 인스턴스 생성
-    public static MemberRemoteDataSource getInstance(@NonNull AppExecutors appExecutors,
+    public static MemberRemoteRepository getInstance(@NonNull AppExecutors appExecutors,
                                                      @NonNull SharedPreferences sharedPreferences){
         if(INSTANCE == null){
-            INSTANCE = new MemberRemoteDataSource(appExecutors,sharedPreferences);
+            INSTANCE = new MemberRemoteRepository(appExecutors,sharedPreferences);
         }
         return INSTANCE;
     }
@@ -69,12 +66,12 @@ public class MemberRemoteDataSource implements MemberDataSource {
             Member member = new Member(
                     email,"","",
                     password,false,false,
-                    loginType,false
+                    loginType
             );
             mNetRetrofitService.postTokenCallback("application/json",member)
-                    .enqueue(new Callback<JwtToken>() {
+                    .enqueue(new Callback<JsonWebToken>() {
                         @Override
-                        public void onResponse(Call<JwtToken> call, Response<JwtToken> response) {
+                        public void onResponse(Call<JsonWebToken> call, Response<JsonWebToken> response) {
                             // JWT 콜백
                             Log.e("Get JWT",response.code()+"");
                             if(response.code()==200){
@@ -90,7 +87,7 @@ public class MemberRemoteDataSource implements MemberDataSource {
                         }
 
                         @Override
-                        public void onFailure(Call<JwtToken> call, Throwable t) {
+                        public void onFailure(Call<JsonWebToken> call, Throwable t) {
                             // 아무런 응답이 없을 시
                             // 등록된 회원이 없다고 판단
                             //Log.e("jwt 콜백","실패");
@@ -109,12 +106,12 @@ public class MemberRemoteDataSource implements MemberDataSource {
             Member member = new Member(
                     email,"","",
                     password,false,false,
-                    0,false
+                    0
             );
             mNetRetrofitService.refreshTokenCallback("application/json",member)
-                    .enqueue(new Callback<JwtToken>() {
+                    .enqueue(new Callback<JsonWebToken>() {
                         @Override
-                        public void onResponse(Call<JwtToken> call, Response<JwtToken> response) {
+                        public void onResponse(Call<JsonWebToken> call, Response<JsonWebToken> response) {
                             // JWT 콜백
                             //Log.e("jwt 리프래쉬","성공");
                             Log.e("JWT Refresh",response.code()+"");
@@ -126,7 +123,7 @@ public class MemberRemoteDataSource implements MemberDataSource {
                         }
 
                         @Override
-                        public void onFailure(Call<JwtToken> call, Throwable t) {
+                        public void onFailure(Call<JsonWebToken> call, Throwable t) {
                             // 사용안함
                         }
                     });
@@ -219,8 +216,4 @@ public class MemberRemoteDataSource implements MemberDataSource {
         mAppExecutors.getNetworkIO().execute(runnable);
     }
 
-    @Override
-    public void refresh() {
-        // 사용하지 않음
-    }
 }

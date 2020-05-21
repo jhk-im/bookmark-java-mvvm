@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.jroomstudio.smartbookmarkeditor.R;
 import com.jroomstudio.smartbookmarkeditor.data.category.Category;
-import com.jroomstudio.smartbookmarkeditor.data.category.source.CategoriesRepository;
+import com.jroomstudio.smartbookmarkeditor.data.category.source.local.CategoriesLocalRepository;
 import com.jroomstudio.smartbookmarkeditor.databinding.MainCategoryItemBinding;
 import com.jroomstudio.smartbookmarkeditor.main.MainActivity;
 import com.jroomstudio.smartbookmarkeditor.main.home.item.CategoryItemNavigator;
@@ -29,7 +29,7 @@ public class CategoriesRecyclerAdapter
     private List<Category> mCategories;
 
     // 카테고리 원격과 로컬 데이터 소스 액세스
-    private CategoriesRepository mCategoriesRepository;
+    private CategoriesLocalRepository mCategoriesRepository;
 
     // 메인프래그먼트 뷰모델
     private MainHomeViewModel mMainHomeViewModel;
@@ -44,7 +44,7 @@ public class CategoriesRecyclerAdapter
      * 어댑터 생성자
      **/
     public CategoriesRecyclerAdapter(List<Category> categories,
-                                     CategoriesRepository categoriesRepository,
+                                     CategoriesLocalRepository categoriesRepository,
                                      MainHomeViewModel mainHomeViewModel, MainActivity itemNavigator){
         setCategories(categories);
         mCategoriesRepository = categoriesRepository;
@@ -97,6 +97,7 @@ public class CategoriesRecyclerAdapter
                     viewGroup.getContext().getApplicationContext(),
                     mCategoriesRepository
             );
+
             // 뷰모델에 네비게이터 셋팅
             mCategoryItemViewModel.setNavigator(mItemNavigator);
             // 뷰모델과 뷰를 연결

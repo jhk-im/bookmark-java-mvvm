@@ -104,7 +104,8 @@ public class ItemTouchEditActivity extends AppCompatActivity implements ItemTouc
             ItemTouchEditViewModel viewModel = new ItemTouchEditViewModel(
                     Injection.provideBookmarksRepository(getApplicationContext()),
                     Injection.provideCategoriesRepository(getApplicationContext()),
-                    getApplicationContext()
+                    getApplicationContext(),
+                    spActStatus
             );
             Log.d("create view model","ItemTouchEditViewModel");
             // ViewModelHolder(UI 없는 Fragment) 생성

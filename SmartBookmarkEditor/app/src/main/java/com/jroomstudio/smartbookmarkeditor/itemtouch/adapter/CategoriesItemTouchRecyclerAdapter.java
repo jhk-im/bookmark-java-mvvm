@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.jroomstudio.smartbookmarkeditor.R;
 import com.jroomstudio.smartbookmarkeditor.data.category.Category;
-import com.jroomstudio.smartbookmarkeditor.data.category.source.CategoriesRepository;
+import com.jroomstudio.smartbookmarkeditor.data.category.source.local.CategoriesLocalRepository;
 import com.jroomstudio.smartbookmarkeditor.itemtouch.ItemTouchEditViewModel;
 import com.jroomstudio.smartbookmarkeditor.util.ItemTouchHelperListener;
 
@@ -27,7 +27,7 @@ public class CategoriesItemTouchRecyclerAdapter
     private List<Category> mCategories;
 
     // 카테고리 원격과 로컬 데이터 소스 액세스
-    private CategoriesRepository mCategoriesRepository;
+    private CategoriesLocalRepository mCategoriesRepository;
 
     // 메인프래그먼트 뷰모델
     private ItemTouchEditViewModel mViewModel;
@@ -39,7 +39,7 @@ public class CategoriesItemTouchRecyclerAdapter
      * 어댑터 생성자
      **/
     public CategoriesItemTouchRecyclerAdapter(List<Category> categories,
-                                              CategoriesRepository categoriesRepository,
+                                              CategoriesLocalRepository categoriesRepository,
                                               ItemTouchEditViewModel viewModel){
         setCategories(categories);
         mCategoriesRepository = categoriesRepository;

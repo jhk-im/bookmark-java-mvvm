@@ -2,7 +2,7 @@ package com.jroomstudio.smartbookmarkeditor.data.member;
 
 import com.google.gson.annotations.SerializedName;
 
-public class JwtToken {
+public class JsonWebToken {
     @SerializedName("message")
     private String message;
     @SerializedName("jwt")
@@ -15,7 +15,7 @@ public class JwtToken {
     private String name;
 
     // 생성자
-    public JwtToken(String inputMessage, String inputJwt, String inputEmail, String inputExpireAt, String inputName){
+    public JsonWebToken(String inputMessage, String inputJwt, String inputEmail, String inputExpireAt, String inputName){
         this.message = inputMessage;
         this.jwt = inputJwt;
         this.email = inputEmail;

@@ -9,7 +9,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.jroomstudio.smartbookmarkeditor.R;
-import com.jroomstudio.smartbookmarkeditor.data.notice.NoticeLocalDataSource;
+import com.jroomstudio.smartbookmarkeditor.data.notice.NoticeLocalRepository;
 import com.jroomstudio.smartbookmarkeditor.data.notice.NoticeLocalDatabase;
 import com.jroomstudio.smartbookmarkeditor.util.AppExecutors;
 
@@ -37,7 +37,7 @@ public class NoticePopupActivity extends AppCompatActivity {
 
         // 로컬 데이터베이스 소스 생성
         NoticeLocalDatabase database = NoticeLocalDatabase.getInstance(this);
-        NoticeLocalDataSource noticeLocalDataSource = NoticeLocalDataSource.
+        NoticeLocalRepository noticeLocalRepository = NoticeLocalRepository.
                 getInstance(new AppExecutors(), database.notificationsDAO());
 
         TextView deleteQuestion;
@@ -55,11 +55,11 @@ public class NoticePopupActivity extends AppCompatActivity {
         btnOk.setOnClickListener(v -> {
             if(getIntent().getStringExtra("delete_type").equals(ALL_DELETE)){
                 // 전체삭제
-                noticeLocalDataSource.deleteAllNotifications();
+                noticeLocalRepository.deleteAllNotifications();
                 finish();
             }else{
                 // 단일객체 삭제
-                noticeLocalDataSource.deleteNotice(getIntent().getStringExtra("delete_id"));
+                noticeLocalRepository.deleteNotice(getIntent().getStringExtra("delete_id"));
                 finish();
             }
         });

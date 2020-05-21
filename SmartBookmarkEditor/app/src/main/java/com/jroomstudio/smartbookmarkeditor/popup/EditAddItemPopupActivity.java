@@ -243,10 +243,12 @@ public class EditAddItemPopupActivity extends AppCompatActivity implements EditA
             EditAddItemPopupViewModel viewModel = new EditAddItemPopupViewModel(
                     Injection.provideBookmarksRepository(getApplicationContext()),
                     Injection.provideCategoriesRepository(getApplicationContext()),
+                    Injection.provideRemoteBookmarksRepository(spActStatus),
                     getApplicationContext(),
                     mIntentViewType,
                     mItemId,
-                    mDeleteItemType
+                    mDeleteItemType,
+                    spActStatus
             );
             // ViewModelHolder(UI 없는 Fragment) 생성
             ActivityUtils.addFragmentToActivity(

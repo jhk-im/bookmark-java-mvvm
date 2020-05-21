@@ -2,23 +2,21 @@ package com.jroomstudio.smartbookmarkeditor;
 
 import android.content.Context;
 
-import androidx.annotation.Nullable;
 import androidx.databinding.BaseObservable;
-import androidx.databinding.Bindable;
 import androidx.databinding.Observable;
 import androidx.databinding.ObservableBoolean;
 import androidx.databinding.ObservableField;
 
 import com.jroomstudio.smartbookmarkeditor.data.category.Category;
-import com.jroomstudio.smartbookmarkeditor.data.category.source.CategoriesDataSource;
-import com.jroomstudio.smartbookmarkeditor.data.category.source.CategoriesRepository;
+import com.jroomstudio.smartbookmarkeditor.data.category.source.local.CategoriesLocalDataSource;
+import com.jroomstudio.smartbookmarkeditor.data.category.source.local.CategoriesLocalRepository;
 
 /**
  * 카테고리 단일 객체를 아이템 뷰모델에서 표시하기위해 상속받아 구현하는 추상클래스
  * 아이템이 여러개로 늘어나기 때문에 추상 클래스를 상속받아 구현한다.
  **/
 public abstract class CategoryViewModel extends BaseObservable
-        implements CategoriesDataSource.GetCategoryCallback {
+        implements CategoriesLocalDataSource.GetCategoryCallback {
 
     // 카테고리 아이템의 title 관찰 변수
     public final ObservableField<String> title = new ObservableField<>();
@@ -29,22 +27,22 @@ public abstract class CategoryViewModel extends BaseObservable
     // 카테고리 단일객체 관찰
     private final ObservableField<Category> mCategoryObservable = new ObservableField<>();
 
-
     // 카테고리 원격, 로컬 데이터 소스 멤버변수
-    private final CategoriesRepository mCategoriesRepository;
+    private final CategoriesLocalRepository mCategoriesRepository;
 
     // context 멤버변수
     private final Context mContext;
 
+
     // 카테고리 뷰모델 생성자
-    public CategoryViewModel(Context context, CategoriesRepository categoriesRepository){
+    public CategoryViewModel(Context context, CategoriesLocalRepository categoriesRepository){
         mContext = context;
         mCategoriesRepository = categoriesRepository;
-
         // 노툴된 관찰 가능 항목은 mCategoriesObservable 관찰 가능 항목에 따라 다르다.
         mCategoryObservable.addOnPropertyChangedCallback(new OnPropertyChangedCallback() {
             @Override
             public void onPropertyChanged(Observable sender, int propertyId) {
+                // 게스트
                 Category category = mCategoryObservable.get();
                 if(category != null){
                     title.set(category.getTitle());
@@ -66,10 +64,6 @@ public abstract class CategoryViewModel extends BaseObservable
         mCategoryObservable.set(category);
     }
 
-    // 객체 널 체크
-    @Bindable
-    public boolean isDataAvailable() { return mCategoryObservable.get() != null; }
-
 
     // GetCategoryCallback -> 데이터 로드 성공
     @Override
@@ -82,24 +76,6 @@ public abstract class CategoryViewModel extends BaseObservable
     @Override
     public void onDataNotAvailable() { mCategoryObservable.set(null); }
 
-    // 객체삭제
-    public void deleteCategory() {
-        if(mCategoryObservable.get() != null){
-            mCategoriesRepository.deleteCategory(mCategoryObservable.get().getId());
-        }
-    }
-
-    // 객체 refresh
-    public void onRefresh(){
-        if(mCategoryObservable.get() != null){
-            start(mCategoryObservable.get().getId());
-        }
-    }
-
-
-    // 객체 id 반환
-    @Nullable
-    protected String getCategoryId() { return mCategoryObservable.get().getId(); }
 
     // 객체 반환
     protected Category getCategory() { return mCategoryObservable.get(); }

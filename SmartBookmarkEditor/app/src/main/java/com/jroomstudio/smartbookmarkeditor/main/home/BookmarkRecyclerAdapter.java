@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.jroomstudio.smartbookmarkeditor.R;
 import com.jroomstudio.smartbookmarkeditor.data.bookmark.Bookmark;
-import com.jroomstudio.smartbookmarkeditor.data.bookmark.source.BookmarksRepository;
+import com.jroomstudio.smartbookmarkeditor.data.bookmark.source.local.BookmarksLocalRepository;
 import com.jroomstudio.smartbookmarkeditor.databinding.MainBookmarkItemBinding;
 import com.jroomstudio.smartbookmarkeditor.main.MainActivity;
 import com.jroomstudio.smartbookmarkeditor.main.home.item.BookmarkItemNavigator;
@@ -28,7 +28,7 @@ public class BookmarkRecyclerAdapter
     private List<Bookmark> mBookmarks;
 
     // 북마크 원격과 로컬 데이터소스 액세스
-    private BookmarksRepository mBookmarksRepository;
+    private BookmarksLocalRepository mBookmarksLocalRepository;
 
     // 메인프래그먼트 뷰모델
     private MainHomeViewModel mMainHomeViewModel;
@@ -43,10 +43,10 @@ public class BookmarkRecyclerAdapter
      * 어댑터 생성자
      **/
     public BookmarkRecyclerAdapter(List<Bookmark> bookmarks,
-                                   BookmarksRepository bookmarksRepository,
+                                   BookmarksLocalRepository bookmarksLocalRepository,
                                    MainHomeViewModel mainHomeViewModel, MainActivity itemNavigator){
         setBookmarks(bookmarks);
-        mBookmarksRepository = bookmarksRepository;
+        mBookmarksLocalRepository = bookmarksLocalRepository;
         mMainHomeViewModel = mainHomeViewModel;
         mItemNavigator = itemNavigator;
     }
@@ -99,7 +99,7 @@ public class BookmarkRecyclerAdapter
             // 뷰모델 생성
             mBookmarkItemViewModel = new BookmarkItemViewModel(
                     viewGroup.getContext().getApplicationContext(),
-                    mBookmarksRepository
+                    mBookmarksLocalRepository
             );
             // 뷰모델 네비게이터 셋팅
             mBookmarkItemViewModel.setNavigator(mItemNavigator);

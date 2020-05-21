@@ -9,8 +9,8 @@ import androidx.databinding.ObservableList;
 
 import com.jroomstudio.smartbookmarkeditor.BR;
 import com.jroomstudio.smartbookmarkeditor.data.notice.Notice;
-import com.jroomstudio.smartbookmarkeditor.data.notice.NoticeDataSource;
 import com.jroomstudio.smartbookmarkeditor.data.notice.NoticeLocalDataSource;
+import com.jroomstudio.smartbookmarkeditor.data.notice.NoticeLocalRepository;
 
 import java.util.List;
 
@@ -39,15 +39,15 @@ public class NoticeViewModel extends BaseObservable {
     public void onActivityDestroyed(){ mNavigator = null; }
 
     // 알림 객체 로컬 데이터 소스
-    private NoticeLocalDataSource mNoticeLocalDataSource;
+    private NoticeLocalRepository mNoticeLocalRepository;
 
     /**
      * Notice Activity ViewModel 생성자
-     * @param noticeLocalDataSource - 알림 객체 로컬 데이터 액세스
+     * @param noticeLocalRepository - 알림 객체 로컬 데이터 액세스
      * @param context - 응용프로그램 context 를 강제로 사용함
      **/
-    public NoticeViewModel(NoticeLocalDataSource noticeLocalDataSource, Context context){
-        mNoticeLocalDataSource = noticeLocalDataSource;
+    public NoticeViewModel(NoticeLocalRepository noticeLocalRepository, Context context){
+        mNoticeLocalRepository = noticeLocalRepository;
         mContext = context;
     }
 
@@ -57,7 +57,7 @@ public class NoticeViewModel extends BaseObservable {
     private void loadNotifications()
     {
         // 알림 객체 가져오기
-        mNoticeLocalDataSource.getNotifications(new NoticeDataSource.LoadNotificationsCallback() {
+        mNoticeLocalRepository.getNotifications(new NoticeLocalDataSource.LoadNotificationsCallback() {
             @Override
             public void onNotificationsLoaded(List<Notice> notifications) {
                 // 옵저버블 리스트에 추가

@@ -5,9 +5,9 @@ import android.content.Context;
 import androidx.annotation.Nullable;
 
 import com.jroomstudio.smartbookmarkeditor.CategoryViewModel;
-import com.jroomstudio.smartbookmarkeditor.data.category.source.CategoriesRepository;
-import com.jroomstudio.smartbookmarkeditor.main.home.item.CategoryItemNavigator;
+import com.jroomstudio.smartbookmarkeditor.data.category.source.local.CategoriesLocalRepository;
 import com.jroomstudio.smartbookmarkeditor.main.home.MainHomeFragment;
+import com.jroomstudio.smartbookmarkeditor.main.home.item.CategoryItemNavigator;
 
 import java.lang.ref.WeakReference;
 
@@ -24,7 +24,8 @@ public class CategoryItemTouchViewModel extends CategoryViewModel {
     @Nullable
     private WeakReference<CategoryItemNavigator> mNavigator;
 
-    public CategoryItemTouchViewModel(Context context, CategoriesRepository categoriesRepository) {
+    public CategoryItemTouchViewModel(Context context,
+                                      CategoriesLocalRepository categoriesRepository) {
         super(context, categoriesRepository);
     }
 

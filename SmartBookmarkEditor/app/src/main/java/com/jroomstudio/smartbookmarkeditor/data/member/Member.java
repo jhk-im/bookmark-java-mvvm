@@ -83,12 +83,6 @@ public class Member {
     @SerializedName("login_type")
     private final int mLoginType;
 
-    /**
-     * 푸쉬 알림 상태
-     **/
-    @ColumnInfo(name = "login_status")
-    @SerializedName("login_status")
-    private final boolean mLoginStatus;
 
 
     /**
@@ -103,8 +97,7 @@ public class Member {
                   @Nonnull String autoPassword,
                   boolean darkTheme,
                   boolean pushNotice,
-                  int loginType,
-                  boolean loginStatus){
+                  int loginType){
         this(UUID.randomUUID().toString(),
                 email,
                 name,
@@ -112,8 +105,7 @@ public class Member {
                 autoPassword,
                 darkTheme,
                 pushNotice,
-                loginType,
-                loginStatus);
+                loginType);
     }
 
     /**
@@ -126,8 +118,7 @@ public class Member {
                   @NonNull String autoPassword,
                   boolean darkTheme,
                   boolean pushNotice,
-                  int loginType,
-                  boolean loginStatus){
+                  int loginType){
         this.mId = id;
         this.mEmail = email;
         this.mName = name;
@@ -136,7 +127,6 @@ public class Member {
         this.mDarkTheme = darkTheme;
         this.mPushNotice = pushNotice;
         this.mLoginType = loginType;
-        this.mLoginStatus = loginStatus;
     }
 
     @Nonnull
@@ -158,7 +148,6 @@ public class Member {
 
     public boolean isPushNotice(){ return mPushNotice; }
 
-    public boolean isLoginStatus(){ return mLoginStatus; }
 
     public int getLoginType(){ return mLoginType; }
 
@@ -174,7 +163,6 @@ public class Member {
                 com.google.android.gms.common.internal.Objects.equal(mAutoPassword, member.getAutoPassword()) &&
                 com.google.android.gms.common.internal.Objects.equal(mDarkTheme, member.isDarkTheme()) &&
                 com.google.android.gms.common.internal.Objects.equal(mPushNotice, member.isPushNotice()) &&
-                com.google.android.gms.common.internal.Objects.equal(mLoginStatus, member.isLoginStatus()) &&
                 com.google.android.gms.common.internal.Objects.equal(mLoginType, member.getLoginType());
     }
 
@@ -190,7 +178,6 @@ public class Member {
                 "auto_password : "+mAutoPassword+"\n" +
                 "dark_theme : "+mDarkTheme+"\n" +
                 "push_notice : "+mPushNotice+"\n" +
-                "login_status : "+mLoginStatus+"\n" +
                 "login_type : "+mLoginType+"\n";
     }
 }

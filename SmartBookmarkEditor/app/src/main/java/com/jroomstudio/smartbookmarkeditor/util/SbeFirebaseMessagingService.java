@@ -16,7 +16,7 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.jroomstudio.smartbookmarkeditor.R;
 import com.jroomstudio.smartbookmarkeditor.data.notice.Notice;
-import com.jroomstudio.smartbookmarkeditor.data.notice.NoticeLocalDataSource;
+import com.jroomstudio.smartbookmarkeditor.data.notice.NoticeLocalRepository;
 import com.jroomstudio.smartbookmarkeditor.data.notice.NoticeLocalDatabase;
 import com.jroomstudio.smartbookmarkeditor.notice.NoticeActivity;
 
@@ -37,7 +37,7 @@ import java.util.Date;
 public class SbeFirebaseMessagingService extends FirebaseMessagingService {
 
     // notifications  로컬 데이터베이스 소스
-    private NoticeLocalDataSource noticeLocalDataSource;
+    private NoticeLocalRepository noticeLocalRepository;
 
     // notice 데이터베이스 생성
     @Override
@@ -46,7 +46,7 @@ public class SbeFirebaseMessagingService extends FirebaseMessagingService {
         //Log.e("notice service","onCreate");
         // 알림 메세지 저장하는 룸 데이터베이스 생성
         NoticeLocalDatabase database = NoticeLocalDatabase.getInstance(this);
-        noticeLocalDataSource = NoticeLocalDataSource.
+        noticeLocalRepository = NoticeLocalRepository.
                 getInstance(new AppExecutors(), database.notificationsDAO());
     }
 
@@ -104,7 +104,7 @@ public class SbeFirebaseMessagingService extends FirebaseMessagingService {
 
             // 알림저장
             Notice notice = new Notice(title,body,date);
-            noticeLocalDataSource.saveNotice(notice);
+            noticeLocalRepository.saveNotice(notice);
 
             //Notification Chanel 생성
             setNotificationChanel(title,body);

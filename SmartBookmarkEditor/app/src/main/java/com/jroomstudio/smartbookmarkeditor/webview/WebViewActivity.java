@@ -30,8 +30,8 @@ import androidx.core.widget.NestedScrollView;
 import com.jroomstudio.smartbookmarkeditor.Injection;
 import com.jroomstudio.smartbookmarkeditor.R;
 import com.jroomstudio.smartbookmarkeditor.data.bookmark.Bookmark;
-import com.jroomstudio.smartbookmarkeditor.data.bookmark.source.BookmarksDataSource;
-import com.jroomstudio.smartbookmarkeditor.data.bookmark.source.BookmarksRepository;
+import com.jroomstudio.smartbookmarkeditor.data.bookmark.source.local.BookmarksLocalDataSource;
+import com.jroomstudio.smartbookmarkeditor.data.bookmark.source.local.BookmarksLocalRepository;
 
 import java.net.URISyntaxException;
 import java.util.List;
@@ -40,7 +40,7 @@ import java.util.Objects;
 public class WebViewActivity extends AppCompatActivity {
 
     // 북마크 데이터 소스
-    private BookmarksRepository mBookmarksRepository;
+    private BookmarksLocalRepository mBookmarksLocalRepository;
 
     // 액티비티 상태저장 Shared Preferences
     private SharedPreferences spActStatus;
@@ -81,7 +81,7 @@ public class WebViewActivity extends AppCompatActivity {
         setContentView(R.layout.web_view_act);
 
         // 북마크 데이터 레포지토리 접근
-        mBookmarksRepository = Injection.provideBookmarksRepository(getApplicationContext());
+        mBookmarksLocalRepository = Injection.provideBookmarksRepository(getApplicationContext());
 
         // 웹뷰
         mWebView = (WebView) findViewById(R.id.web_view);
@@ -259,8 +259,8 @@ public class WebViewActivity extends AppCompatActivity {
      * 현재 카테고리 내부에 추가하려는 url 이 존재하는지 체크한다.
      **/
     void getBookmarksInCategoryOverlapCheck(){
-        mBookmarksRepository.getBookmarks(category,
-                new BookmarksDataSource.LoadBookmarksCallback() {
+        mBookmarksLocalRepository.getBookmarks(category,
+                new BookmarksLocalDataSource.LoadBookmarksCallback() {
             @Override
             public void onBookmarksLoaded(List<Bookmark> bookmarks) {
                 for(Bookmark bookmark : bookmarks){

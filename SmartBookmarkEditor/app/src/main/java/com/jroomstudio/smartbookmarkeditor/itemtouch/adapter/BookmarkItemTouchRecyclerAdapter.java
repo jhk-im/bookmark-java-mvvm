@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.jroomstudio.smartbookmarkeditor.R;
 import com.jroomstudio.smartbookmarkeditor.data.bookmark.Bookmark;
-import com.jroomstudio.smartbookmarkeditor.data.bookmark.source.BookmarksRepository;
+import com.jroomstudio.smartbookmarkeditor.data.bookmark.source.local.BookmarksLocalRepository;
 import com.jroomstudio.smartbookmarkeditor.itemtouch.ItemTouchEditViewModel;
 import com.jroomstudio.smartbookmarkeditor.util.ItemTouchHelperListener;
 
@@ -28,7 +28,7 @@ public class BookmarkItemTouchRecyclerAdapter
     private List<Bookmark> mBookmarks;
 
     // 북마크 원격과 로컬 데이터소스 액세스
-    private BookmarksRepository mBookmarksRepository;
+    private BookmarksLocalRepository mBookmarksLocalRepository;
 
     // 메인프래그먼트 뷰모델
     private ItemTouchEditViewModel mViewModel;
@@ -40,10 +40,10 @@ public class BookmarkItemTouchRecyclerAdapter
      * 어댑터 생성자
      **/
     public BookmarkItemTouchRecyclerAdapter(List<Bookmark> bookmarks,
-                                            BookmarksRepository bookmarksRepository,
+                                            BookmarksLocalRepository bookmarksLocalRepository,
                                             ItemTouchEditViewModel viewModel){
         setBookmarks(bookmarks);
-        mBookmarksRepository = bookmarksRepository;
+        mBookmarksLocalRepository = bookmarksLocalRepository;
         mViewModel = viewModel;
     }
 

@@ -73,7 +73,12 @@ public class EditAddItemPopupFragment extends Fragment {
         mDataBinding.setViewmodel(mViewModel);
 
         // 스피너 리스너 셋팅
-        spinnerSelectedListener();
+        if(mCategoryList.size() > 0){
+            spinnerSelectedListener();
+        }else{
+            // 카테고리가 없으면 북마크 버튼 비활성화
+            mDataBinding.rbBookmarks.setEnabled(false);
+        }
 
         return mDataBinding.getRoot();
     }

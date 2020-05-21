@@ -14,8 +14,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.jroomstudio.smartbookmarkeditor.Injection;
 import com.jroomstudio.smartbookmarkeditor.R;
 import com.jroomstudio.smartbookmarkeditor.data.bookmark.Bookmark;
-import com.jroomstudio.smartbookmarkeditor.data.bookmark.source.BookmarksDataSource;
-import com.jroomstudio.smartbookmarkeditor.data.bookmark.source.BookmarksRepository;
+import com.jroomstudio.smartbookmarkeditor.data.bookmark.source.local.BookmarksLocalDataSource;
+import com.jroomstudio.smartbookmarkeditor.data.bookmark.source.local.BookmarksLocalRepository;
 
 import java.util.List;
 import java.util.Objects;
@@ -29,7 +29,7 @@ public class WebAddBookmarkPopupActivity extends AppCompatActivity {
     public static final String ADD_CATEGORY = "ADD_CATEGORY";
 
     // 북마크 데이터 소스
-    private BookmarksRepository mBookmarksRepository;
+    private BookmarksLocalRepository mBookmarksLocalRepository;
 
     // url, 카테고리, 타이틀
     private TextView tvCategory, tvUrl;
@@ -62,8 +62,13 @@ public class WebAddBookmarkPopupActivity extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.web_add_bookmark_popup_act);
 
-        // 북마크 데이터 레포지토리 접근
-        mBookmarksRepository = Injection.provideBookmarksRepository(getApplicationContext());
+        if(!spActStatus.getBoolean("login_status",false)){
+            // 게스트 유저
+            // 북마크 데이터 레포지토리 접근
+            mBookmarksLocalRepository = Injection.provideBookmarksRepository(getApplicationContext());
+        }else{
+            // 회원 유저
+        }
 
         // 인텐트로 넘어온 데이터 셋팅
         getIntentData();
@@ -100,8 +105,13 @@ public class WebAddBookmarkPopupActivity extends AppCompatActivity {
         btnCancel = (Button) findViewById(R.id.btn_cancel);
         // 저장
         btnComplete.setOnClickListener(v -> {
-            // favicon 추출하고 저장
-            urlPatternMatching(tvUrl.getText().toString());
+            if(!spActStatus.getBoolean("login_status",false)){
+                // 게스트 유저
+                // favicon 추출하고 저장
+                urlPatternMatching(tvUrl.getText().toString());
+            }else{
+                // 회원 유저
+            }
         });
         // 취소
         btnCancel.setOnClickListener(v -> onBackPressed());
@@ -109,9 +119,8 @@ public class WebAddBookmarkPopupActivity extends AppCompatActivity {
 
     // 북마크 저장
     void saveBookmark(String faviconUrl){
-        mBookmarksRepository.refreshBookmarks();
-        mBookmarksRepository.getBookmarks(tvCategory.getText().toString(),
-                new BookmarksDataSource.LoadBookmarksCallback() {
+        mBookmarksLocalRepository.getBookmarks(tvCategory.getText().toString(),
+                new BookmarksLocalDataSource.LoadBookmarksCallback() {
             @Override
             public void onBookmarksLoaded(List<Bookmark> bookmarks) {
                 // 1. 아이템 추가
@@ -139,7 +148,7 @@ public class WebAddBookmarkPopupActivity extends AppCompatActivity {
                 Objects.requireNonNull(tvCategory.getText().toString()),
                 position,
                 faviconUrl);
-        mBookmarksRepository.saveBookmark(bookmark);
+        mBookmarksLocalRepository.saveBookmark(bookmark);
         Toast.makeText(this, "북마크를 추가하였습니다.", Toast.LENGTH_SHORT).show();
         finish();
     }

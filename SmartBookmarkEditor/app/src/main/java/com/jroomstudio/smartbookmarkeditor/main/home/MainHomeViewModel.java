@@ -1,6 +1,7 @@
 package com.jroomstudio.smartbookmarkeditor.main.home;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 
 import androidx.databinding.BaseObservable;
 import androidx.databinding.ObservableArrayList;
@@ -9,11 +10,11 @@ import androidx.databinding.ObservableList;
 
 import com.jroomstudio.smartbookmarkeditor.BR;
 import com.jroomstudio.smartbookmarkeditor.data.bookmark.Bookmark;
-import com.jroomstudio.smartbookmarkeditor.data.bookmark.source.BookmarksDataSource;
-import com.jroomstudio.smartbookmarkeditor.data.bookmark.source.BookmarksRepository;
+import com.jroomstudio.smartbookmarkeditor.data.bookmark.source.local.BookmarksLocalDataSource;
+import com.jroomstudio.smartbookmarkeditor.data.bookmark.source.local.BookmarksLocalRepository;
 import com.jroomstudio.smartbookmarkeditor.data.category.Category;
-import com.jroomstudio.smartbookmarkeditor.data.category.source.CategoriesDataSource;
-import com.jroomstudio.smartbookmarkeditor.data.category.source.CategoriesRepository;
+import com.jroomstudio.smartbookmarkeditor.data.category.source.local.CategoriesLocalDataSource;
+import com.jroomstudio.smartbookmarkeditor.data.category.source.local.CategoriesLocalRepository;
 import com.jroomstudio.smartbookmarkeditor.main.MainHomeNavigator;
 
 import java.util.Collections;
@@ -49,13 +50,16 @@ public class MainHomeViewModel extends BaseObservable {
      **/
     private Context mContext;
 
+    // 액티비티 상태저장 Shared Preferences
+    private SharedPreferences spActStatus;
+
     /**
      * - 로컬 , 원격에서 데이터를 액세스
      **/
     // 북마크
-    private BookmarksRepository mBookmarksRepository;
+    private BookmarksLocalRepository mBookmarksLocalRepository;
     // 카테고리
-    private CategoriesRepository mCategoriesRepository;
+    private CategoriesLocalRepository mCategoriesRepository;
 
     // 액티비티 아이템 네비게이터
     private MainHomeNavigator mNavigator;
@@ -106,35 +110,49 @@ public class MainHomeViewModel extends BaseObservable {
 
     /**
      * Main Activity ViewModel 생성자
-     * @param bookmarksRepository - 북마크 로컬, 원격 데이터 액세스
+     * @param bookmarksLocalRepository - 북마크 로컬 액세스
      * @param categoriesRepository - 카테고리 로컬, 원격 데이터 액세스
      * @param context - 응용프로그램 context 를 강제로 사용함
      **/
-    public MainHomeViewModel(BookmarksRepository bookmarksRepository,
-                             CategoriesRepository categoriesRepository, Context context){
-        mBookmarksRepository = bookmarksRepository;
+    public MainHomeViewModel(BookmarksLocalRepository bookmarksLocalRepository,
+                             CategoriesLocalRepository categoriesRepository,
+                             Context context, SharedPreferences sharedPreferences){
+        mBookmarksLocalRepository = bookmarksLocalRepository;
         mCategoriesRepository = categoriesRepository;
         mContext = context.getApplicationContext();
+        spActStatus = sharedPreferences;
     }
 
     // 프래그먼트 onResume
     void start(){
-        loadCategories();
+
+        if(!spActStatus.getBoolean("login_status",false)){
+            // 게스트 유저
+            loadCategories();
+        }else{
+            // 회원 유저
+        }
+
     }
 
     // 아이템 클릭시 실행
     public void changeSelectCategory(Category category){
-        // 현재 카테고리 isSelected false 로 변경
-        mCategoriesRepository.
-                selectedCategory(Objects.requireNonNull(currentCategory.get()),false);
-        // 전달받은 카테고리 isSelected true 로 변경
-        mCategoriesRepository.selectedCategory(category,true);
-        // 업데이트
-        loadCategories();
+        if(!spActStatus.getBoolean("login_status",false)){
+            // 게스트유저
+            // 현재 카테고리 isSelected false 로 변경
+            mCategoriesRepository.
+                    selectedCategory(Objects.requireNonNull(currentCategory.get()),false);
+            // 전달받은 카테고리 isSelected true 로 변경
+            mCategoriesRepository.selectedCategory(category,true);
+            // 업데이트
+            loadCategories();
+        }else{
+            // 회원 유저
+        }
     }
 
     /**
-     * 데이터베이스에서 카테고리 정보 받아오기
+     * 로컬 데이터베이스에서 카테고리 정보 받아오기
      * -> 프래그먼트가 시작될 때 실행된다.
      *  -> 카테고리를 먼저 받아온다.
      *   -> 카테고리 중 선택된 카테고리를 찾아 저장한다.
@@ -144,7 +162,7 @@ public class MainHomeViewModel extends BaseObservable {
     {
         // 카테고리
         mCategoriesRepository.refreshCategories();
-        mCategoriesRepository.getCategories(new CategoriesDataSource.LoadCategoriesCallback() {
+        mCategoriesRepository.getCategories(new CategoriesLocalDataSource.LoadCategoriesCallback() {
             @Override
             public void onCategoriesLoaded(List<Category> categories) {
 
@@ -171,13 +189,12 @@ public class MainHomeViewModel extends BaseObservable {
         });
     }
 
-
     // 데이터베이스에서 북마크 로드
     private void loadBookmarks(){
         // 현재 선택된 카테고리 북마크 가져오기
-        mBookmarksRepository.refreshBookmarks();
-        mBookmarksRepository.getBookmarks(Objects.requireNonNull(currentCategory.get().getTitle()),
-                new BookmarksDataSource.LoadBookmarksCallback() {
+        //mBookmarksLocalDataSource.refreshBookmarks();
+        mBookmarksLocalRepository.getBookmarks(Objects.requireNonNull(currentCategory.get().getTitle()),
+                new BookmarksLocalDataSource.LoadBookmarksCallback() {
                     @Override
                     public void onBookmarksLoaded(List<Bookmark> bookmarks) {
                         // 옵저버블 리스트에 추가
