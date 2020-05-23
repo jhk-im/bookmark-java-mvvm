@@ -48,10 +48,8 @@ public interface BookmarksRemoteDataSource {
     void saveBookmark(@NonNull Bookmark bookmark);
 
     // 입력된 id의 Bookmark 객체를 찾아서 제거
-    void deleteBookmark(@NonNull String id,@NonNull String category);
+    void deleteBookmark(@NonNull String id,@NonNull String category, @NonNull UpdateCallback callback);
 
-    // 입력된 카테고리의 bookmark 전부 제거
-    void deleteAllInCategory(@NonNull String category);
 
     // 입력된 Bookmark 값 변경
     void updateBookmark(@NonNull Bookmark bookmark);
@@ -67,5 +65,10 @@ public interface BookmarksRemoteDataSource {
     void getAllCategories(@NonNull LoadCategoriesCallback callback);
 
     void selectedCategory(@NonNull String category, @NonNull UpdateCallback callback);
+
+    // 입력된 카테고리 제거
+    void deleteCategory(@NonNull String category, @NonNull UpdateCallback callback);
+
+    void updateCategory();
 
 }

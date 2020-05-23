@@ -74,6 +74,24 @@ public class MainHomeViewModel extends BaseObservable {
     public void setNavigator(MainHomeNavigator navigator) { mNavigator = navigator; }
 
     /**
+     * Main Activity ViewModel 생성자
+     * @param bookmarksLocalRepository - 북마크 로컬 액세스
+     * @param categoriesRepository - 카테고리 로컬, 원격 데이터 액세스
+     * @param context - 응용프로그램 context 를 강제로 사용함
+     **/
+    public MainHomeViewModel(BookmarksLocalRepository bookmarksLocalRepository,
+                             CategoriesLocalRepository categoriesRepository,
+                             BookmarksRemoteRepository bookmarksRemoteRepository,
+                             Context context, SharedPreferences sharedPreferences){
+        mBookmarksLocalRepository = bookmarksLocalRepository;
+        mCategoriesRepository = categoriesRepository;
+        mBookmarksRemoteRepository = bookmarksRemoteRepository;
+        mContext = context.getApplicationContext();
+        spActStatus = sharedPreferences;
+    }
+
+
+    /**
      * mNavigator -> ItemNavigator 메소드
      **/
     // 네비게이터 null 셋팅
@@ -112,23 +130,6 @@ public class MainHomeViewModel extends BaseObservable {
             // 선택된 북마크 객체를 메인 액티비티의 editSelectBookmark 로 전달
             mNavigator.editBookmark(bookmark,categoryItems);
         }
-    }
-
-    /**
-     * Main Activity ViewModel 생성자
-     * @param bookmarksLocalRepository - 북마크 로컬 액세스
-     * @param categoriesRepository - 카테고리 로컬, 원격 데이터 액세스
-     * @param context - 응용프로그램 context 를 강제로 사용함
-     **/
-    public MainHomeViewModel(BookmarksLocalRepository bookmarksLocalRepository,
-                             CategoriesLocalRepository categoriesRepository,
-                             BookmarksRemoteRepository bookmarksRemoteRepository,
-                             Context context, SharedPreferences sharedPreferences){
-        mBookmarksLocalRepository = bookmarksLocalRepository;
-        mCategoriesRepository = categoriesRepository;
-        mBookmarksRemoteRepository = bookmarksRemoteRepository;
-        mContext = context.getApplicationContext();
-        spActStatus = sharedPreferences;
     }
 
     // 프래그먼트 onResume
@@ -198,6 +199,7 @@ public class MainHomeViewModel extends BaseObservable {
     /**
      * 원격 데이터 베이스
     **/
+
     private void loadRemoteCategories(){
         mBookmarksRemoteRepository.getAllCategories(
                 new BookmarksRemoteDataSource.LoadCategoriesCallback() {
@@ -209,6 +211,12 @@ public class MainHomeViewModel extends BaseObservable {
                         mNavigator.setToolbarTitle(category.getTitle());
                         currentCategory.set(category);
                     }
+                }
+
+                if(currentCategory.get() == null){
+                    mNavigator.setToolbarTitle("카테고리 선택");
+                    Category c = new Category("",0,false);
+                    currentCategory.set(c);
                 }
                 // 옵저버블 리스트에 추가
                 // 카테고리 position 순서대로 정렬

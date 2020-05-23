@@ -16,6 +16,7 @@ import com.jroomstudio.smartbookmarkeditor.BR;
 import com.jroomstudio.smartbookmarkeditor.data.bookmark.Bookmark;
 import com.jroomstudio.smartbookmarkeditor.data.bookmark.source.local.BookmarksLocalDataSource;
 import com.jroomstudio.smartbookmarkeditor.data.bookmark.source.local.BookmarksLocalRepository;
+import com.jroomstudio.smartbookmarkeditor.data.bookmark.source.remote.BookmarksRemoteDataSource;
 import com.jroomstudio.smartbookmarkeditor.data.bookmark.source.remote.BookmarksRemoteRepository;
 import com.jroomstudio.smartbookmarkeditor.data.category.Category;
 import com.jroomstudio.smartbookmarkeditor.data.category.source.local.CategoriesLocalDataSource;
@@ -63,6 +64,9 @@ public class EditAddItemPopupViewModel extends BaseObservable {
     // 편집할 북마크 객체
     private Bookmark mUpdateBookmark;
 
+    // 현재선택된 카테고리
+    private String mSelectedCategory;
+
     // 데이터 로딩바 표시
     private boolean mIsDataLoadingBar;
 
@@ -105,7 +109,7 @@ public class EditAddItemPopupViewModel extends BaseObservable {
                                      BookmarksRemoteRepository bookmarksRemoteRepository,
                                      Context context
                                      , String type, String editItemId, String deleteItemType,
-                                     SharedPreferences sharedPreferences) {
+                                     SharedPreferences sharedPreferences, String selectedCategory) {
         mBookmarksLocalRepository = bookmarksLocalRepository;
         mCategoriesRepository = categoriesRepository;
         mBookmarksRemoteRepository = bookmarksRemoteRepository;
@@ -120,6 +124,8 @@ public class EditAddItemPopupViewModel extends BaseObservable {
         mEditItemId = editItemId;
         // 삭제할 아이템의 타입
         mDeleteItemType = deleteItemType;
+        // 선택된 카테고리
+        mSelectedCategory = selectedCategory;
         //타이틀설정
         setViewType();
         // 편집인 경우 각 아이템의 필요한 데이터 셋팅
@@ -185,21 +191,15 @@ public class EditAddItemPopupViewModel extends BaseObservable {
             if(!spActStatus.getBoolean("login_status",false)){
                 // 게스트 유저
                 setEditCategoryLocalData();
-            }else{
-                // 회원 유저
-                //getEditRemoteCategory();
             }
         }
         // 북마크 편집 or 북마크 삭제
         else if (mViewType.equals(EditAddItemPopupActivity.EDIT_BOOKMARK) ||
                 mViewType.equals(EditAddItemPopupActivity.DELETE_ITEM)
                         && mDeleteItemType.equals(EditAddItemPopupActivity.EDIT_BOOKMARK)){
-            if(!spActStatus.getBoolean("login_status",false)){
+            if(!spActStatus.getBoolean("login_status",false)) {
                 // 게스트 유저
                 setEditBookmarkLocalData();
-            }else{
-                // 회원 유저
-                //getEditRemoteBookmark();
             }
         }
     }
@@ -357,6 +357,8 @@ public class EditAddItemPopupViewModel extends BaseObservable {
                 }else{
                     // 회원
                     createBookmark(0,faviconUrl);
+                    Toast.makeText(mContext, bookmarkCategory.get()+"에 저장", Toast.LENGTH_SHORT).show();
+                    navigationAddNewItem();
                 }
             }
         }else{
@@ -452,21 +454,68 @@ public class EditAddItemPopupViewModel extends BaseObservable {
     private void deleteItem(){
         // 카테고리 삭제
         if(mDeleteItemType.equals(EditAddItemPopupActivity.EDIT_CATEGORY)){
-            // 해당 카테고리에 북마크가 존재하면
-            if(mUpdateBookmarks.size() != 0){
-                // 카테고리 안에있는 모든 북마크도 삭제
-                mBookmarksLocalRepository.deleteAllInCategory(mUpdateCategory.getTitle());
+            if(!spActStatus.getBoolean("login_status",false)){
+                // 게스트 유저
+                // 해당 카테고리에 북마크가 존재하면
+                if(mUpdateBookmarks.size() != 0){
+                    // 카테고리 안에있는 모든 북마크도 삭제
+                    mBookmarksLocalRepository.deleteAllInCategory(mUpdateCategory.getTitle());
+                }
+                mCategoriesRepository.deleteCategory(mUpdateCategory.getId());
+                Toast.makeText(mContext, "카테고리 삭제", Toast.LENGTH_SHORT).show();
+                navigationAddNewItem();
+            }else{
+                //회원
+                mBookmarksRemoteRepository.deleteCategory(
+                        mSelectedCategory,
+                        new BookmarksRemoteDataSource.UpdateCallback() {
+                            @Override
+                            public void onCompletedUpdate() {
+                                Toast.makeText(mContext, "카테고리 삭제", Toast.LENGTH_SHORT).show();
+                                navigationAddNewItem();
+                            }
+
+                            @Override
+                            public void onFailedUpdate() {
+                                Toast.makeText(mContext, "인터넷 연결을 확인해주세요.", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
             }
-            mCategoriesRepository.deleteCategory(mUpdateCategory.getId());
-            Toast.makeText(mContext, mUpdateCategory.getTitle()+" 카테고리 삭제", Toast.LENGTH_SHORT).show();
-            navigationAddNewItem();
         }
         // 북마크 삭제
         if(mDeleteItemType.equals(EditAddItemPopupActivity.EDIT_BOOKMARK)){
-            mBookmarksLocalRepository.deleteBookmark(mUpdateBookmark.getId());
-            Toast.makeText(mContext, mUpdateBookmark.getTitle()+" 북마크 삭제", Toast.LENGTH_SHORT).show();
-            navigationAddNewItem();
+            if(!spActStatus.getBoolean("login_status",false)) {
+                // 게스트 유저
+                mBookmarksLocalRepository.deleteBookmark(mUpdateBookmark.getId());
+                Toast.makeText(mContext, "북마크 삭제", Toast.LENGTH_SHORT).show();
+                navigationAddNewItem();
+            }else{
+                //회원
+                mBookmarksRemoteRepository.deleteBookmark(
+                        mEditItemId, mSelectedCategory,
+                        new BookmarksRemoteDataSource.UpdateCallback() {
+                            @Override
+                            public void onCompletedUpdate() {
+                                Toast.makeText(mContext, "북마크 삭제", Toast.LENGTH_SHORT).show();
+                                navigationAddNewItem();
+                            }
+
+                            @Override
+                            public void onFailedUpdate() {
+                                Toast.makeText(mContext, "인터넷 연결을 확인해주세요.", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+            }
         }
+    }
+
+    /**
+     * 원격 데이터베이스
+     **/
+
+    private void setEditBookamrkRemoteData(){
+        //mBookmarksRemoteRepository.get
     }
 
     /**

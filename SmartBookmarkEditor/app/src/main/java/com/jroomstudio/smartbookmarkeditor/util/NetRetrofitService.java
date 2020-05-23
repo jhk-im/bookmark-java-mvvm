@@ -88,20 +88,6 @@ public interface NetRetrofitService {
             @Header("MemberEmail") String email,
             @Body Bookmark param);
 
-    // 입력된 카테고리인 bookmark 전부제거
-    @GET("member/api/bookmark/deleteAllCategory.php")
-    Call<Void> deleteAllCategory(
-            @Header("Authorization") String auth,
-            @Query("email") String email,
-            @Query("category") String category);
-
-    // 입력된 id의 Bookmark 객체를 찾아서 제거
-    @GET("member/api/bookmark/deleteBookmark.php")
-    Call<Void> deleteBookmark(
-            @Header("Authorization") String auth,
-            @Query("email") String email,
-            @Query("category") String category,
-            @Query("id") String id);
 
     /**
      * 완료
@@ -128,6 +114,13 @@ public interface NetRetrofitService {
             @Query("member_email") String email,
             @Query("category_title") String category);
 
+    // 입력된 카테고리를 제거
+    @GET("member/api/deleteCategory.php")
+    Call<Void> deleteCategory(
+            @Header("Authorization") String auth,
+            @Query("member_email") String email,
+            @Query("category_title") String category);
+
     // 북마크 저장
     @POST("member/api/saveBookmark.php")
     Call<Void> saveBookmark(
@@ -141,6 +134,14 @@ public interface NetRetrofitService {
     Call<List<Bookmark>> getBookmarks(
             @Header("Authorization") String auth,
             @Query("member_email") String email,
+            @Query("category_title") String category);
+
+    // 입력된 id의 Bookmark 객체를 찾아서 제거
+    @GET("member/api/deleteBookmark.php")
+    Call<Void> deleteBookmark(
+            @Header("Authorization") String auth,
+            @Query("member_email") String email,
+            @Query("bookmark_id") String id,
             @Query("category_title") String category);
 
 }

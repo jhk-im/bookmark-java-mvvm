@@ -66,6 +66,9 @@ public class EditAddItemPopupActivity extends AppCompatActivity implements EditA
     // 삭제하려는 아이템이 카테고리인지 북마크인지 구분
     private String mDeleteItemType;
 
+    // 원격일 경우 현재 선택된 카테고리
+    private String mSelectedCategory;
+
     // 액티비티 상태저장 Shared Preferences
     private SharedPreferences spActStatus;
 
@@ -143,6 +146,7 @@ public class EditAddItemPopupActivity extends AppCompatActivity implements EditA
             case EDIT_CATEGORY:
                 // 편집 관련 버튼 레이아웃 셋팅
                 mItemId = getIntent().getStringExtra(ID);
+                mSelectedCategory = getIntent().getStringExtra(TITLE);
                 isCreateFragment = false;
                 mDeleteItemType = EDIT_CATEGORY;
                 setButtonLinear(View.GONE);
@@ -151,6 +155,7 @@ public class EditAddItemPopupActivity extends AppCompatActivity implements EditA
             case EDIT_BOOKMARK:
                 // 편집 관련 버튼 레이아웃 셋팅
                 mItemId = getIntent().getStringExtra(ID);
+                mSelectedCategory = getIntent().getStringExtra(SELECT_CATEGORY);
                 mDeleteItemType = EDIT_BOOKMARK;
                 isCreateFragment = false;
                 setButtonLinear(View.VISIBLE);
@@ -248,7 +253,8 @@ public class EditAddItemPopupActivity extends AppCompatActivity implements EditA
                     mIntentViewType,
                     mItemId,
                     mDeleteItemType,
-                    spActStatus
+                    spActStatus,
+                    mSelectedCategory
             );
             // ViewModelHolder(UI 없는 Fragment) 생성
             ActivityUtils.addFragmentToActivity(
@@ -339,6 +345,8 @@ public class EditAddItemPopupActivity extends AppCompatActivity implements EditA
     // 아이템 추가 완료후 팝업 액티비티 종료
     @Override
     public void updateItem() {
+        //Intent intent = new Intent(this, MainActivity.class);
+        //startActivity(intent);
         finish();
     }
 

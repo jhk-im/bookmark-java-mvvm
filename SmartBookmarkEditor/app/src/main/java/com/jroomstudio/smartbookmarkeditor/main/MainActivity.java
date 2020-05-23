@@ -423,6 +423,7 @@ public class MainActivity extends AppCompatActivity
         intent.putExtra(EditAddItemPopupActivity.ID,bookmark.getId());
         intent.putExtra(EditAddItemPopupActivity.TITLE,bookmark.getTitle());
         intent.putExtra(EditAddItemPopupActivity.URL,bookmark.getUrl());
+
         // 카테고리 TITLE 리스트
         intent.putStringArrayListExtra(EditAddItemPopupActivity.CATEGORY_LIST,
                 setCategoriesTitle(categories));
