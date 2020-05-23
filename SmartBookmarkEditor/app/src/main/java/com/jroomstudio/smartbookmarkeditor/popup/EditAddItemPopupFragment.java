@@ -1,6 +1,7 @@
 package com.jroomstudio.smartbookmarkeditor.popup;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +14,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.jroomstudio.smartbookmarkeditor.R;
-
 import com.jroomstudio.smartbookmarkeditor.databinding.EditAddItemPopupFragBinding;
 
 import java.util.ArrayList;
@@ -73,12 +73,8 @@ public class EditAddItemPopupFragment extends Fragment {
         mDataBinding.setViewmodel(mViewModel);
 
         // 스피너 리스너 셋팅
-        if(mCategoryList.size() > 0){
-            spinnerSelectedListener();
-        }else{
-            // 카테고리가 없으면 북마크 버튼 비활성화
-            mDataBinding.rbBookmarks.setEnabled(false);
-        }
+        spinnerSelectedListener();
+
 
         return mDataBinding.getRoot();
     }
@@ -134,7 +130,16 @@ public class EditAddItemPopupFragment extends Fragment {
         // 북마크 편집이나 추가가 아니면 스피너 셋팅은 하지 않음
        if(!mViewModel.isSelectBookmark.get()){
             return;
-        }
+        }else{
+           // 아이템 추가이면서 카테고리가 아무것도 없을때
+           // 스피너 생성하지않고 북마크를 추가할 수 없도록 편집창을 막음
+           if(mCategoryList.size()==0){
+               Log.e("category list","0");
+               mDataBinding.rbBookmarks.setEnabled(false);
+               mViewModel.isSelectBookmark.set(false);
+               return;
+           }
+       }
 
         // 스피너에 셋팅할 ArrayAdapter 생성
         ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(

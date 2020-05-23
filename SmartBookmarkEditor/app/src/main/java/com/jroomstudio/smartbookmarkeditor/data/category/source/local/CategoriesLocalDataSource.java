@@ -34,9 +34,6 @@ public interface CategoriesLocalDataSource {
         void onDataNotAvailable();
     }
 
-    // Categories 를 refresh
-    void refreshCategories();
-
     // Categories 에서 리스트 가져오기
     void getCategories(@NonNull LoadCategoriesCallback callback);
 
@@ -45,9 +42,6 @@ public interface CategoriesLocalDataSource {
 
     // Category 객체를 데이터베이스에 저장
     void saveCategory(@NonNull Category category);
-
-    // 모든 카테고리 제거
-    void deleteAllCategories();
 
     // 입력된 id 의 category 찾아서 제거
     void deleteCategory(@NonNull String id);
@@ -60,9 +54,5 @@ public interface CategoriesLocalDataSource {
 
     // 입력된 카테고리 객체의 selected 여부 변경
     void selectedCategory(@NonNull Category category, boolean selected);
-
-    // 입력된 카테고리 id의 객체를 찾아 selected 여부 변경
-    void selectedCategory(@NonNull String id, boolean selected);
-
 
 }

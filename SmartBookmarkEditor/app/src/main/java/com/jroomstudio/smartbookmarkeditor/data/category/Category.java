@@ -8,7 +8,6 @@ import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import com.google.common.base.Objects;
-import com.google.common.base.Strings;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.UUID;
@@ -66,7 +65,6 @@ public final class Category {
         this(UUID.randomUUID().toString(),title,position,selected);
     }
 
-
     /**
      * - 생성자
      * - 객체가 새로 만들어지거나 정보를 가져와 셋팅할 때 사용함
@@ -88,18 +86,6 @@ public final class Category {
 
     public boolean isSelected() { return mSelected; }
 
-
-    public boolean isEmpty(){
-        return Strings.isNullOrEmpty(mTitle);
-    }
-
-    public String getTitleForList() {
-        if (!Strings.isNullOrEmpty(mTitle)){
-            return mTitle;
-        } else {
-            return null;
-        }
-    }
 
     @Override
     public boolean equals(@Nullable Object obj) {

@@ -143,11 +143,7 @@ public class EditAddItemPopupViewModel extends BaseObservable {
     private void setViewType(){
         switch (mViewType) {
             case EditAddItemPopupActivity.ADD_ITEM :
-                if(categories.size()==0){
-                    isSelectBookmark.set(false);
-                }else{
-                    isSelectBookmark.set(true);
-                }
+                isSelectBookmark.set(true);
                 mIsAddItem = true;
                 mIsDeleteItem = false;
                 viewTitle.set("아이템 추가");
@@ -355,7 +351,13 @@ public class EditAddItemPopupViewModel extends BaseObservable {
             if(mc.matches()){
                 // http 와 도메인에 favicon.ico 를 입력하여 url 완성
                 faviconUrl = mc.group(1) + "://" + mc.group(2)+ "/favicon.ico";
-                saveLocalBookmark(faviconUrl);
+                if(!spActStatus.getBoolean("login_status",false)){
+                    // 게스트 유저
+                    saveLocalBookmark(faviconUrl);
+                }else{
+                    // 회원
+                    createBookmark(0,faviconUrl);
+                }
             }
         }else{
             Toast.makeText(mContext, "URL 주소를 확인해주세요.", Toast.LENGTH_SHORT).show();
@@ -397,7 +399,8 @@ public class EditAddItemPopupViewModel extends BaseObservable {
             }
             Toast.makeText(mContext, categoryTitle.get()+" 카테고리 생성", Toast.LENGTH_SHORT).show();
             navigationAddNewItem();
-        }else{
+        }
+        else{
             // 업데이트 하는 경우
             Category updateCategory = new Category(mUpdateCategory.getId(),
                     Objects.requireNonNull(categoryTitle.get()),
@@ -419,6 +422,29 @@ public class EditAddItemPopupViewModel extends BaseObservable {
             mCategoriesRepository.saveCategory(updateCategory);
             Toast.makeText(mContext, categoryTitle.get()+" 카테고리명 업데이트", Toast.LENGTH_SHORT).show();
             navigationAddNewItem();
+        }
+    }
+
+    /**
+     * 북마크생성
+     * - 북마크 최초 생성 시 사용하는 메소드
+     * @param position - 카테고리 상의 position 값
+     * @param faviconUrl - 파비콘 url
+     **/
+    private void createBookmark(int position, String faviconUrl){
+        Bookmark bookmark = new Bookmark(
+                Objects.requireNonNull(bookmarkTitle.get()),
+                Objects.requireNonNull(bookmarkUrl.get()),
+                "WEB_VIEW",
+                Objects.requireNonNull(bookmarkCategory.get()),
+                position,
+                faviconUrl);
+        if(!spActStatus.getBoolean("login_status",false)) {
+            // 게스트 유저
+            mBookmarksLocalRepository.saveBookmark(bookmark);
+        }else{
+            // 회원
+            mBookmarksRemoteRepository.saveBookmark(bookmark);
         }
     }
 
@@ -444,21 +470,7 @@ public class EditAddItemPopupViewModel extends BaseObservable {
     }
 
     /**
-     * 원격데이터베이스--------------------------------------------------
-     **/
-
-    private void createRemoteItem(){
-        if(isSelectBookmark.get()){
-            //북마크 생성
-
-        }else{
-            //카테고리 생성
-
-        }
-    }
-
-    /**
-     * 로컬데이터베이스 -------------------------------------------------
+     * 로컬데이터베이스
      **/
     // 편집할 카테고리의 로컬 데이터 셋팅
     private void setEditCategoryLocalData(){
@@ -527,7 +539,7 @@ public class EditAddItemPopupViewModel extends BaseObservable {
                             // 1-1 해당 카테고리에 북마크가 있는경우
                             // position 값을 카테고리안의 북마크 사이즈 크기로 지정
                             // -> 해당 카테고리 전체 사이즈, 파비콘 url
-                            addLocalBookmark(bookmarks.size(),faviconUrl);
+                            createBookmark(bookmarks.size(),faviconUrl);
                         }else{
                             // 2. 아이템 편집
                             if(mUpdateBookmark.getCategory().equals(bookmarkCategory.get())){
@@ -547,7 +559,7 @@ public class EditAddItemPopupViewModel extends BaseObservable {
                         // 1-2. 카테고리 추가시 해당 카테고리에 북마크가 없는경우
                         if(mIsAddItem){
                             // 해당 카테고리에 북마크가 없다면 position 0 으로 추가한다.
-                            addLocalBookmark(0,faviconUrl);
+                            createBookmark(0,faviconUrl);
                         } else {
                             // 2-3. 카테고리 편집시 해당 카테고리에 북마크가 없다면  0으로 추가
                             // 이전 카테고리 포지션값 재배열
@@ -606,7 +618,6 @@ public class EditAddItemPopupViewModel extends BaseObservable {
 
     }
 
-
     /**
      * 북마크 업데이트
      * - 북마크 편집시 사용하는 메소드
@@ -636,23 +647,6 @@ public class EditAddItemPopupViewModel extends BaseObservable {
             mBookmarksLocalRepository.saveBookmark(updateBookmark);
         }
 
-    }
-
-    /**
-     * 북마크생성
-     * - 북마크 최초 생성 시 사용하는 메소드
-     * @param position - 카테고리 상의 position 값
-     * @param faviconUrl - 파비콘 url
-     **/
-    private void addLocalBookmark(int position, String faviconUrl){
-        Bookmark bookmark = new Bookmark(
-                Objects.requireNonNull(bookmarkTitle.get()),
-                Objects.requireNonNull(bookmarkUrl.get()),
-                "WEB_VIEW",
-                Objects.requireNonNull(bookmarkCategory.get()),
-                position,
-                faviconUrl);
-        mBookmarksLocalRepository.saveBookmark(bookmark);
     }
 
 }

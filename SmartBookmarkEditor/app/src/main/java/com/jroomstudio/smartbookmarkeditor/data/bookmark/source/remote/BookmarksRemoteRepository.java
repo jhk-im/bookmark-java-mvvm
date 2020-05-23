@@ -68,8 +68,9 @@ public class BookmarksRemoteRepository implements BookmarksRemoteDataSource {
         }
         return INSTANCE;
     }
-
-    // 토믄 기간 만료 시 재발행
+    /**
+     * 토큰 기간 만료 시 재발행
+    **/
     @Override
     public void refreshToken(@NonNull RefreshTokenCallback callback) {
         Runnable runnable = () ->{
@@ -106,44 +107,71 @@ public class BookmarksRemoteRepository implements BookmarksRemoteDataSource {
         mAppExecutors.getNetworkIO().execute(runnable);
     }
 
-    // 북마크 리스트 가져오기
+    /**
+     * 북마크 리스트 가져오기
+     **/
     @Override
-    public void getBookmarks(@NonNull Bookmark bookmark,
-                             @NonNull LoadBookmarksCallback callback) {
-        Runnable runnable = () ->{
-            String jwt = spActStatus.getString("jwt","");
-            mNetRetrofitService.getBookmarkListCallback("Bearer "+jwt, "application/json", bookmark)
+    public void getBookmarks(@NonNull String category,
+                                          @NonNull LoadBookmarksCallback callback) {
+        Runnable runnable = () ->
+            mNetRetrofitService.getBookmarks(
+                    "Bearer "+spActStatus.getString("jwt",""),
+                    spActStatus.getString("member_email",""),
+                    category)
                     .enqueue(new Callback<List<Bookmark>>() {
                         @Override
                         public void onResponse(Call<List<Bookmark>> call,
                                                Response<List<Bookmark>> response) {
-                            // 가져오기 성공
-                            callback.onBookmarksLoaded(response.body());
-                        }
-
-                        @Override
-                        public void onFailure(Call<List<Bookmark>> call, Throwable t) {
-                            // 가져오기 실패
-                            Log.e("Get Bookmarks onFailure",t.getMessage());
-                            callback.onDataNotAvailable();
-                        }
-                    });
-        };
-        mAppExecutors.getNetworkIO().execute(runnable);
-    }
-
-    @Override
-    public void getBookmarksInputCategory(@NonNull String category,
-                                          @NonNull LoadBookmarksCallback callback) {
-        Runnable runnable = () -> {
-            String jwt = spActStatus.getString("jwt","");
-            String email = spActStatus.getString("member_email","");
-            mNetRetrofitService.getBookmarksInputCategory("Bearer "+jwt,email,category)
-                    .enqueue(new Callback<List<Bookmark>>() {
-                        @Override
-                        public void onResponse(Call<List<Bookmark>> call, Response<List<Bookmark>> response) {
                             // 성공
-                            callback.onBookmarksLoaded(response.body());
+                            Log.e("getBookmarks()",response.code()+"");
+                            if(response.code()==200){
+                                // Log.e("header", response.headers()+"");
+                                // Log.e("body", response.body()+"");
+                                callback.onBookmarksLoaded(response.body());
+                            } else if(response.code()==401){
+                                // 실패시 jwt 재발급 받고 다시시도
+                                refreshToken(new RefreshTokenCallback() {
+                                    @Override
+                                    public void onRefreshTokenCallback() {
+                                        mNetRetrofitService.getBookmarks(
+                                                "Bearer "+spActStatus.getString("jwt",""),
+                                                spActStatus.getString("member_email",""),
+                                                category).enqueue(new Callback<List<Bookmark>>() {
+                                            @Override
+                                            public void onResponse(Call<List<Bookmark>> call,
+                                                                   Response<List<Bookmark>> response) {
+                                                // 성공
+                                                Log.e("reGetBookmarks()",response.code()+"");
+                                                if(response.code()==200){
+                                                    //Log.e("header", response.headers()+"");
+                                                    //Log.e("body", response.body()+"");
+                                                    callback.onBookmarksLoaded(response.body());
+                                                }else if(response.code()==402){
+                                                    // bookmark 리스트에 아무것도 없을 때
+                                                    callback.onDataNotAvailable();
+                                                }
+                                            }
+
+                                            @Override
+                                            public void onFailure(Call<List<Bookmark>> call, Throwable t) {
+                                                // 가져오기 실패
+                                                Log.e("Get Bookmarks onFailure",t.getMessage());
+                                                callback.onDataNotAvailable();
+                                            }
+                                        });
+                                    }
+
+                                    @Override
+                                    public void refreshTokenFailed() {
+                                        // 데이터 없음
+                                        //callback.onDataNotAvailable();
+                                        callback.onDataNotAvailable();
+                                    }
+                                });
+                            } else if(response.code()==402){
+                                // bookmark 리스트에 아무것도 없을 때
+                                callback.onDataNotAvailable();
+                            }
                         }
 
                         @Override
@@ -153,21 +181,23 @@ public class BookmarksRemoteRepository implements BookmarksRemoteDataSource {
                             callback.onDataNotAvailable();
                         }
                     });
-        };
         mAppExecutors.getNetworkIO().execute(runnable);
     }
 
     @Override
     public void getBookmark(@NonNull Bookmark bookmark, @NonNull GetBookmarkCallback callback) {
-        Runnable runnable = () -> {
-            String jwt = spActStatus.getString("jwt","");
-            String email = spActStatus.getString("member_email","");
-            mNetRetrofitService.getBookmarkCallback("Bearer "+jwt,email,bookmark)
+        Runnable runnable = () ->
+            mNetRetrofitService.getBookmarkCallback(
+                    "Bearer "+spActStatus.getString("jwt",""),
+                    "application/json",
+                    spActStatus.getString("member_email",""),
+                    bookmark)
                     .enqueue(new Callback<Bookmark>() {
                         @Override
                         public void onResponse(Call<Bookmark> call, Response<Bookmark> response) {
                             //성공
-                            callback.onBookmarkLoaded(bookmark);
+                            //callback.onBookmarkLoaded(bookmark);
+
                         }
 
                         @Override
@@ -177,25 +207,40 @@ public class BookmarksRemoteRepository implements BookmarksRemoteDataSource {
                             callback.onDataNotAvailable();
                         }
                     });
-        };
         mAppExecutors.getNetworkIO().execute(runnable);
     }
 
     // 북마크 저장
     @Override
     public void saveBookmark(@NonNull Bookmark bookmark) {
-        Runnable runnable = () ->{
-            String jwt = spActStatus.getString("jwt","");
-            String email = spActStatus.getString("member_email","");
+        Runnable runnable = () -> {
             mNetRetrofitService.saveBookmark(
-                    "Bearer "+jwt,
+                    "Bearer "+spActStatus.getString("jwt",""),
                     "application/json",
-                    email,
+                    spActStatus.getString("member_email",""),
                     bookmark)
                     .enqueue(new Callback<Void>() {
                         @Override
                         public void onResponse(Call<Void> call, Response<Void> response) {
                             // 저장 성공
+                            Log.e("saveBookmark()1",response.code()+"");
+                            if(response.code()==200){
+                                Log.e("save success", "북마크 저장 성공");
+                                //Log.e("body", response.body()+"");
+                            } else if(response.code()==401){
+                                // 실패시 jwt 재발급 받고 다시시도
+                                refreshToken(new RefreshTokenCallback() {
+                                    @Override
+                                    public void onRefreshTokenCallback() {
+                                        saveBookmark(bookmark);
+                                    }
+
+                                    @Override
+                                    public void refreshTokenFailed() {
+                                        //
+                                    }
+                                });
+                            }
                         }
 
                         @Override
@@ -210,11 +255,11 @@ public class BookmarksRemoteRepository implements BookmarksRemoteDataSource {
 
     // 입력된 id 의 북마크 삭제
     @Override
-    public void deleteBookmark(@NonNull String id) {
+    public void deleteBookmark(@NonNull String id,@NonNull String category) {
         Runnable runnable = () ->{
             String jwt = spActStatus.getString("jwt","");
             String email = spActStatus.getString("member_email","");
-            mNetRetrofitService.deleteBookmark("Bearer "+jwt,email,id)
+            mNetRetrofitService.deleteBookmark("Bearer "+jwt,email,id,category)
                     .enqueue(new Callback<Void>() {
                         @Override
                         public void onResponse(Call<Void> call, Response<Void> response) {
@@ -254,15 +299,18 @@ public class BookmarksRemoteRepository implements BookmarksRemoteDataSource {
         mAppExecutors.getNetworkIO().execute(runnable);
     }
 
-    /**
-     * 북마크 객체 업데이트
-     **/
+    // 북마크 업데이트
     @Override
     public void updateBookmark(@NonNull Bookmark bookmark) {
         Runnable runnable = () ->{
             String jwt = spActStatus.getString("jwt","");
+            String email = spActStatus.getString("member_email","");
             mNetRetrofitService
-                    .updateBookmarkCallback("Bearer "+jwt, "application/json", bookmark)
+                    .updateBookmarkCallback(
+                            "Bearer "+jwt,
+                            "application/json",
+                            email,
+                            bookmark)
                     .enqueue(new Callback<Bookmark>() {
                         @Override
                         public void onResponse(Call<Bookmark> call, Response<Bookmark> response) {
@@ -279,17 +327,19 @@ public class BookmarksRemoteRepository implements BookmarksRemoteDataSource {
         mAppExecutors.getNetworkIO().execute(runnable);
     }
 
-    /**
-     * bookmark 리스트 업데이트
-    **/
+    // 북마크 리스트 업데이트
     @Override
-    public void updateBookmarks(@NonNull List<Bookmark> bookmarks) {
+    public void updateBookmarks(@NonNull List<Bookmark> bookmarks, @NonNull String category) {
         Runnable runnable = () ->{
             String jwt = spActStatus.getString("jwt","");
             String email = spActStatus.getString("member_email","");
             mNetRetrofitService
-                    .updateBookmarkListCallback("Bearer "+jwt, "application/json",
-                            email,bookmarks)
+                    .updateBookmarkListCallback(
+                            "Bearer "+jwt,
+                            "application/json",
+                            email,
+                            category,
+                            bookmarks)
                     .enqueue(new Callback<Void>() {
                         @Override
                         public void onResponse(Call<Void> call, Response<Void> response) {
@@ -308,31 +358,28 @@ public class BookmarksRemoteRepository implements BookmarksRemoteDataSource {
     }
 
     /**
-     * 카테고리 관련
+     * 카테고리 저장
      */
     @Override
     public void saveCategory(@NonNull Category category) {
-        Runnable runnable = () -> {
-            String jwt = spActStatus.getString("jwt","");
-            String email = spActStatus.getString("member_email","");
-            tempCateogy = category;
+        Runnable runnable = () ->
             mNetRetrofitService.saveCategory(
-                    "Bearer "+jwt,
+                    "Bearer "+spActStatus.getString("jwt",""),
                     "application/json",
-                    email,
+                    spActStatus.getString("member_email",""),
                     tempCateogy).enqueue(new Callback<Void>() {
                 @Override
                 public void onResponse(Call<Void> call, Response<Void> response) {
                     Log.e("saveCategory()1",response.code()+"");
                     if(response.code()==200){
-                        Log.e("header", response.headers()+"");
+                        Log.e("save success", "카테고리 저장 성공");
                         //Log.e("body", response.body()+"");
                     } else if(response.code()==401){
                         // 실패시 jwt 재발급 받고 다시시도
                         refreshToken(new RefreshTokenCallback() {
                             @Override
                             public void onRefreshTokenCallback() {
-                                saveCategory(tempCateogy);
+                                saveCategory(category);
                             }
 
                             @Override
@@ -346,11 +393,136 @@ public class BookmarksRemoteRepository implements BookmarksRemoteDataSource {
                 @Override
                 public void onFailure(Call<Void> call, Throwable t) {
                     // 저장실패
-                    Log.e("UpdateBookmarksFailure",t.getMessage());
-
+                    Log.e("SaveCategoryFailure",t.getMessage());
                 }
             });
-        };
+        mAppExecutors.getNetworkIO().execute(runnable);
+    }
+
+    /**
+     * 카테고리 데이터 가져오기
+     **/
+    @Override
+    public void getAllCategories(@NonNull LoadCategoriesCallback callback) {
+        Runnable runnable = () ->
+            mNetRetrofitService.getAllCategories(
+                    "Bearer "+spActStatus.getString("jwt",""),
+                    spActStatus.getString("member_email",""))
+                    .enqueue(new Callback<List<Category>>() {
+                        @Override
+                        public void onResponse(Call<List<Category>> call,
+                                               Response<List<Category>> response) {
+                            Log.e("getAllCategory()",response.code()+"");
+                            //성공
+                            if(response.code()==200){
+                                //Log.e("header", response.headers()+"");
+                                //Log.e("body", response.body()+"");
+                                callback.onCategoriesLoaded(response.body());
+                            } else if(response.code()==401){
+                                // 실패시 jwt 재발급 받고 다시시도
+                                refreshToken(new RefreshTokenCallback() {
+                                    @Override
+                                    public void onRefreshTokenCallback() {
+                                        //Log.e("refreshAllCategory","refresh");
+                                        mNetRetrofitService.getAllCategories(
+                                                "Bearer "+spActStatus.getString("jwt",""),
+                                                spActStatus.getString("member_email",""))
+                                                .enqueue(new Callback<List<Category>>() {
+                                                    @Override
+                                                    public void onResponse(Call<List<Category>> call,
+                                                                           Response<List<Category>> response) {
+                                                        Log.e("reAllCategory()",response.code()+"");
+                                                        if(response.code()==200){
+                                                            //Log.e("header", response.headers()+"");
+                                                            //Log.e("body", response.body()+"");
+                                                            callback.onCategoriesLoaded(response.body());
+                                                        } else if(response.code()==402){
+                                                            // bookmark 리스트에 아무것도 없을 때
+                                                            Log.e("getAllCategory","category null");
+                                                            callback.onDataNotAvailable();
+                                                        }
+                                                    }
+
+                                                    @Override
+                                                    public void onFailure(Call<List<Category>> call, Throwable t) {
+                                                        Log.e("getAllCategoryFailure",t.getMessage());
+                                                        callback.onDataNotAvailable();
+                                                    }
+                                                });
+                                    }
+
+                                    @Override
+                                    public void refreshTokenFailed() {
+                                        // 데이터 없음
+                                        //callback.onDataNotAvailable();
+                                        callback.onDataNotAvailable();
+                                    }
+                                });
+                            } else if(response.code()==402){
+                                // bookmark 리스트에 아무것도 없을 때
+                                Log.e("getAllCategory","category null");
+                                callback.onDataNotAvailable();
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<List<Category>> call, Throwable t) {
+                            // 실패
+                            Log.e("getAllCategoryFailure",t.getMessage());
+                            callback.onDataNotAvailable();
+                        }
+                    });
+        mAppExecutors.getNetworkIO().execute(runnable);
+    }
+
+    /**
+     * 카테고리 데이터 업데이트
+     **/
+    @Override
+    public void selectedCategory(@NonNull String category, @NonNull UpdateCallback callback) {
+        Runnable runnable = () ->
+            mNetRetrofitService.selectedCategory(
+                    "Bearer "+spActStatus.getString("jwt",""),
+                    spActStatus.getString("member_email",""),
+                    category
+            ).enqueue(new Callback<Void>() {
+                @Override
+                public void onResponse(Call<Void> call, Response<Void> response) {
+                    // 성공
+                    Log.e("getBookmarks()",response.code()+"");
+                    if(response.code()==200){
+                        Log.e("update success", "카테고리 선택 변경");
+                        callback.onCompletedUpdate();
+                    }else if(response.code()==401){
+                        // 실패시 jwt 재발급 받고 다시시도
+                        refreshToken(new RefreshTokenCallback() {
+                            @Override
+                            public void onRefreshTokenCallback() {
+                               mNetRetrofitService.selectedCategory(
+                                       "Bearer "+spActStatus.getString("jwt",""),
+                                       spActStatus.getString("member_email",""),
+                                       category
+                               );
+                               callback.onCompletedUpdate();
+                            }
+
+                            @Override
+                            public void refreshTokenFailed() {
+                                // 데이터 없음
+                                //callback.onDataNotAvailable();
+                                callback.onFailedUpdate();
+                            }
+                        });
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Void> call, Throwable t) {
+                    // 실패
+                    Log.e("getAllCategoryFailure",t.getMessage());
+                    callback.onFailedUpdate();
+                }
+            });
         mAppExecutors.getNetworkIO().execute(runnable);
     }
 

@@ -2,7 +2,6 @@ package com.jroomstudio.smartbookmarkeditor.data.category.source.local;
 
 
 import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
 
 import com.jroomstudio.smartbookmarkeditor.data.category.Category;
 import com.jroomstudio.smartbookmarkeditor.util.AppExecutors;
@@ -65,11 +64,6 @@ public class CategoriesLocalRepository implements CategoriesLocalDataSource {
         return INSTANCE;
     }
 
-    /**
-     * INSTANCE 를 null 로
-     **/
-    @VisibleForTesting
-    static void clearInstance() { INSTANCE = null; }
 
     // 기본 지울수없는 카테고리 생성
     public List<Category> defaultCategory(){
@@ -92,11 +86,6 @@ public class CategoriesLocalRepository implements CategoriesLocalDataSource {
     /*
      * CategoriesDataSource 오버라이드 메소드 구현
      */
-
-    @Override
-    public void refreshCategories() {
-        // {@link CategoriesRepository} 에서 처리하므로 이곳에서는 필요하지 않다.
-    }
 
     // 로컬 데이터베이스에서 categories 리스트 가져오기
     @Override
@@ -146,15 +135,6 @@ public class CategoriesLocalRepository implements CategoriesLocalDataSource {
         mAppExecutors.getDiskIO().execute(runnable);
     }
 
-    // 모든 category 삭제
-    @Override
-    public void deleteAllCategories() {
-        Runnable runnable = () -> {
-            mCategoriesDAO.deleteAllCategories();
-        };
-        mAppExecutors.getDiskIO().execute(runnable);
-    }
-
     // id로 category 찾아서 삭제
     @Override
     public void deleteCategory(@NonNull String id) {
@@ -183,11 +163,6 @@ public class CategoriesLocalRepository implements CategoriesLocalDataSource {
           mCategoriesDAO.updateSelected(category.getId(), selected);
         };
         mAppExecutors.getDiskIO().execute(runnable);
-    }
-
-    @Override
-    public void selectedCategory(@NonNull String id, boolean selected) {
-        // {@link CategoriesRepository} 에서 처리하므로 이곳에서는 필요하지 않다.
     }
 
 }

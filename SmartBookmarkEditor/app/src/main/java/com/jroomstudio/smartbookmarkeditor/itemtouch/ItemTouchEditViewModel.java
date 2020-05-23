@@ -129,7 +129,6 @@ public class ItemTouchEditViewModel extends BaseObservable {
     private void loadCategories()
     {
         // 카테고리
-        mCategoriesRepository.refreshCategories();
         mCategoriesRepository.getCategories(new CategoriesLocalDataSource.LoadCategoriesCallback() {
             @Override
             public void onCategoriesLoaded(List<Category> categories) {

@@ -29,15 +29,16 @@ public interface BookmarksRemoteDataSource {
         void onFailedUpdate();
     }
 
+    interface LoadCategoriesCallback{
+        void onCategoriesLoaded(List<Category> categories);
+        void onDataNotAvailable();
+    }
+
     // 토큰만료시 재발급
     void refreshToken(@NonNull RefreshTokenCallback callback);
 
-    // Bookmark 리스트를 데이터베이스에서 가져온다.
-    void getBookmarks(@NonNull Bookmark bookmark,
-                      @NonNull LoadBookmarksCallback callback);
-
     // 입력된 카테고리인 bookmark 를 전부 가져온다.
-    void getBookmarksInputCategory(@NonNull String category,
+    void getBookmarks(@NonNull String category,
                                    @NonNull LoadBookmarksCallback callback);
     // 특정 북마크를 가져온다.
     void getBookmark(@NonNull Bookmark bookmark,
@@ -47,7 +48,7 @@ public interface BookmarksRemoteDataSource {
     void saveBookmark(@NonNull Bookmark bookmark);
 
     // 입력된 id의 Bookmark 객체를 찾아서 제거
-    void deleteBookmark(@NonNull String id);
+    void deleteBookmark(@NonNull String id,@NonNull String category);
 
     // 입력된 카테고리의 bookmark 전부 제거
     void deleteAllInCategory(@NonNull String category);
@@ -56,11 +57,15 @@ public interface BookmarksRemoteDataSource {
     void updateBookmark(@NonNull Bookmark bookmark);
 
     // 입력된 리스트 값 변경
-    void updateBookmarks(@NonNull List<Bookmark> bookmarks);
+    void updateBookmarks(@NonNull List<Bookmark> bookmarks, @NonNull String category);
 
     /**
-     *  카테고리 저장
+     *  카테고리
      **/
     void saveCategory(@NonNull Category category);
+
+    void getAllCategories(@NonNull LoadCategoriesCallback callback);
+
+    void selectedCategory(@NonNull String category, @NonNull UpdateCallback callback);
 
 }

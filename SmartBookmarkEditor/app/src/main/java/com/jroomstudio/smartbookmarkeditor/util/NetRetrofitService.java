@@ -9,7 +9,6 @@ import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
-import retrofit2.http.Field;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
@@ -60,21 +59,16 @@ public interface NetRetrofitService {
             @Header("Content-Type") String contentType,
             @Body Member param);
 
-    /**
-     * Bookmark 관련
-     **/
-    // Json 으로 넘기고 해당 북마크 리스트 데이터 콜백
-    @POST("member/api/bookmark/getBookmarkList.php")
-    Call<List<Bookmark>> getBookmarkListCallback(
-            @Header("Authorization") String auth,
-            @Header("Content-Type") String contentType,
-            @Body Bookmark param);
 
+    /**
+     *  사용전
+     **/
     // 북마크 콜백
     @POST("member/api/bookmark/getBookmark.php")
     Call<Bookmark> getBookmarkCallback(
             @Header("Authorization") String auth,
             @Header("Content-Type") String contentType,
+            @Header("MemberEmail") String email,
             @Body Bookmark param);
 
     // Json 으로 넘기고 해당 북마크 리스트 데이터 업데이트 후 콜백
@@ -82,30 +76,17 @@ public interface NetRetrofitService {
     Call<Void> updateBookmarkListCallback(
             @Header("Authorization") String auth,
             @Header("Content-Type") String contentType,
-            @Field("email") String email,
+            @Header("MemberEmail") String email,
+            @Header("CategoryName") String category,
             @Body List<Bookmark> params);
 
     // Json 으로 넘긴 값으로 북마크 데이터 업데이트 후 콜백
-    @POST("member/api/bookmark/updateBookmark.php")
+    @GET("member/api/updateBookmark.php")
     Call<Bookmark> updateBookmarkCallback(
             @Header("Authorization") String auth,
             @Header("Content-Type") String contentType,
+            @Header("MemberEmail") String email,
             @Body Bookmark param);
-
-    // 북마크 저장
-    @POST("member/api/bookmark/saveBookmark.php")
-    Call<Void> saveBookmark(
-            @Header("Authorization") String auth,
-            @Header("Content-Type") String contentType,
-            @Field("email") String email,
-            @Body Bookmark param);
-
-    // 북마크 가져오기
-    @GET("member/api/bookmark/getBookmarksInputCategory.php")
-    Call<List<Bookmark>> getBookmarksInputCategory(
-            @Header("Authorization") String auth,
-            @Query("email") String email,
-            @Query("category") String category);
 
     // 입력된 카테고리인 bookmark 전부제거
     @GET("member/api/bookmark/deleteAllCategory.php")
@@ -119,17 +100,47 @@ public interface NetRetrofitService {
     Call<Void> deleteBookmark(
             @Header("Authorization") String auth,
             @Query("email") String email,
+            @Query("category") String category,
             @Query("id") String id);
 
     /**
-     * 카테고리
+     * 완료
      **/
-    // 북마크 저장
+    // 카테고리 저장
     @POST("member/api/saveCategory.php")
     Call<Void> saveCategory(
             @Header("Authorization") String auth,
             @Header("Content-Type") String contentType,
             @Header("MemberEmail") String email,
             @Body Category param);
+
+    // 카테고리 리스트 가져오기
+    @GET("member/api/getCategories.php")
+    Call<List<Category>> getAllCategories(
+            @Header("Authorization") String auth,
+            @Query("member_email") String email
+    );
+
+    // 카테고리 선택
+    @GET("member/api/selectedCategory.php")
+    Call<Void> selectedCategory(
+            @Header("Authorization") String auth,
+            @Query("member_email") String email,
+            @Query("category_title") String category);
+
+    // 북마크 저장
+    @POST("member/api/saveBookmark.php")
+    Call<Void> saveBookmark(
+            @Header("Authorization") String auth,
+            @Header("Content-Type") String contentType,
+            @Header("MemberEmail") String email,
+            @Body Bookmark param);
+
+    // 북마크 리스트 가져오기
+    @GET("member/api/getBookmarks.php")
+    Call<List<Bookmark>> getBookmarks(
+            @Header("Authorization") String auth,
+            @Query("member_email") String email,
+            @Query("category_title") String category);
 
 }

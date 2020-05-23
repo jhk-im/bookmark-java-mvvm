@@ -246,6 +246,7 @@ public class MainActivity extends AppCompatActivity
             MainHomeViewModel viewModel = new MainHomeViewModel(
                     Injection.provideBookmarksRepository(getApplicationContext()),
                     Injection.provideCategoriesRepository(getApplicationContext()),
+                    Injection.provideRemoteBookmarksRepository(spActStatus),
                     getApplicationContext(),spActStatus
             );
             // ViewModelHolder(UI 없는 Fragment) 생성
@@ -488,7 +489,6 @@ public class MainActivity extends AppCompatActivity
             loginOut(true);
         }
     }
-
     // 홈 버튼
     @Override
     public void onClickHome() {

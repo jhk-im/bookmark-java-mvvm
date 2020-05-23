@@ -2,6 +2,7 @@ package com.jroomstudio.smartbookmarkeditor.main.home;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.widget.Toast;
 
 import androidx.databinding.BaseObservable;
 import androidx.databinding.ObservableArrayList;
@@ -12,6 +13,8 @@ import com.jroomstudio.smartbookmarkeditor.BR;
 import com.jroomstudio.smartbookmarkeditor.data.bookmark.Bookmark;
 import com.jroomstudio.smartbookmarkeditor.data.bookmark.source.local.BookmarksLocalDataSource;
 import com.jroomstudio.smartbookmarkeditor.data.bookmark.source.local.BookmarksLocalRepository;
+import com.jroomstudio.smartbookmarkeditor.data.bookmark.source.remote.BookmarksRemoteDataSource;
+import com.jroomstudio.smartbookmarkeditor.data.bookmark.source.remote.BookmarksRemoteRepository;
 import com.jroomstudio.smartbookmarkeditor.data.category.Category;
 import com.jroomstudio.smartbookmarkeditor.data.category.source.local.CategoriesLocalDataSource;
 import com.jroomstudio.smartbookmarkeditor.data.category.source.local.CategoriesLocalRepository;
@@ -60,6 +63,9 @@ public class MainHomeViewModel extends BaseObservable {
     private BookmarksLocalRepository mBookmarksLocalRepository;
     // 카테고리
     private CategoriesLocalRepository mCategoriesRepository;
+
+    // 북마크 원격 카테고리
+    private BookmarksRemoteRepository mBookmarksRemoteRepository;
 
     // 액티비티 아이템 네비게이터
     private MainHomeNavigator mNavigator;
@@ -116,101 +122,51 @@ public class MainHomeViewModel extends BaseObservable {
      **/
     public MainHomeViewModel(BookmarksLocalRepository bookmarksLocalRepository,
                              CategoriesLocalRepository categoriesRepository,
+                             BookmarksRemoteRepository bookmarksRemoteRepository,
                              Context context, SharedPreferences sharedPreferences){
         mBookmarksLocalRepository = bookmarksLocalRepository;
         mCategoriesRepository = categoriesRepository;
+        mBookmarksRemoteRepository = bookmarksRemoteRepository;
         mContext = context.getApplicationContext();
         spActStatus = sharedPreferences;
     }
 
     // 프래그먼트 onResume
     void start(){
-
         if(!spActStatus.getBoolean("login_status",false)){
             // 게스트 유저
-            loadCategories();
+            loadLocalCategories();
         }else{
-            // 회원 유저
+            // 회원
+            loadRemoteCategories();
         }
-
     }
 
     // 아이템 클릭시 실행
     public void changeSelectCategory(Category category){
         if(!spActStatus.getBoolean("login_status",false)){
-            // 게스트유저
+            // 게스트 유저
             // 현재 카테고리 isSelected false 로 변경
             mCategoriesRepository.
                     selectedCategory(Objects.requireNonNull(currentCategory.get()),false);
             // 전달받은 카테고리 isSelected true 로 변경
             mCategoriesRepository.selectedCategory(category,true);
-            // 업데이트
-            loadCategories();
+            loadLocalCategories();
         }else{
-            // 회원 유저
-        }
-    }
-
-    /**
-     * 로컬 데이터베이스에서 카테고리 정보 받아오기
-     * -> 프래그먼트가 시작될 때 실행된다.
-     *  -> 카테고리를 먼저 받아온다.
-     *   -> 카테고리 중 선택된 카테고리를 찾아 저장한다.
-     *    -> 선택된 카테고리에 해당하는 북마크를 로드한다.
-     **/
-    private void loadCategories()
-    {
-        // 카테고리
-        mCategoriesRepository.refreshCategories();
-        mCategoriesRepository.getCategories(new CategoriesLocalDataSource.LoadCategoriesCallback() {
-            @Override
-            public void onCategoriesLoaded(List<Category> categories) {
-
-                for(Category category : categories){
-                    if(category.isSelected()){
-                        // 액티비티 액션바 타이틀을 현재 선택된 카테고리로 업데이트
-                        mNavigator.setToolbarTitle(category.getTitle());
-                        currentCategory.set(category);
-                    }
+            // 회원
+            mBookmarksRemoteRepository.selectedCategory(category.getTitle(),
+                    new BookmarksRemoteDataSource.UpdateCallback() {
+                @Override
+                public void onCompletedUpdate() {
+                    // 북마크 가져오기
+                    loadRemoteCategories();
                 }
-
-                // 옵저버블 리스트에 추가
-                // 카테고리 position 순서대로 정렬
-                categoryItems.clear();
-                categoryItems.addAll(sortToCategories(categories));
-                notifyPropertyChanged(BR._all);
-                // 북마크 가져오기
-                loadBookmarks();
-            }
-            @Override
-            public void onDataNotAvailable() {
-                     //onDataNotAvailable();
-            }
-        });
-    }
-
-    // 데이터베이스에서 북마크 로드
-    private void loadBookmarks(){
-        // 현재 선택된 카테고리 북마크 가져오기
-        //mBookmarksLocalDataSource.refreshBookmarks();
-        mBookmarksLocalRepository.getBookmarks(Objects.requireNonNull(currentCategory.get().getTitle()),
-                new BookmarksLocalDataSource.LoadBookmarksCallback() {
-                    @Override
-                    public void onBookmarksLoaded(List<Bookmark> bookmarks) {
-                        // 옵저버블 리스트에 추가
-                        // 북마크 포지션대로 정렬
-                        bookmarkItems.clear();
-                        bookmarkItems.addAll(sortToBookmarks(bookmarks));
-                        notifyPropertyChanged(BR._all);
-                    }
-
-                    @Override
-                    public void onDataNotAvailable() {
-                        // 해당 카테고리의 북마크가 없으면 리스트 비우기
-                        bookmarkItems.clear();
-                        //onDataNotAvailable();
-                    }
-                });
+                @Override
+                public void onFailedUpdate() {
+                    Toast.makeText(mContext, "인터넷 연결을 확인해주세요.", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
     }
 
     // 북마크 리스트를 position 값에 맞게 순서정렬
@@ -238,5 +194,119 @@ public class MainHomeViewModel extends BaseObservable {
         });
         return categories;
     }
+
+    /**
+     * 원격 데이터 베이스
+    **/
+    private void loadRemoteCategories(){
+        mBookmarksRemoteRepository.getAllCategories(
+                new BookmarksRemoteDataSource.LoadCategoriesCallback() {
+            @Override
+            public void onCategoriesLoaded(List<Category> categories) {
+                for(Category category : categories){
+                    if(category.isSelected()){
+                        // 액티비티 액션바 타이틀을 현재 선택된 카테고리로 업데이트
+                        mNavigator.setToolbarTitle(category.getTitle());
+                        currentCategory.set(category);
+                    }
+                }
+                // 옵저버블 리스트에 추가
+                // 카테고리 position 순서대로 정렬
+                categoryItems.clear();
+                categoryItems.addAll(sortToCategories(categories));
+                notifyPropertyChanged(BR._all);
+                // 북마크 가져오기
+                loadRemoteBookmarks();
+            }
+
+            @Override
+            public void onDataNotAvailable() {
+                // 카테고리 없음
+                categoryItems.clear();
+                notifyPropertyChanged(BR._all);
+            }
+        });
+    }
+
+    private void loadRemoteBookmarks(){
+        mBookmarksRemoteRepository.getBookmarks(currentCategory.get().getTitle(),
+                new BookmarksRemoteDataSource.LoadBookmarksCallback() {
+                    @Override
+                    public void onBookmarksLoaded(List<Bookmark> bookmarks) {
+                        // 옵저버블 리스트에 추가
+                        // 북마크 포지션대로 정렬
+                        bookmarkItems.clear();
+                        bookmarkItems.addAll(sortToBookmarks(bookmarks));
+                        notifyPropertyChanged(BR._all);
+                    }
+
+                    @Override
+                    public void onDataNotAvailable() {
+                        // 해당 카테고리의 북마크가 없으면 리스트 비우기
+                        bookmarkItems.clear();
+                        //onDataNotAvailable();
+                    }
+                });
+    }
+
+    /**
+     * 로컬 데이터베이스
+     **/
+    private void loadLocalCategories()
+    {
+        // 카테고리
+        mCategoriesRepository.getCategories(new CategoriesLocalDataSource.LoadCategoriesCallback() {
+            @Override
+            public void onCategoriesLoaded(List<Category> categories) {
+
+                for(Category category : categories){
+                    if(category.isSelected()){
+                        // 액티비티 액션바 타이틀을 현재 선택된 카테고리로 업데이트
+                        mNavigator.setToolbarTitle(category.getTitle());
+                        currentCategory.set(category);
+                    }
+                }
+
+                // 옵저버블 리스트에 추가
+                // 카테고리 position 순서대로 정렬
+                categoryItems.clear();
+                categoryItems.addAll(sortToCategories(categories));
+                notifyPropertyChanged(BR._all);
+                // 북마크 가져오기
+                loadLocalBookmarks();
+            }
+            @Override
+            public void onDataNotAvailable() {
+                //onDataNotAvailable()
+                // 카테고리 없음
+                categoryItems.clear();
+                notifyPropertyChanged(BR._all);
+            }
+        });
+    }
+    // 데이터베이스에서 북마크 로드
+    private void loadLocalBookmarks(){
+        // 현재 선택된 카테고리 북마크 가져오기
+        //mBookmarksLocalDataSource.refreshBookmarks();
+        mBookmarksLocalRepository.getBookmarks(currentCategory.get().getTitle(),
+                new BookmarksLocalDataSource.LoadBookmarksCallback() {
+                    @Override
+                    public void onBookmarksLoaded(List<Bookmark> bookmarks) {
+                        // 옵저버블 리스트에 추가
+                        // 북마크 포지션대로 정렬
+                        bookmarkItems.clear();
+                        bookmarkItems.addAll(sortToBookmarks(bookmarks));
+                        notifyPropertyChanged(BR._all);
+                    }
+
+                    @Override
+                    public void onDataNotAvailable() {
+                        // 해당 카테고리의 북마크가 없으면 리스트 비우기
+                        bookmarkItems.clear();
+                        //onDataNotAvailable();
+                    }
+                });
+    }
+
 
 }
