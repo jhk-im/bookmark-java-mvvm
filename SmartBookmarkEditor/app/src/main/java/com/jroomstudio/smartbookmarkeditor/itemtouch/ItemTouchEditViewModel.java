@@ -13,6 +13,8 @@ import com.jroomstudio.smartbookmarkeditor.BR;
 import com.jroomstudio.smartbookmarkeditor.data.bookmark.Bookmark;
 import com.jroomstudio.smartbookmarkeditor.data.bookmark.source.local.BookmarksLocalDataSource;
 import com.jroomstudio.smartbookmarkeditor.data.bookmark.source.local.BookmarksLocalRepository;
+import com.jroomstudio.smartbookmarkeditor.data.bookmark.source.remote.BookmarksRemoteDataSource;
+import com.jroomstudio.smartbookmarkeditor.data.bookmark.source.remote.BookmarksRemoteRepository;
 import com.jroomstudio.smartbookmarkeditor.data.category.Category;
 import com.jroomstudio.smartbookmarkeditor.data.category.source.local.CategoriesLocalDataSource;
 import com.jroomstudio.smartbookmarkeditor.data.category.source.local.CategoriesLocalRepository;
@@ -54,6 +56,8 @@ public class ItemTouchEditViewModel extends BaseObservable {
     private BookmarksLocalRepository mBookmarksLocalRepository;
     // 카테고리
     private CategoriesLocalRepository mCategoriesRepository;
+    // 북마크 원격 데이터 소스
+    private BookmarksRemoteRepository mBookmarksRemoteRepository;
     // 네비게이터
     private ItemTouchEditNavigator mNavigator;
     // 네비게이터 셋팅 - 프래그먼트와 뷰모델 생성시
@@ -85,11 +89,13 @@ public class ItemTouchEditViewModel extends BaseObservable {
      **/
     ItemTouchEditViewModel(BookmarksLocalRepository bookmarksLocalRepository,
                            CategoriesLocalRepository categoriesRepository, Context context,
-                           SharedPreferences sharedPreferences){
+                           SharedPreferences sharedPreferences,
+                           BookmarksRemoteRepository bookmarksRemoteRepository){
         mBookmarksLocalRepository = bookmarksLocalRepository;
         mCategoriesRepository = categoriesRepository;
         mContext = context.getApplicationContext();
         spActStatus = sharedPreferences;
+        mBookmarksRemoteRepository = bookmarksRemoteRepository;
     }
 
     // 프래그먼트 onResume 에서 실행
@@ -97,26 +103,89 @@ public class ItemTouchEditViewModel extends BaseObservable {
         Toast.makeText(mContext, "롱클릭으로 아이템 순서변경", Toast.LENGTH_SHORT).show();
         if(!spActStatus.getBoolean("login_status",false)){
             // 게스트 유저
-            loadCategories();
+            loadLocalCategories();
         }else{
             // 회원 유저
+            loadRemoteCategories();
         }
     }
 
     // 포지션 변경후 fab 버튼 누르고 종료
     public void updatePosition(){
-        // 북마크 포지션 값 변경
-        for(Bookmark bookmark : bookmarkItems){
-            // 포지션값 변경
-            mBookmarksLocalRepository.updatePosition(bookmark,bookmarkItems.indexOf(bookmark));
+        if(!spActStatus.getBoolean("login_status",false)){
+            // 게스트 유저
+            // 북마크 포지션 값 변경
+            for(Bookmark bookmark : bookmarkItems){
+                // 포지션값 변경
+                mBookmarksLocalRepository.updatePosition(bookmark,bookmarkItems.indexOf(bookmark));
+            }
+            // 카테고리 포지션값 변경
+            for(Category category : categoryItems){
+                // 포지션값 변경
+                mCategoriesRepository.updatePosition(category,categoryItems.indexOf(category));
+            }
+            // 저장하고 종료
+            onItemsSaved();
+        }else{
+            
         }
-        // 카테고리 포지션값 변경
-        for(Category category : categoryItems){
-            // 포지션값 변경
-            mCategoriesRepository.updatePosition(category,categoryItems.indexOf(category));
-        }
-        // 저장하고 종료
-        onItemsSaved();
+    }
+
+    /**
+     * 원격 데이터 베이스
+     **/
+    private void loadRemoteCategories(){
+        mBookmarksRemoteRepository.getAllCategories(
+                new BookmarksRemoteDataSource.LoadCategoriesCallback() {
+                    @Override
+                    public void onCategoriesLoaded(List<Category> categories) {
+                        for(Category category : categories){
+                            if(category.isSelected()){
+                                // 액티비티 액션바 타이틀을 현재 선택된 카테고리로 업데이트
+                                currentCategory.set(category);
+                            }
+                        }
+
+                        if(currentCategory.get() == null){
+                            Category c = new Category("",0,false);
+                            currentCategory.set(c);
+                        }
+                        // 옵저버블 리스트에 추가
+                        // 카테고리 position 순서대로 정렬
+                        categoryItems.clear();
+                        categoryItems.addAll(sortToCategories(categories));
+                        notifyPropertyChanged(BR._all);
+                        // 북마크 가져오기
+                        loadRemoteBookmarks();
+                    }
+
+                    @Override
+                    public void onDataNotAvailable() {
+                        // 카테고리 없음
+                        categoryItems.clear();
+                        notifyPropertyChanged(BR._all);
+                    }
+                });
+    }
+    private void loadRemoteBookmarks(){
+        mBookmarksRemoteRepository.getBookmarks(currentCategory.get().getTitle(),
+                new BookmarksRemoteDataSource.LoadBookmarksCallback() {
+                    @Override
+                    public void onBookmarksLoaded(List<Bookmark> bookmarks) {
+                        // 옵저버블 리스트에 추가
+                        // 북마크 포지션대로 정렬
+                        bookmarkItems.clear();
+                        bookmarkItems.addAll(sortToBookmarks(bookmarks));
+                        notifyPropertyChanged(BR._all);
+                    }
+
+                    @Override
+                    public void onDataNotAvailable() {
+                        // 해당 카테고리의 북마크가 없으면 리스트 비우기
+                        bookmarkItems.clear();
+                        //onDataNotAvailable();
+                    }
+                });
     }
 
     /**
@@ -126,7 +195,7 @@ public class ItemTouchEditViewModel extends BaseObservable {
      *   -> 카테고리 중 선택된 카테고리를 찾아 저장한다.
      *    -> 선택된 카테고리에 해당하는 북마크를 로드한다.
      **/
-    private void loadCategories()
+    private void loadLocalCategories()
     {
         // 카테고리
         mCategoriesRepository.getCategories(new CategoriesLocalDataSource.LoadCategoriesCallback() {
@@ -145,7 +214,7 @@ public class ItemTouchEditViewModel extends BaseObservable {
                 categoryItems.addAll(sortToCategories(categories));
                 notifyPropertyChanged(BR._all);
                 // 북마크 가져오기
-                loadBookmarks();
+                loadLocalBookmarks();
             }
             @Override
             public void onDataNotAvailable() {
@@ -155,7 +224,7 @@ public class ItemTouchEditViewModel extends BaseObservable {
     }
 
     // 데이터베이스에서 북마크 로드
-    private void loadBookmarks(){
+    private void loadLocalBookmarks(){
         // 현재 선택된 카테고리 북마크 가져오기
         //mBookmarksLocalRepository.refreshBookmarks();
         mBookmarksLocalRepository.getBookmarks(Objects.requireNonNull(currentCategory.get().getTitle()),

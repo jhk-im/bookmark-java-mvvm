@@ -41,7 +41,7 @@ public interface BookmarksRemoteDataSource {
     void getBookmarks(@NonNull String category,
                                    @NonNull LoadBookmarksCallback callback);
     // 특정 북마크를 가져온다.
-    void getBookmark(@NonNull Bookmark bookmark,
+    void getBookmark(@NonNull String categoryTitle, @NonNull String bookmarkId,
                      @NonNull GetBookmarkCallback callback);
 
     // 북마크를 저장하고 저장된 객체를 콜백으로 돌려받는다.
@@ -52,7 +52,13 @@ public interface BookmarksRemoteDataSource {
 
 
     // 입력된 Bookmark 값 변경
-    void updateBookmark(@NonNull Bookmark bookmark);
+    void updateBookmark(@NonNull String updateCategory,
+                        @NonNull String id,
+                        @NonNull String title,
+                        @NonNull String url,
+                        @NonNull String category,
+                        @NonNull String favicon,
+                        @NonNull UpdateCallback callback);
 
     // 입력된 리스트 값 변경
     void updateBookmarks(@NonNull List<Bookmark> bookmarks, @NonNull String category);
@@ -69,6 +75,7 @@ public interface BookmarksRemoteDataSource {
     // 입력된 카테고리 제거
     void deleteCategory(@NonNull String category, @NonNull UpdateCallback callback);
 
-    void updateCategory();
+    // 카테고리 업데이트
+    void updateCategory(@NonNull String id, @NonNull String title, @NonNull UpdateCallback callback);
 
 }

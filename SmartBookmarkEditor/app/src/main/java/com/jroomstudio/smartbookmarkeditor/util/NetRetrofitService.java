@@ -59,38 +59,8 @@ public interface NetRetrofitService {
             @Header("Content-Type") String contentType,
             @Body Member param);
 
-
     /**
-     *  사용전
-     **/
-    // 북마크 콜백
-    @POST("member/api/bookmark/getBookmark.php")
-    Call<Bookmark> getBookmarkCallback(
-            @Header("Authorization") String auth,
-            @Header("Content-Type") String contentType,
-            @Header("MemberEmail") String email,
-            @Body Bookmark param);
-
-    // Json 으로 넘기고 해당 북마크 리스트 데이터 업데이트 후 콜백
-    @POST("member/api/bookmark/updateBookmarkList.php")
-    Call<Void> updateBookmarkListCallback(
-            @Header("Authorization") String auth,
-            @Header("Content-Type") String contentType,
-            @Header("MemberEmail") String email,
-            @Header("CategoryName") String category,
-            @Body List<Bookmark> params);
-
-    // Json 으로 넘긴 값으로 북마크 데이터 업데이트 후 콜백
-    @GET("member/api/updateBookmark.php")
-    Call<Bookmark> updateBookmarkCallback(
-            @Header("Authorization") String auth,
-            @Header("Content-Type") String contentType,
-            @Header("MemberEmail") String email,
-            @Body Bookmark param);
-
-
-    /**
-     * 완료
+     * 카테고리 , 북마크
      **/
     // 카테고리 저장
     @POST("member/api/saveCategory.php")
@@ -121,6 +91,15 @@ public interface NetRetrofitService {
             @Query("member_email") String email,
             @Query("category_title") String category);
 
+    // 카테고리 업데이트
+    // 카테고리 저장
+    @GET("member/api/updateCategory.php")
+    Call<Void> updateCategory(
+            @Header("Authorization") String auth,
+            @Query("member_email") String email,
+            @Query("category_id") String id,
+            @Query("update_title") String title);
+
     // 북마크 저장
     @POST("member/api/saveBookmark.php")
     Call<Void> saveBookmark(
@@ -136,6 +115,14 @@ public interface NetRetrofitService {
             @Query("member_email") String email,
             @Query("category_title") String category);
 
+    // Json 으로 넘긴 값으로 북마크 데이터 업데이트 후 콜백
+    @GET("member/api/getBookmark.php")
+    Call<Bookmark> getBookmark(
+            @Header("Authorization") String auth,
+            @Query("member_email") String email,
+            @Query("category_title") String categoryTitle,
+            @Query("bookmark_id") String bookmarkId);
+
     // 입력된 id의 Bookmark 객체를 찾아서 제거
     @GET("member/api/deleteBookmark.php")
     Call<Void> deleteBookmark(
@@ -144,4 +131,15 @@ public interface NetRetrofitService {
             @Query("bookmark_id") String id,
             @Query("category_title") String category);
 
+    // 업데이트 북마크
+    @GET("member/api/updateBookmark.php")
+    Call<Void> updateBookmark(
+            @Header("Authorization") String auth,
+            @Query("member_email") String email,
+            @Query("update_category") String updateCategory,
+            @Query("bookmark_id") String id,
+            @Query("bookmark_title") String title,
+            @Query("bookmark_url") String url,
+            @Query("bookmark_category") String category,
+            @Query("bookmark_favicon") String favicon);
 }

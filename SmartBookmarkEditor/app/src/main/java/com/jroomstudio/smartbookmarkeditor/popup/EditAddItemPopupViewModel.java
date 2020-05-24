@@ -89,7 +89,6 @@ public class EditAddItemPopupViewModel extends BaseObservable {
     private BookmarksLocalRepository mBookmarksLocalRepository;
     // 카테고리 로컬 데이터 소스
     private CategoriesLocalRepository mCategoriesRepository;
-
     // 북마크 원격 데이터 소스
     private BookmarksRemoteRepository mBookmarksRemoteRepository;
 
@@ -130,7 +129,6 @@ public class EditAddItemPopupViewModel extends BaseObservable {
         setViewType();
         // 편집인 경우 각 아이템의 필요한 데이터 셋팅
         setEditItemInfo();
-
     }
 
     // 현재 프래그먼트가 추가 작업인지 편집작업인지를 구분한다.
@@ -191,6 +189,12 @@ public class EditAddItemPopupViewModel extends BaseObservable {
             if(!spActStatus.getBoolean("login_status",false)){
                 // 게스트 유저
                 setEditCategoryLocalData();
+            }else{
+                //회원
+                Category temp = new Category(mSelectedCategory,0,false);
+                categoryTitle.set(mSelectedCategory);
+                mUpdateCategory = temp;
+                notifyPropertyChanged(BR._all);
             }
         }
         // 북마크 편집 or 북마크 삭제
@@ -200,6 +204,9 @@ public class EditAddItemPopupViewModel extends BaseObservable {
             if(!spActStatus.getBoolean("login_status",false)) {
                 // 게스트 유저
                 setEditBookmarkLocalData();
+            }else{
+                // 회원
+                setEditBookmarkRemoteData();
             }
         }
     }
@@ -330,10 +337,28 @@ public class EditAddItemPopupViewModel extends BaseObservable {
             // 타이틀이나 카테고리만 변경했을 때
             if(!mUpdateBookmark.getTitle().equals(bookmarkTitle.get()) ||
                     !mUpdateBookmark.getCategory().equals(bookmarkCategory.get())){
-                // url 검사 진행하지않고 바로 저장
-                saveLocalBookmark(mUpdateBookmark.getFaviconUrl());
-                mIsDataLoadingBar = false;
-                notifyChange(); // For the @Bindable properties
+                if(!spActStatus.getBoolean("login_status",false)){
+                    // 게스트 유저
+                    // url 검사 진행하지않고 바로 저장
+                    saveLocalBookmark(mUpdateBookmark.getFaviconUrl());
+                    mIsDataLoadingBar = false;
+                    notifyChange(); // For the @Bindable properties
+                }else{
+                    // 회원
+                    Bookmark bookmark = new Bookmark(
+                            mUpdateBookmark.getId(), Objects.requireNonNull(bookmarkTitle.get()),
+                            mUpdateBookmark.getUrl(), mUpdateBookmark.getAction(),
+                            mUpdateBookmark.getCategory(),
+                            mUpdateBookmark.getPosition(),mUpdateBookmark.getFaviconUrl()
+                    );
+                    if(!mUpdateBookmark.getCategory().equals(bookmarkCategory.get())){
+                        // 카테고리,타이틀 변경
+                        updateRemoteBookmark(bookmarkCategory.get(),bookmark);
+                    }else{
+                        // 타이틀만 변경
+                        updateRemoteBookmark("",bookmark);
+                    }
+                }
                 return;
             }
         }
@@ -356,9 +381,28 @@ public class EditAddItemPopupViewModel extends BaseObservable {
                     saveLocalBookmark(faviconUrl);
                 }else{
                     // 회원
-                    createBookmark(0,faviconUrl);
-                    Toast.makeText(mContext, bookmarkCategory.get()+"에 저장", Toast.LENGTH_SHORT).show();
-                    navigationAddNewItem();
+                    // 아이템 추가
+                    if(mIsAddItem) {
+                        createBookmarkObject(0, faviconUrl);
+                        Toast.makeText(mContext, "북마크 저장", Toast.LENGTH_SHORT).show();
+                        navigationAddNewItem();
+                    }else{
+                        // 편집 (타이틀,url,파비콘 변경)
+                        Bookmark bookmark = new Bookmark(
+                                mUpdateBookmark.getId(),
+                                Objects.requireNonNull(bookmarkTitle.get()),
+                                Objects.requireNonNull(bookmarkUrl.get()),
+                                mUpdateBookmark.getAction(),
+                                mUpdateBookmark.getCategory(),
+                                mUpdateBookmark.getPosition(),faviconUrl);
+                        if(!mUpdateBookmark.getCategory().equals(bookmarkCategory.get())){
+                            // 카테고리 변경
+                            updateRemoteBookmark(bookmarkCategory.get(),bookmark);
+                        }else{
+                            // 카테고리 변경하지 않음
+                            updateRemoteBookmark("",bookmark);
+                        }
+                    }
                 }
             }
         }else{
@@ -404,26 +448,45 @@ public class EditAddItemPopupViewModel extends BaseObservable {
         }
         else{
             // 업데이트 하는 경우
-            Category updateCategory = new Category(mUpdateCategory.getId(),
-                    Objects.requireNonNull(categoryTitle.get()),
-                    mUpdateCategory.getPosition(),
-                    mUpdateCategory.isSelected());
-
-            // 카테고리에 포함된 북마크 카테고리명 변경
-            for(Bookmark bookmark : mUpdateBookmarks){
-                Bookmark updateBookmark = new Bookmark(bookmark.getId(),
-                        bookmark.getTitle(),
-                        bookmark.getUrl(),
-                        bookmark.getAction(),
+            if(!spActStatus.getBoolean("login_status",false)){
+                // 게스트 유저
+                Category updateCategory = new Category(mUpdateCategory.getId(),
                         Objects.requireNonNull(categoryTitle.get()),
-                        bookmark.getPosition(),
-                        bookmark.getFaviconUrl());
-                mBookmarksLocalRepository.saveBookmark(updateBookmark);
+                        mUpdateCategory.getPosition(),
+                        mUpdateCategory.isSelected());
+
+                // 카테고리에 포함된 북마크 카테고리명 변경
+                for(Bookmark bookmark : mUpdateBookmarks){
+                    Bookmark updateBookmark = new Bookmark(bookmark.getId(),
+                            bookmark.getTitle(),
+                            bookmark.getUrl(),
+                            bookmark.getAction(),
+                            Objects.requireNonNull(categoryTitle.get()),
+                            bookmark.getPosition(),
+                            bookmark.getFaviconUrl());
+                    mBookmarksLocalRepository.saveBookmark(updateBookmark);
+                }
+                // 카테고리 업데이트
+                mCategoriesRepository.saveCategory(updateCategory);
+                Toast.makeText(mContext, "카테고리 업데이트", Toast.LENGTH_SHORT).show();
+                navigationAddNewItem();
+            }else{
+                // 회원
+                mBookmarksRemoteRepository.updateCategory(mEditItemId, Objects.requireNonNull(categoryTitle.get()),
+                        new BookmarksRemoteDataSource.UpdateCallback() {
+                            @Override
+                            public void onCompletedUpdate() {
+                                Toast.makeText(mContext, "카테고리 업데이트", Toast.LENGTH_SHORT).show();
+                                navigationAddNewItem();
+                            }
+
+                            @Override
+                            public void onFailedUpdate() {
+                                Toast.makeText(mContext, "인터넷 연결을 확인해주세요.", Toast.LENGTH_SHORT).show();
+                            }
+                        });
             }
-            // 카테고리 업데이트
-            mCategoriesRepository.saveCategory(updateCategory);
-            Toast.makeText(mContext, categoryTitle.get()+" 카테고리명 업데이트", Toast.LENGTH_SHORT).show();
-            navigationAddNewItem();
+
         }
     }
 
@@ -433,7 +496,7 @@ public class EditAddItemPopupViewModel extends BaseObservable {
      * @param position - 카테고리 상의 position 값
      * @param faviconUrl - 파비콘 url
      **/
-    private void createBookmark(int position, String faviconUrl){
+    private void createBookmarkObject(int position, String faviconUrl){
         Bookmark bookmark = new Bookmark(
                 Objects.requireNonNull(bookmarkTitle.get()),
                 Objects.requireNonNull(bookmarkUrl.get()),
@@ -513,9 +576,48 @@ public class EditAddItemPopupViewModel extends BaseObservable {
     /**
      * 원격 데이터베이스
      **/
+    private void updateRemoteBookmark(String updateCategory, Bookmark bookmark){
 
-    private void setEditBookamrkRemoteData(){
-        //mBookmarksRemoteRepository.get
+        // 카테고리 변경
+        mBookmarksRemoteRepository.updateBookmark(
+                updateCategory,
+                bookmark.getId(),
+                bookmark.getTitle(),
+                bookmark.getUrl(),
+                bookmark.getCategory(),
+                bookmark.getFaviconUrl(),
+                new BookmarksRemoteDataSource.UpdateCallback() {
+                    @Override
+                    public void onCompletedUpdate() {
+                        Toast.makeText(mContext, "북마크 업데이트", Toast.LENGTH_SHORT).show();
+                        navigationAddNewItem();
+                    }
+
+                    @Override
+                    public void onFailedUpdate() {
+                        Toast.makeText(mContext, "인터넷 연결을 확인해주세요.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    // 원격에서 북마크 정보 받아오기
+    private void setEditBookmarkRemoteData(){
+        mBookmarksRemoteRepository.getBookmark(mSelectedCategory,mEditItemId,
+                new BookmarksRemoteDataSource.GetBookmarkCallback() {
+                    @Override
+                    public void onBookmarkLoaded(Bookmark bookmark) {
+                        bookmarkTitle.set(bookmark.getTitle());
+                        bookmarkUrl.set(bookmark.getUrl());
+                        // 업데이트할 북마크
+                        mUpdateBookmark = bookmark;
+                        notifyPropertyChanged(BR._all);
+                    }
+
+                    @Override
+                    public void onDataNotAvailable() {
+                        // 실패
+                    }
+                });
     }
 
     /**
@@ -551,6 +653,7 @@ public class EditAddItemPopupViewModel extends BaseObservable {
                     }
                 });
     }
+
     // 편집할 북마크의 로컬 데이터 셋팅
     private void setEditBookmarkLocalData(){
         // -> 생성시 전달받은 id 로 북마크 가져오기
@@ -573,6 +676,39 @@ public class EditAddItemPopupViewModel extends BaseObservable {
     }
 
     /**
+     * 북마크 업데이트
+     * - 북마크 편집시 사용하는 메소드
+     * @param changeCategory - 카테고리가 변경된 북마크인지 여부
+     * @param faviconUrl - 파비콘 url
+     * @param position - 카테고리 상의 position 값
+     **/
+    private void updateLocalBookmark(boolean changeCategory, String faviconUrl, int position){
+
+        if(changeCategory){
+            // 카테고리 변경하는 경우
+            Bookmark updateBookmark = new Bookmark(mUpdateBookmark.getId(),
+                    Objects.requireNonNull(bookmarkTitle.get()),
+                    Objects.requireNonNull(bookmarkUrl.get()),
+                    mUpdateBookmark.getAction(),
+                    Objects.requireNonNull(bookmarkCategory.get()),
+                    position,faviconUrl);
+
+            mBookmarksLocalRepository.saveBookmark(updateBookmark);
+
+        }else{
+            // 카테고리 변경하지 않은 경우
+            Bookmark updateBookmark = new Bookmark(mUpdateBookmark.getId(),
+                    Objects.requireNonNull(bookmarkTitle.get()),
+                    Objects.requireNonNull(bookmarkUrl.get()),
+                    mUpdateBookmark.getAction(),
+                    mUpdateBookmark.getCategory(),
+                    position,faviconUrl);
+            mBookmarksLocalRepository.saveBookmark(updateBookmark);
+        }
+
+    }
+
+    /**
      * saveBookmark
      *  - setFaviconUrlAndSaveBookmark 에서 파비콘 url 생성후 입력받는다.
      * - 북마크 객체를 업데이트 혹은 새로저장한다.
@@ -588,7 +724,7 @@ public class EditAddItemPopupViewModel extends BaseObservable {
                             // 1-1 해당 카테고리에 북마크가 있는경우
                             // position 값을 카테고리안의 북마크 사이즈 크기로 지정
                             // -> 해당 카테고리 전체 사이즈, 파비콘 url
-                            createBookmark(bookmarks.size(),faviconUrl);
+                            createBookmarkObject(bookmarks.size(),faviconUrl);
                         }else{
                             // 2. 아이템 편집
                             if(mUpdateBookmark.getCategory().equals(bookmarkCategory.get())){
@@ -608,7 +744,7 @@ public class EditAddItemPopupViewModel extends BaseObservable {
                         // 1-2. 카테고리 추가시 해당 카테고리에 북마크가 없는경우
                         if(mIsAddItem){
                             // 해당 카테고리에 북마크가 없다면 position 0 으로 추가한다.
-                            createBookmark(0,faviconUrl);
+                            createBookmarkObject(0,faviconUrl);
                         } else {
                             // 2-3. 카테고리 편집시 해당 카테고리에 북마크가 없다면  0으로 추가
                             // 이전 카테고리 포지션값 재배열
@@ -616,7 +752,7 @@ public class EditAddItemPopupViewModel extends BaseObservable {
                         }
                     }
                 });
-        Toast.makeText(mContext, bookmarkCategory.get()+"에 저장", Toast.LENGTH_SHORT).show();
+        Toast.makeText(mContext, "북마크 저장", Toast.LENGTH_SHORT).show();
         navigationAddNewItem();
     }
 
@@ -667,35 +803,5 @@ public class EditAddItemPopupViewModel extends BaseObservable {
 
     }
 
-    /**
-     * 북마크 업데이트
-     * - 북마크 편집시 사용하는 메소드
-     * @param changeCategory - 카테고리가 변경된 북마크인지 여부
-     * @param faviconUrl - 파비콘 url
-     * @param position - 카테고리 상의 position 값
-     **/
-    private void updateLocalBookmark(boolean changeCategory, String faviconUrl, int position){
-
-        if(changeCategory){
-            // 카테고리 변경하는 경우
-            Bookmark updateBookmark = new Bookmark(mUpdateBookmark.getId(),
-                    Objects.requireNonNull(bookmarkTitle.get()),
-                    Objects.requireNonNull(bookmarkUrl.get()),
-                    mUpdateBookmark.getAction(),
-                    Objects.requireNonNull(bookmarkCategory.get()),
-                    position,faviconUrl);
-            mBookmarksLocalRepository.saveBookmark(updateBookmark);
-        }else{
-            // 카테고리 변경하지 않은 경우
-            Bookmark updateBookmark = new Bookmark(mUpdateBookmark.getId(),
-                    Objects.requireNonNull(bookmarkTitle.get()),
-                    Objects.requireNonNull(bookmarkUrl.get()),
-                    mUpdateBookmark.getAction(),
-                    mUpdateBookmark.getCategory(),
-                    position,faviconUrl);
-            mBookmarksLocalRepository.saveBookmark(updateBookmark);
-        }
-
-    }
 
 }
