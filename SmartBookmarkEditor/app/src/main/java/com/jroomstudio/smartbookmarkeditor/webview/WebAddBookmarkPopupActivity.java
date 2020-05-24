@@ -16,6 +16,7 @@ import com.jroomstudio.smartbookmarkeditor.R;
 import com.jroomstudio.smartbookmarkeditor.data.bookmark.Bookmark;
 import com.jroomstudio.smartbookmarkeditor.data.bookmark.source.local.BookmarksLocalDataSource;
 import com.jroomstudio.smartbookmarkeditor.data.bookmark.source.local.BookmarksLocalRepository;
+import com.jroomstudio.smartbookmarkeditor.data.bookmark.source.remote.BookmarksRemoteRepository;
 
 import java.util.List;
 import java.util.Objects;
@@ -30,6 +31,7 @@ public class WebAddBookmarkPopupActivity extends AppCompatActivity {
 
     // 북마크 데이터 소스
     private BookmarksLocalRepository mBookmarksLocalRepository;
+    private BookmarksRemoteRepository mBookmarksRemoteRepository;
 
     // url, 카테고리, 타이틀
     private TextView tvCategory, tvUrl;
@@ -68,6 +70,7 @@ public class WebAddBookmarkPopupActivity extends AppCompatActivity {
             mBookmarksLocalRepository = Injection.provideBookmarksRepository(getApplicationContext());
         }else{
             // 회원 유저
+            mBookmarksRemoteRepository = Injection.provideRemoteBookmarksRepository(spActStatus);
         }
 
         // 인텐트로 넘어온 데이터 셋팅
@@ -105,13 +108,7 @@ public class WebAddBookmarkPopupActivity extends AppCompatActivity {
         btnCancel = (Button) findViewById(R.id.btn_cancel);
         // 저장
         btnComplete.setOnClickListener(v -> {
-            if(!spActStatus.getBoolean("login_status",false)){
-                // 게스트 유저
-                // favicon 추출하고 저장
-                urlPatternMatching(tvUrl.getText().toString());
-            }else{
-                // 회원 유저
-            }
+            urlPatternMatching(tvUrl.getText().toString());
         });
         // 취소
         btnCancel.setOnClickListener(v -> onBackPressed());
@@ -119,24 +116,34 @@ public class WebAddBookmarkPopupActivity extends AppCompatActivity {
 
     // 북마크 저장
     void saveBookmark(String faviconUrl){
-        mBookmarksLocalRepository.getBookmarks(tvCategory.getText().toString(),
-                new BookmarksLocalDataSource.LoadBookmarksCallback() {
-            @Override
-            public void onBookmarksLoaded(List<Bookmark> bookmarks) {
-                // 1. 아이템 추가
-                // 1-1 해당 카테고리에 북마크가 있는경우
-                // position 값을 카테고리안의 북마크 사이즈 크기로 지정
-                // -> 해당 카테고리 전체 사이즈, 파비콘 url
-                addBookmark(bookmarks.size(),faviconUrl);
-            }
+        if(!spActStatus.getBoolean("login_status",false)){
+            // 게스트 유저
+            // favicon 추출하고 저장
+            mBookmarksLocalRepository.getBookmarks(tvCategory.getText().toString(),
+                    new BookmarksLocalDataSource.LoadBookmarksCallback() {
+                        @Override
+                        public void onBookmarksLoaded(List<Bookmark> bookmarks) {
+                            // 1. 아이템 추가
+                            // 1-1 해당 카테고리에 북마크가 있는경우
+                            // position 값을 카테고리안의 북마크 사이즈 크기로 지정
+                            // -> 해당 카테고리 전체 사이즈, 파비콘 url
+                            addBookmark(bookmarks.size(),faviconUrl);
 
-            @Override
-            public void onDataNotAvailable() {
-                // 1-2. 카테고리 추가시 해당 카테고리에 북마크가 없는경우
-                // 해당 카테고리에 북마크가 없다면 position 0 으로 추가한다.
-                addBookmark(0,faviconUrl);
-            }
-        });
+                        }
+
+                        @Override
+                        public void onDataNotAvailable() {
+                            // 1-2. 카테고리 추가시 해당 카테고리에 북마크가 없는경우
+                            // 해당 카테고리에 북마크가 없다면 position 0 으로 추가한다.
+                            addBookmark(0,faviconUrl);
+                        }
+                    });
+        }
+        else{
+            // 회원
+            addBookmark(0,faviconUrl);
+        }
+
     }
 
     // 북마크 저장
@@ -148,7 +155,14 @@ public class WebAddBookmarkPopupActivity extends AppCompatActivity {
                 Objects.requireNonNull(tvCategory.getText().toString()),
                 position,
                 faviconUrl);
-        mBookmarksLocalRepository.saveBookmark(bookmark);
+        if(!spActStatus.getBoolean("login_status",false)){
+            // 게스트 유저
+            // favicon 추출하고 저장
+            mBookmarksLocalRepository.saveBookmark(bookmark);
+        }else{
+            // 회원 유저
+            mBookmarksRemoteRepository.saveBookmark(bookmark);
+        }
         Toast.makeText(this, "북마크를 추가하였습니다.", Toast.LENGTH_SHORT).show();
         finish();
     }
@@ -168,6 +182,7 @@ public class WebAddBookmarkPopupActivity extends AppCompatActivity {
             // http 와 도메인에 favicon.ico 를 입력하여 url 완성
             faviconUrl = mc.group(1) + "://" + mc.group(2)+ "/favicon.ico";
             Log.e("favicon url -> ",faviconUrl);
+
             saveBookmark(faviconUrl);
             //String http = mc.group(1);
             //String domain = mc.group(2);

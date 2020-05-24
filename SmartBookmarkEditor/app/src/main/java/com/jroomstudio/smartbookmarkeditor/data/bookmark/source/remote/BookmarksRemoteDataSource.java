@@ -61,7 +61,9 @@ public interface BookmarksRemoteDataSource {
                         @NonNull UpdateCallback callback);
 
     // 입력된 리스트 값 변경
-    void updateBookmarks(@NonNull List<Bookmark> bookmarks, @NonNull String category);
+    void updateBookmarkPosition(@NonNull List<Bookmark> bookmarks, @NonNull UpdateCallback callback);
+
+    void updateCategoryPosition(@NonNull List<Category> categories, @NonNull UpdateCallback callback);
 
     /**
      *  카테고리

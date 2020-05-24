@@ -77,6 +77,7 @@ public class ItemTouchEditViewModel extends BaseObservable {
     // -> 액티비티에서 종료를 진행한다.
     private void onItemsSaved(){
         if(mNavigator != null){
+            Toast.makeText(mContext, "아이템 포지션 업데이트", Toast.LENGTH_SHORT).show();
             mNavigator.onItemsSaved();
         }
     }
@@ -127,7 +128,30 @@ public class ItemTouchEditViewModel extends BaseObservable {
             // 저장하고 종료
             onItemsSaved();
         }else{
-            
+            mBookmarksRemoteRepository.updateCategoryPosition(categoryItems,
+                    new BookmarksRemoteDataSource.UpdateCallback() {
+                        @Override
+                        public void onCompletedUpdate() {
+                            mBookmarksRemoteRepository.updateBookmarkPosition(bookmarkItems,
+                                    new BookmarksRemoteDataSource.UpdateCallback() {
+                                        @Override
+                                        public void onCompletedUpdate() {
+                                            // 저장하고 종료
+                                            onItemsSaved();
+                                        }
+
+                                        @Override
+                                        public void onFailedUpdate() {
+                                            Toast.makeText(mContext, "인터넷 연결을 확인해주세요.", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                        }
+
+                        @Override
+                        public void onFailedUpdate() {
+                            Toast.makeText(mContext, "인터넷 연결을 확인해주세요.", Toast.LENGTH_SHORT).show();
+                        }
+                    });
         }
     }
 

@@ -100,6 +100,22 @@ public interface NetRetrofitService {
             @Query("category_id") String id,
             @Query("update_title") String title);
 
+    // 카테고리 포지션 변경
+    @POST("member/api/updateCategoryPosition.php")
+    Call<Void> updateCategoryPosition(
+            @Header("Authorization") String auth,
+            @Header("Content-Type") String contentType,
+            @Header("MemberEmail") String email,
+            @Body List<Category> params);
+
+    // 북마크 포지션 변경
+    @POST("member/api/updateBookmarkPosition.php")
+    Call<Void> updateBookmarkPosition(
+            @Header("Authorization") String auth,
+            @Header("Content-Type") String contentType,
+            @Header("MemberEmail") String email,
+            @Body List<Bookmark> params);
+
     // 북마크 저장
     @POST("member/api/saveBookmark.php")
     Call<Void> saveBookmark(
