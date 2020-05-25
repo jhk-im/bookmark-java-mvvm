@@ -56,7 +56,9 @@
   >  * MariaDB 회원 데이터 테이블 관리 
   >  * PHP + JSON 데이터를 활용하여 회원 데이터 CRUD 구현  
 * * *
-### Android MVVM Pattern 클래스 구조 
+### Android 클래스 구조 
 * * *
 ### Server PHP 클래스 구조
 * * *
+### Android MVVM Pattern
+* * *                      
