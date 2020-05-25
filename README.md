@@ -34,17 +34,17 @@
   >  * JSON 데이터  
 * * *
 ### 세부 기능 
-  > <img src="./GithubImage/Screenshot_login.jpg" width="35%" height="30%"></img>
-  > <img src="./GithubImage/Screenshot_home.jpg" width="35%" height="30%"></img>
-  > <img src="./GithubImage/Screenshot_addbookmark.jpg" width="35%" height="30%"></img>
-  > <img src="./GithubImage/Screenshot_addCategory.jpg" width="35%" height="30%"></img>
-  > <img src="./GithubImage/Screenshot_darkTheme_1.jpg" width="35%" height="30%"></img>
-  > <img src="./GithubImage/Screenshot_darkTheme_2.jpg" width="35%" height="30%"></img>
-  > <img src="./GithubImage/Screenshot_editPosition.jpg" width="35%" height="30%"></img>
-  > <img src="./GithubImage/Screenshot_notice.jpg" width="35%" height="30%"></img>
-  > <img src="./GithubImage/Screenshot_webview.jpg" width="35%" height="30%"></img>
-  > <img src="./GithubImage/Screenshot_urlShare.jpg" width="35%" height="30%"></img>
-  > <img src="./GithubImage/Screenshot_webview_editbookmark.jpg" width="35%" height="30%"></img>     
+  > <img src="./GithubImage/Screenshot_login.jpg" width="30%" height="25%"></img>
+  > <img src="./GithubImage/Screenshot_home.jpg" width="30%" height="25%"></img>
+  > <img src="./GithubImage/Screenshot_addbookmark.jpg" width="30%" height="25%"></img>
+  > <img src="./GithubImage/Screenshot_addCategory.jpg" width="30%" height="25%"></img>
+  > <img src="./GithubImage/Screenshot_darkTheme_1.jpg" width="30%" height="25%"></img>
+  > <img src="./GithubImage/Screenshot_darkTheme_2.jpg" width="30%" height="25%"></img>
+  > <img src="./GithubImage/Screenshot_editPosition.jpg" width="30%" height="25%"></img>
+  > <img src="./GithubImage/Screenshot_notice.jpg" width="30%" height="25%"></img>
+  > <img src="./GithubImage/Screenshot_webview.jpg" width="30%" height="25%"></img>
+  > <img src="./GithubImage/Screenshot_urlShare.jpg" width="30%" height="25%"></img>
+  > <img src="./GithubImage/Screenshot_webview_editbookmark.jpg" width="30%" height="25%"></img>     
   >  * Google, Facebook 로그인 연동
   >  * Room database + SharedPreference 활용한 게스트 유저 데이터 CRUD 구현 
   >  * Firebase fcm 알림기능 
