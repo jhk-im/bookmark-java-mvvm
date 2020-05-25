@@ -31,17 +31,7 @@ Email : <wanted0301@gmail.com>
   >  * 회원관리 
   >  * JSON 데이터  
 * * *
-### 세부 기능
-  >  * Google, Facebook 로그인 연동
-  >  * Room database + SharedPreference 활용한 게스트 유저 데이터 CRUD 구현 
-  >  * Firebase fcm 알림기능 
-  >  * Drag & Drop으로 북마크 순서 조절 
-  >  * 북마크 url 공유 
-  >  * Dark Theme 구현 
-  >  * Retrofit을 활용한 HTTP 통신 
-  >  * JWT 인증을 통한 회원가입, 로그인
-  >  * MariaDB 회원 데이터 테이블 관리 
-  >  * PHP + JSON 데이터를 활용하여 회원 데이터 CRUD 구현   
+### 세부 기능 
   > <img src="./GithubImage/Screenshot_login.jpg" width="30%" height="30%"></img>
   > <img src="./GithubImage/Screenshot_home.jpg" width="30%" height="30%"></img>
   > <img src="./GithubImage/Screenshot_addbookmark.jpg" width="30%" height="30%"></img>
@@ -53,4 +43,15 @@ Email : <wanted0301@gmail.com>
   > <img src="./GithubImage/Screenshot_webview.jpg" width="30%" height="30%"></img>
   > <img src="./GithubImage/Screenshot_urlShare.jpg" width="30%" height="30%"></img>
   > <img src="./GithubImage/Screenshot_webview_editbookmark.jpg" width="30%" height="30%"></img>
+    >  * Google, Facebook 로그인 연동
+  >  * Room database + SharedPreference 활용한 게스트 유저 데이터 CRUD 구현 
+  >  * Firebase fcm 알림기능 
+  >  * Drag & Drop으로 북마크 순서 조절 
+  >  * 북마크 url 공유 
+  >  * Dark Theme 구현 
+  >  * Retrofit을 활용한 HTTP 통신 
+  >  * JWT 인증을 통한 회원가입, 로그인
+  >  * MariaDB 회원 데이터 테이블 관리 
+  >  * PHP + JSON 데이터를 활용하여 회원 데이터 CRUD 구현  
 * * *
+### MVVM Pattern 구조 
