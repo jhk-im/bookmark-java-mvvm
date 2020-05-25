@@ -42,8 +42,5 @@ Email : <wanted0301@gmail.com>
   >  * JWT 인증을 통한 회원가입, 로그인
   >  * MariaDB 회원 데이터 테이블 관리 
   >  * PHP + JSON 데이터를 활용하여 회원 데이터 CRUD 구현   
-  <img src="./GithubImage/Screenshot_login.jpg" width="25%" height="25%"></img>
-  <img src="./GithubImage/Screenshot_home.jpg" width="25%" height="25%"></img>    
-  <img src="./GithubImage/Screenshot_addbookmark.jpg" width="25%" height="25%"></img>
-  <img src="./GithubImage/Screenshot_addCategory.jpg" width="25%" height="25%"></img>
+  <img src="./GithubImage/Screenshot_login.jpg" width="25%" height="25%"></img><img src="./GithubImage/Screenshot_home.jpg" width="25%" height="25%"></img><img src="./GithubImage/Screenshot_addbookmark.jpg" width="25%" height="25%"></img><img src="./GithubImage/Screenshot_addCategory.jpg" width="25%" height="25%"></img>
 * * *
