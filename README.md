@@ -6,8 +6,10 @@
 [프로젝트 내용] 카테고리별 북마크 관리    
 [프로젝트 인원] 1명    
 
-소스코드 : <https://github.com/ll0301/DotjariApp/tree/master/app/src/main>     
-플레이 스토어 : 게시보류중
+소스코드 :    
+Android <https://github.com/ll0301/DotjariApp/tree/master/app/src/main>     
+PHP <https://github.com/ll0301/DotjariApp/tree/master/app/src/main>     
+플레이 스토어 : 게시보류중    
 블로그 : <https://jroomstudio.tistory.com/>    
 Email : <wanted0301@gmail.com>    
 * * *
