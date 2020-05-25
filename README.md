@@ -42,8 +42,8 @@ Email : <wanted0301@gmail.com>
   > <img src="./GithubImage/Screenshot_notice.jpg" width="30%" height="30%"></img>
   > <img src="./GithubImage/Screenshot_webview.jpg" width="30%" height="30%"></img>
   > <img src="./GithubImage/Screenshot_urlShare.jpg" width="30%" height="30%"></img>
-  > <img src="./GithubImage/Screenshot_webview_editbookmark.jpg" width="30%" height="30%"></img>
-    >  * Google, Facebook 로그인 연동
+  > <img src="./GithubImage/Screenshot_webview_editbookmark.jpg" width="30%" height="30%"></img>     
+  >  * Google, Facebook 로그인 연동
   >  * Room database + SharedPreference 활용한 게스트 유저 데이터 CRUD 구현 
   >  * Firebase fcm 알림기능 
   >  * Drag & Drop으로 북마크 순서 조절 
