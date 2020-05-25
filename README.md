@@ -31,10 +31,6 @@ Email : <wanted0301@gmail.com>
   >  * 회원관리 
   >  * JSON 데이터  
 * * *
-### Android MVVM Pattern 클래스 구조 
-* * *
-### Server PHP 클래스 구조
-* * *
 ### 세부 기능 
   > <img src="./GithubImage/Screenshot_login.jpg" width="30%" height="35%"></img>
   > <img src="./GithubImage/Screenshot_home.jpg" width="30%" height="35%"></img>
@@ -57,4 +53,8 @@ Email : <wanted0301@gmail.com>
   >  * JWT 인증을 통한 회원가입, 로그인
   >  * MariaDB 회원 데이터 테이블 관리 
   >  * PHP + JSON 데이터를 활용하여 회원 데이터 CRUD 구현  
+* * *
+### Android MVVM Pattern 클래스 구조 
+* * *
+### Server PHP 클래스 구조
 * * *
