@@ -7,8 +7,8 @@
 [프로젝트 인원] 1명    
 
 소스코드 :    
-Android <https://github.com/ll0301/BookmarkSE/tree/master/SmartBookmarkEditor/app/src/main/java/com/jroomstudio/smartbookmarkeditor>     
-PHP <https://github.com/ll0301/DotjariApp/tree/master/app/src/main>     
+Android <https://github.com/ll0301/BookmarkSE/tree/master/SmartBookmarkEditor/app/src/main>     
+PHP <https://github.com/ll0301/BookmarkSE/tree/master/Server_php>     
 플레이 스토어 : 게시보류중    
 블로그 : <https://jroomstudio.tistory.com/>    
 Email : <wanted0301@gmail.com>    
