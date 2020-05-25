@@ -6,8 +6,10 @@
 [프로젝트 내용] 카테고리별 북마크 관리    
 [프로젝트 인원] 1명    
 
-소스코드 : <https://github.com/ll0301/DotjariApp/tree/master/app/src/main>    
-플레이 스토어 : 게시보류중
+소스코드 :    
+Android <https://github.com/ll0301/BookmarkSE/tree/master/SmartBookmarkEditor/app/src/main/java/com/jroomstudio/smartbookmarkeditor>     
+PHP <https://github.com/ll0301/DotjariApp/tree/master/app/src/main>     
+플레이 스토어 : 게시보류중    
 블로그 : <https://jroomstudio.tistory.com/>    
 Email : <wanted0301@gmail.com>    
 * * *
@@ -31,7 +33,18 @@ Email : <wanted0301@gmail.com>
   >  * 회원관리 
   >  * JSON 데이터  
 * * *
-### 세부 기능
+### 세부 기능 
+  > <img src="./GithubImage/Screenshot_login.jpg" width="30%" height="35%"></img>
+  > <img src="./GithubImage/Screenshot_home.jpg" width="30%" height="35%"></img>
+  > <img src="./GithubImage/Screenshot_addbookmark.jpg" width="30%" height="35%"></img>
+  > <img src="./GithubImage/Screenshot_addCategory.jpg" width="30%" height="35%"></img>
+  > <img src="./GithubImage/Screenshot_darkTheme_1.jpg" width="30%" height="35%"></img>
+  > <img src="./GithubImage/Screenshot_darkTheme_2.jpg" width="30%" height="35%"></img>
+  > <img src="./GithubImage/Screenshot_editPosition.jpg" width="30%" height="35%"></img>
+  > <img src="./GithubImage/Screenshot_notice.jpg" width="30%" height="35%"></img>
+  > <img src="./GithubImage/Screenshot_webview.jpg" width="30%" height="35%"></img>
+  > <img src="./GithubImage/Screenshot_urlShare.jpg" width="30%" height="35%"></img>
+  > <img src="./GithubImage/Screenshot_webview_editbookmark.jpg" width="35%" height="35%"></img>     
   >  * Google, Facebook 로그인 연동
   >  * Room database + SharedPreference 활용한 게스트 유저 데이터 CRUD 구현 
   >  * Firebase fcm 알림기능 
@@ -41,5 +54,9 @@ Email : <wanted0301@gmail.com>
   >  * Retrofit을 활용한 HTTP 통신 
   >  * JWT 인증을 통한 회원가입, 로그인
   >  * MariaDB 회원 데이터 테이블 관리 
-  >  * PHP + JSON 데이터를 활용하여 회원 데이터 CRUD 구현   
+  >  * PHP + JSON 데이터를 활용하여 회원 데이터 CRUD 구현  
+* * *
+### Android MVVM Pattern 클래스 구조 
+* * *
+### Server PHP 클래스 구조
 * * *
