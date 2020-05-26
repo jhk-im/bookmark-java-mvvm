@@ -41,7 +41,7 @@
   > ##### 클래스
   > <img src="./GithubImage/class/BookmarkSE_main.png"></img>
   >
-  >  * home 프래그먼트 에서 bookmark 및 category 아이템 Recycler View
+  >  * home 프래그먼트 에서 bookmark 및 category 아이템 Recycler View 구현
   >  * Navigation View와 메뉴 
   >  * push 알림 및 다크테마 스위치
   >  * home 프래그먼트와 Navigation View 에 각각 viewModel 생성하고 분리하여 MVVM 패턴 적용   
@@ -77,13 +77,13 @@
   > ##### 클래스
   > <img src="./GithubImage/class/BookmarkSE_itemtouch.png"></img>
   >
-  >  * 프래그먼트에서 bookmark 및 category 아이템 Recycler View
+  >  * 프래그먼트에서 bookmark 및 category 아이템 Recycler View 구현
   >  * 각 아이템 Drag & Drop 으로 포지션 편집  
   >  * 프래그먼트(view)와 viewModel클래스로 구분하여 MVVM 패턴 적용  
 * * *
-  > #### 아이템 포지션 편집 페이지 (Drag & Drop)
+  > #### 웹뷰 페이지 + 북마크 추가 팝업
   > <img src="./GithubImage/screenshot/Screenshot_webview.jpg" width="30%" height="25%"></img>
-  > <img src="./GithubImage/screenshot/Screenshot_webview_share.jpg" width="30%" height="25%"></img>
+  > <img src="./GithubImage/screenshot/Screenshot_webview_shared.jpg" width="30%" height="25%"></img>
   > <img src="./GithubImage/screenshot/Screenshot_webview_editbookmark.jpg" width="30%" height="25%"></img>  
   > ##### 클래스
   > <img src="./GithubImage/class/BookmarkSE_webview.png"></img>
@@ -92,6 +92,30 @@
   >  * web-view로 인터넷 페이지 확인 
   >  * bookmark 추가 팝업으로 북마크 저장 
   >  * url 공유 기능 
+* * *
+  > #### 푸쉬알림 페이지 
+  > <img src="./GithubImage/screenshot/Screenshot_notice1.jpg" width="30%" height="25%"></img>
+  > <img src="./GithubImage/screenshot/Screenshot_notice2.jpg" width="30%" height="25%"></img>
+  > <img src="./GithubImage/screenshot/Screenshot_notice3.jpg" width="30%" height="25%"></img>  
+  > ##### 클래스
+  > <img src="./GithubImage/class/BookmarkSE_notice.png"></img>
+  >
+  >  * 프래그먼트에서 Notice  Recycler View 구현 
+  >  * Notice 객체 추가,수정,삭제
+  >  * Firebase fcm 으로 푸쉬알림
+  >  * 프래그먼트(view)와 viewModel클래스로 구분하여 MVVM 패턴 적용
+* * *
+  > #### 정보, 로그인 페이지 
+  > <img src="./GithubImage/screenshot/Screenshot_information.jpg" width="30%" height="25%"></img>
+  > <img src="./GithubImage/screenshot/Screenshot_login.jpg" width="30%" height="25%"></img>
+  > ##### 클래스
+  > <img src="./GithubImage/class/BookmarkSE_information.png"></img>
+  > <img src="./GithubImage/class/BookmarkSE_login.png"></img>
+  >
+  >  * 프래그먼트에서 Notice  Recycler View 구현 
+  >  * Notice 객체 추가,수정,삭제
+  >  * Firebase fcm 으로 푸쉬알림
+  >  * 프래그먼트(view)와 viewModel클래스로 구분하여 MVVM 패턴 적용
 * * *
 ### Android MVVM Pattern
 * * *                      
