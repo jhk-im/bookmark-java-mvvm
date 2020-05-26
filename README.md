@@ -8,7 +8,7 @@
 >PHP <https://github.com/ll0301/BookmarkSE/tree/master/Server_php>     
 >플레이 스토어 : 게시보류중    
 >블로그 : <https://jroomstudio.tistory.com/>    
->Email : <wanted0301@gmail.com> 
+>Email : <jhhh171224@gmail.com> 
 >
 * * *
 ### SKILL
@@ -27,8 +27,7 @@
   >  * PHP 7.2.25
   >  * MariaDB 10.1.44
   >  * HTTP 통신 
-  >  * JWT 인증 
-  >  * 회원관리 
+  >  * JWT 인증  
   >  * JSON 데이터  
 * * *
 ### 클래스 및 기능 설명
