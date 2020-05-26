@@ -112,10 +112,25 @@
   > <img src="./GithubImage/class/BookmarkSE_information.png"></img>
   > <img src="./GithubImage/class/BookmarkSE_login.png"></img>
   >
-  >  * 프래그먼트에서 Notice  Recycler View 구현 
-  >  * Notice 객체 추가,수정,삭제
-  >  * Firebase fcm 으로 푸쉬알림
-  >  * 프래그먼트(view)와 viewModel클래스로 구분하여 MVVM 패턴 적용
+  >  * 개인정보 처리방침, 오픈소스 라이센스 안내문
+  >  * 구글, 페이스북 로그인 구현 
+  >  * Retrofit 과 jwt 인증을 통한 회원가입, 로그인 구현   
+* * *
+  > #### util 패키지 
+  > ##### 클래스
+  > <img src="./GithubImage/class/BookmarkSE_util.png"></img>
+  >
+  >  * 개인정보 처리방침, 오픈소스 라이센스 안내문
+  >  * 구글, 페이스북 로그인 구현 
+  >  * Retrofit 과 jwt 인증을 통한 회원가입, 로그인 구현   
+* * *
+  > #### data 패키지 
+  > ##### 클래스
+  > <img src="./GithubImage/class/BookmarkSE_data.png"></img>
+  >
+  >  * 개인정보 처리방침, 오픈소스 라이센스 안내문
+  >  * 구글, 페이스북 로그인 구현 
+  >  * Retrofit 과 jwt 인증을 통한 회원가입, 로그인 구현   
 * * *
 ### Android MVVM Pattern
 * * *                      
