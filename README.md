@@ -58,18 +58,6 @@
   >  * 북마크 공유기능 
   >  * 프래그먼트(view)와 viewModel클래스로 구분하여 MVVM 패턴 적용  
 * * *
-  > #### 아이템 추가,편집 팝업
-  > <img src="./GithubImage/screenshot/Screenshot_popup1.jpg" width="30%" height="25%"></img>
-  > <img src="./GithubImage/screenshot/Screenshot_popup2.jpg" width="30%" height="25%"></img>
-  > <img src="./GithubImage/screenshot/Screenshot_popup3.jpg" width="30%" height="25%"></img>  
-  > ##### 클래스
-  > <img src="./GithubImage/class/BookmarkSE_popup.png"></img>
-  >
-  >  * category, bookmark 아이템 로컬데이터베이스(게스트), 원격데이터베이스(회원)에 각각 생성
-  >  * 아이템 수정, 삭제
-  >  * 북마크 공유기능 
-  >  * 프래그먼트(view)와 viewModel클래스로 구분하여 MVVM 패턴 적용  
-* * *
   > #### 아이템 포지션 편집 페이지 (Drag & Drop)
   > <img src="./GithubImage/screenshot/Screenshot_editPosition1.jpg" width="30%" height="25%"></img>
   > <img src="./GithubImage/screenshot/Screenshot_editPosition2.jpg" width="30%" height="25%"></img>
