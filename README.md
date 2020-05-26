@@ -33,8 +33,8 @@
   >  * 회원관리 
   >  * JSON 데이터  
 * * *
-### 세부 페이지 기능 및 클래스 
-  > ##### main 패키지
+### 클래스 및 기능 설명
+  > ##### main 페이지
   > <img src="./GithubImage/screenshot/Screenshot_home.jpg" width="30%" height="25%"></img>
   > <img src="./GithubImage/screenshot/Screenshot_darkTheme_1.jpg" width="30%" height="25%"></img>
   > <img src="./GithubImage/screenshot/Screenshot_darkTheme_2.jpg" width="30%" height="25%"></img>  
