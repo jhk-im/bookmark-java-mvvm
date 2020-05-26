@@ -34,7 +34,7 @@
   >  * JSON 데이터  
 * * *
 ### 클래스 및 기능 설명
-  > ##### main 
+  > #### 메인 페이지
   > <img src="./GithubImage/screenshot/Screenshot_home.jpg" width="30%" height="25%"></img>
   > <img src="./GithubImage/screenshot/Screenshot_darkTheme_1.jpg" width="30%" height="25%"></img>
   > <img src="./GithubImage/screenshot/Screenshot_darkTheme_2.jpg" width="30%" height="25%"></img>  
@@ -44,19 +44,43 @@
   >  * home 프래그먼트 에서 bookmark 및 category 아이템 Recycler View
   >  * Navigation View와 메뉴 
   >  * push 알림 및 다크테마 스위치
-  >  * home 프래그먼트와 Navigation view 에 각각 viewModel 생성하여 MVVM 패턴 적용   
+  >  * home 프래그먼트와 Navigation View 에 각각 viewModel 생성하고 분리하여 MVVM 패턴 적용   
 * * *
-  > ##### editadditem popup 
+  > #### 아이템 추가,편집 팝업
   > <img src="./GithubImage/screenshot/Screenshot_popup1.jpg" width="30%" height="25%"></img>
   > <img src="./GithubImage/screenshot/Screenshot_popup2.jpg" width="30%" height="25%"></img>
   > <img src="./GithubImage/screenshot/Screenshot_popup3.jpg" width="30%" height="25%"></img>  
   > ##### 클래스
   > <img src="./GithubImage/class/BookmarkSE_popup.png"></img>
   >
-  >  * home 프래그먼트 에서 bookmark 및 category 아이템 Recycler View
-  >  * Navigation View와 메뉴 
-  >  * push 알림 및 다크테마 스위치
-  >  * home 프래그먼트와 Navigation view 에 각각 viewModel 생성하여 MVVM 패턴 적용   
+  >  * category, bookmark 아이템 로컬데이터베이스(게스트), 원격데이터베이스(회원)에 각각 생성
+  >  * 아이템 수정, 삭제
+  >  * 북마크 공유기능 
+  >  * 프래그먼트(view)와 viewModel클래스로 구분하여 MVVM 패턴 적용  
+* * *
+  > #### 아이템 추가,편집 팝업
+  > <img src="./GithubImage/screenshot/Screenshot_popup1.jpg" width="30%" height="25%"></img>
+  > <img src="./GithubImage/screenshot/Screenshot_popup2.jpg" width="30%" height="25%"></img>
+  > <img src="./GithubImage/screenshot/Screenshot_popup3.jpg" width="30%" height="25%"></img>  
+  > ##### 클래스
+  > <img src="./GithubImage/class/BookmarkSE_popup.png"></img>
+  >
+  >  * category, bookmark 아이템 로컬데이터베이스(게스트), 원격데이터베이스(회원)에 각각 생성
+  >  * 아이템 수정, 삭제
+  >  * 북마크 공유기능 
+  >  * 프래그먼트(view)와 viewModel클래스로 구분하여 MVVM 패턴 적용  
+* * *
+  > #### 아이템 포지션 편집 페이지 (Drag & Drop)
+  > <img src="./GithubImage/screenshot/Screenshot_editPosition1.jpg" width="30%" height="25%"></img>
+  > <img src="./GithubImage/screenshot/Screenshot_editPosition2.jpg" width="30%" height="25%"></img>
+  > <img src="./GithubImage/screenshot/Screenshot_editPosition3.jpg" width="30%" height="25%"></img>  
+  > ##### 클래스
+  > <img src="./GithubImage/class/BookmarkSE_itemtouch.png"></img>
+  >
+  >  * category, bookmark 아이템 로컬데이터베이스(게스트), 원격데이터베이스(회원)에 각각 생성
+  >  * 아이템 수정, 삭제
+  >  * 북마크 공유기능 
+  >  * 프래그먼트(view)와 viewModel클래스로 구분하여 MVVM 패턴 적용  
 * * *
 ### Android MVVM Pattern
 * * *                      
