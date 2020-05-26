@@ -33,12 +33,12 @@
   >  * 회원관리 
   >  * JSON 데이터  
 * * *
-### 세부 페이지 및 클래스 
-  > ### main 페이지 
+### 세부 페이지 기능 및 클래스 
+  > ##### main 패키지
   > <img src="./GithubImage/screenshot/Screenshot_home.jpg" width="30%" height="25%"></img>
   > <img src="./GithubImage/screenshot/Screenshot_darkTheme_1.jpg" width="30%" height="25%"></img>
   > <img src="./GithubImage/screenshot/Screenshot_darkTheme_2.jpg" width="30%" height="25%"></img>  
-  > # 클래스
+  > ##### 클래스
   > <img src="./GithubImage/class/BookmarkSE_main.png"></img>
   >
   >  * home 프래그먼트 에서 bookmark 및 category 아이템 Recycler View
