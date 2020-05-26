@@ -106,19 +106,11 @@
 * * *
   > #### util 패키지 
   > ##### 클래스
-  > <img src="./GithubImage/class/BookmarkSE_util.png"></img>
-  >
-  >  * 개인정보 처리방침, 오픈소스 라이센스 안내문
-  >  * 구글, 페이스북 로그인 구현 
-  >  * Retrofit 과 jwt 인증을 통한 회원가입, 로그인 구현   
+  > <img src="./GithubImage/class/BookmarkSE_util.png"></img> 
 * * *
   > #### data 패키지 
   > ##### 클래스
   > <img src="./GithubImage/class/BookmarkSE_data.png"></img>
-  >
-  >  * 개인정보 처리방침, 오픈소스 라이센스 안내문
-  >  * 구글, 페이스북 로그인 구현 
-  >  * Retrofit 과 jwt 인증을 통한 회원가입, 로그인 구현   
 * * *
 ### Android MVVM Pattern
 * * *                      
