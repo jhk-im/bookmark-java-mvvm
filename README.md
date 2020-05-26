@@ -38,6 +38,8 @@
   > <img src="./GithubImage/screenshot/Screenshot_home.jpg" width="30%" height="25%"></img>
   > <img src="./GithubImage/screenshot/Screenshot_darkTheme_1.jpg" width="30%" height="25%"></img>
   > <img src="./GithubImage/screenshot/Screenshot_darkTheme_2.jpg" width="30%" height="25%"></img>  
+  > ### 클래스
+  > <img src="./GithubImage/class/BookmarkSE_main.png"></img>  
   >  * Google, Facebook 로그인 연동
   >  * Room database + SharedPreference 활용한 게스트 유저 데이터 CRUD 구현 
   >  * Firebase fcm 알림기능 
