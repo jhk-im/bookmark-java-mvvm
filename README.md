@@ -77,9 +77,8 @@
   > ##### 클래스
   > <img src="./GithubImage/class/BookmarkSE_itemtouch.png"></img>
   >
-  >  * category, bookmark 아이템 로컬데이터베이스(게스트), 원격데이터베이스(회원)에 각각 생성
-  >  * 아이템 수정, 삭제
-  >  * 북마크 공유기능 
+  >  * 프래그먼트에서 bookmark 및 category 아이템 Recycler View
+  >  * 각 아이템 Drag & Drop 으로 포지션 편집  
   >  * 프래그먼트(view)와 viewModel클래스로 구분하여 MVVM 패턴 적용  
 * * *
 ### Android MVVM Pattern
