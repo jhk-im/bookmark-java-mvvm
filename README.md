@@ -111,6 +111,4 @@
   > #### data 패키지 
   > ##### 클래스
   > <img src="./GithubImage/class/BookmarkSE_data.png"></img>
-* * *
-### Android MVVM Pattern
-* * *                      
+* * *                    
