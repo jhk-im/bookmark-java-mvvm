@@ -34,12 +34,24 @@
   >  * JSON 데이터  
 * * *
 ### 클래스 및 기능 설명
-  > ##### main 페이지
+  > ##### main 
   > <img src="./GithubImage/screenshot/Screenshot_home.jpg" width="30%" height="25%"></img>
   > <img src="./GithubImage/screenshot/Screenshot_darkTheme_1.jpg" width="30%" height="25%"></img>
   > <img src="./GithubImage/screenshot/Screenshot_darkTheme_2.jpg" width="30%" height="25%"></img>  
   > ##### 클래스
   > <img src="./GithubImage/class/BookmarkSE_main.png"></img>
+  >
+  >  * home 프래그먼트 에서 bookmark 및 category 아이템 Recycler View
+  >  * Navigation View와 메뉴 
+  >  * push 알림 및 다크테마 스위치
+  >  * home 프래그먼트와 Navigation view 에 각각 viewModel 생성하여 MVVM 패턴 적용   
+* * *
+  > ##### editadditem popup 
+  > <img src="./GithubImage/screenshot/Screenshot_popup1.jpg" width="30%" height="25%"></img>
+  > <img src="./GithubImage/screenshot/Screenshot_popup2.jpg" width="30%" height="25%"></img>
+  > <img src="./GithubImage/screenshot/Screenshot_popup3.jpg" width="30%" height="25%"></img>  
+  > ##### 클래스
+  > <img src="./GithubImage/class/BookmarkSE_popup.png"></img>
   >
   >  * home 프래그먼트 에서 bookmark 및 category 아이템 Recycler View
   >  * Navigation View와 메뉴 
