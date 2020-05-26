@@ -81,5 +81,17 @@
   >  * 각 아이템 Drag & Drop 으로 포지션 편집  
   >  * 프래그먼트(view)와 viewModel클래스로 구분하여 MVVM 패턴 적용  
 * * *
+  > #### 아이템 포지션 편집 페이지 (Drag & Drop)
+  > <img src="./GithubImage/screenshot/Screenshot_webview.jpg" width="30%" height="25%"></img>
+  > <img src="./GithubImage/screenshot/Screenshot_webview_share.jpg" width="30%" height="25%"></img>
+  > <img src="./GithubImage/screenshot/Screenshot_webview_editbookmark.jpg" width="30%" height="25%"></img>  
+  > ##### 클래스
+  > <img src="./GithubImage/class/BookmarkSE_webview.png"></img>
+  >
+  >  * url 검색 기능 
+  >  * web-view로 인터넷 페이지 확인 
+  >  * bookmark 추가 팝업으로 북마크 저장 
+  >  * url 공유 기능 
+* * *
 ### Android MVVM Pattern
 * * *                      
