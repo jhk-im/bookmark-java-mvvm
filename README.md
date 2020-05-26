@@ -33,32 +33,30 @@
   >  * 회원관리 
   >  * JSON 데이터  
 * * *
-### 세부 기능 
-  > <img src="./GithubImage/Screenshot_login.jpg" width="30%" height="25%"></img>
-  > <img src="./GithubImage/Screenshot_home.jpg" width="30%" height="25%"></img>
-  > <img src="./GithubImage/Screenshot_addbookmark.jpg" width="30%" height="25%"></img>
-  > <img src="./GithubImage/Screenshot_addCategory.jpg" width="30%" height="25%"></img>
-  > <img src="./GithubImage/Screenshot_darkTheme_1.jpg" width="30%" height="25%"></img>
-  > <img src="./GithubImage/Screenshot_darkTheme_2.jpg" width="30%" height="25%"></img>
-  > <img src="./GithubImage/Screenshot_editPosition.jpg" width="30%" height="25%"></img>
-  > <img src="./GithubImage/Screenshot_notice.jpg" width="30%" height="25%"></img>
-  > <img src="./GithubImage/Screenshot_webview.jpg" width="30%" height="25%"></img>
-  > <img src="./GithubImage/Screenshot_urlShare.jpg" width="30%" height="25%"></img>
-  > <img src="./GithubImage/Screenshot_webview_editbookmark.jpg" width="30%" height="25%"></img>     
-  >  * Google, Facebook 로그인 연동
-  >  * Room database + SharedPreference 활용한 게스트 유저 데이터 CRUD 구현 
-  >  * Firebase fcm 알림기능 
-  >  * Drag & Drop으로 북마크 순서 조절 
-  >  * 북마크 url 공유 
-  >  * Dark Theme 구현 
-  >  * Retrofit을 활용한 HTTP 통신 
-  >  * JWT 인증을 통한 회원가입, 로그인
-  >  * MariaDB 회원 데이터 테이블 관리 
-  >  * PHP + JSON 데이터를 활용하여 회원 데이터 CRUD 구현  
+### 클래스 및 기능 설명
+  > ##### main 
+  > <img src="./GithubImage/screenshot/Screenshot_home.jpg" width="30%" height="25%"></img>
+  > <img src="./GithubImage/screenshot/Screenshot_darkTheme_1.jpg" width="30%" height="25%"></img>
+  > <img src="./GithubImage/screenshot/Screenshot_darkTheme_2.jpg" width="30%" height="25%"></img>  
+  > ##### 클래스
+  > <img src="./GithubImage/class/BookmarkSE_main.png"></img>
+  >
+  >  * home 프래그먼트 에서 bookmark 및 category 아이템 Recycler View
+  >  * Navigation View와 메뉴 
+  >  * push 알림 및 다크테마 스위치
+  >  * home 프래그먼트와 Navigation view 에 각각 viewModel 생성하여 MVVM 패턴 적용   
 * * *
-### Android 클래스 구조 
-* * *
-### Server PHP 클래스 구조
+  > ##### editadditem popup 
+  > <img src="./GithubImage/screenshot/Screenshot_popup1.jpg" width="30%" height="25%"></img>
+  > <img src="./GithubImage/screenshot/Screenshot_popup2.jpg" width="30%" height="25%"></img>
+  > <img src="./GithubImage/screenshot/Screenshot_popup3.jpg" width="30%" height="25%"></img>  
+  > ##### 클래스
+  > <img src="./GithubImage/class/BookmarkSE_popup.png"></img>
+  >
+  >  * home 프래그먼트 에서 bookmark 및 category 아이템 Recycler View
+  >  * Navigation View와 메뉴 
+  >  * push 알림 및 다크테마 스위치
+  >  * home 프래그먼트와 Navigation view 에 각각 viewModel 생성하여 MVVM 패턴 적용   
 * * *
 ### Android MVVM Pattern
 * * *                      
