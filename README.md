@@ -1,17 +1,17 @@
 * * *
 # PORTFOLIO 3 
 ## 북마크SE - 카테고리별로 북마크를 관리하는 앱 
-
-[제작기간] 8주     
-[프로젝트 내용] 카테고리별 북마크 관리    
-[프로젝트 인원] 1명    
-
-소스코드 :    
-Android <https://github.com/ll0301/BookmarkSE/tree/master/SmartBookmarkEditor/app/src/main/java/com/jroomstudio/smartbookmarkeditor>     
-PHP <https://github.com/ll0301/DotjariApp/tree/master/app/src/main>     
-플레이 스토어 : 게시보류중    
-블로그 : <https://jroomstudio.tistory.com/>    
-Email : <wanted0301@gmail.com>    
+>[제작기간] 8주     
+>[프로젝트 내용] 카테고리별 북마크 관리    
+>[프로젝트 인원] 1명    
+>
+>소스코드 :    
+>Android <https://github.com/ll0301/BookmarkSE/tree/master/SmartBookmarkEditor/app/src/main>     
+>PHP <https://github.com/ll0301/BookmarkSE/tree/master/Server_php>     
+>플레이 스토어 : 게시보류중    
+>블로그 : <https://jroomstudio.tistory.com/>    
+>Email : <wanted0301@gmail.com> 
+>
 * * *
 ### SKILL
   > #### Android    
@@ -34,17 +34,17 @@ Email : <wanted0301@gmail.com>
   >  * JSON 데이터  
 * * *
 ### 세부 기능 
-  > <img src="./GithubImage/Screenshot_login.jpg" width="30%" height="35%"></img>
-  > <img src="./GithubImage/Screenshot_home.jpg" width="30%" height="35%"></img>
-  > <img src="./GithubImage/Screenshot_addbookmark.jpg" width="30%" height="35%"></img>
-  > <img src="./GithubImage/Screenshot_addCategory.jpg" width="30%" height="35%"></img>
-  > <img src="./GithubImage/Screenshot_darkTheme_1.jpg" width="30%" height="35%"></img>
-  > <img src="./GithubImage/Screenshot_darkTheme_2.jpg" width="30%" height="35%"></img>
-  > <img src="./GithubImage/Screenshot_editPosition.jpg" width="30%" height="35%"></img>
-  > <img src="./GithubImage/Screenshot_notice.jpg" width="30%" height="35%"></img>
-  > <img src="./GithubImage/Screenshot_webview.jpg" width="30%" height="35%"></img>
-  > <img src="./GithubImage/Screenshot_urlShare.jpg" width="30%" height="35%"></img>
-  > <img src="./GithubImage/Screenshot_webview_editbookmark.jpg" width="35%" height="35%"></img>     
+  > <img src="./GithubImage/Screenshot_login.jpg" width="30%" height="25%"></img>
+  > <img src="./GithubImage/Screenshot_home.jpg" width="30%" height="25%"></img>
+  > <img src="./GithubImage/Screenshot_addbookmark.jpg" width="30%" height="25%"></img>
+  > <img src="./GithubImage/Screenshot_addCategory.jpg" width="30%" height="25%"></img>
+  > <img src="./GithubImage/Screenshot_darkTheme_1.jpg" width="30%" height="25%"></img>
+  > <img src="./GithubImage/Screenshot_darkTheme_2.jpg" width="30%" height="25%"></img>
+  > <img src="./GithubImage/Screenshot_editPosition.jpg" width="30%" height="25%"></img>
+  > <img src="./GithubImage/Screenshot_notice.jpg" width="30%" height="25%"></img>
+  > <img src="./GithubImage/Screenshot_webview.jpg" width="30%" height="25%"></img>
+  > <img src="./GithubImage/Screenshot_urlShare.jpg" width="30%" height="25%"></img>
+  > <img src="./GithubImage/Screenshot_webview_editbookmark.jpg" width="30%" height="25%"></img>     
   >  * Google, Facebook 로그인 연동
   >  * Room database + SharedPreference 활용한 게스트 유저 데이터 CRUD 구현 
   >  * Firebase fcm 알림기능 
@@ -56,7 +56,9 @@ Email : <wanted0301@gmail.com>
   >  * MariaDB 회원 데이터 테이블 관리 
   >  * PHP + JSON 데이터를 활용하여 회원 데이터 CRUD 구현  
 * * *
-### Android MVVM Pattern 클래스 구조 
+### Android 클래스 구조 
 * * *
 ### Server PHP 클래스 구조
 * * *
+### Android MVVM Pattern
+* * *                      
