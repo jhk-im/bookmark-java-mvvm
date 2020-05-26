@@ -83,7 +83,7 @@
 * * *
   > #### 아이템 포지션 편집 페이지 (Drag & Drop)
   > <img src="./GithubImage/screenshot/Screenshot_webview.jpg" width="30%" height="25%"></img>
-  > <img src="./GithubImage/screenshot/Screenshot_webview_share.jpg" width="30%" height="25%"></img>
+  > <img src="./GithubImage/screenshot/Screenshot_webview_shared.jpg" width="30%" height="25%"></img>
   > <img src="./GithubImage/screenshot/Screenshot_webview_editbookmark.jpg" width="30%" height="25%"></img>  
   > ##### 클래스
   > <img src="./GithubImage/class/BookmarkSE_webview.png"></img>
