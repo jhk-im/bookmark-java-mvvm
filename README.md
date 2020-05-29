@@ -1,16 +1,14 @@
-* * *
-# PORTFOLIO 3 
-## 북마크SE - 카테고리별로 북마크를 관리하는 앱 
+# 북마크SE
 >[제작기간] 8주     
->[프로젝트 내용] 카테고리별 북마크 관리    
+>[프로젝트 내용] 카테고리별 북마크 관리하는 안드로이드 앱   
 >[프로젝트 인원] 1명    
 >
 >소스코드 :    
 >Android <https://github.com/ll0301/BookmarkSE/tree/master/SmartBookmarkEditor/app/src/main>     
 >PHP <https://github.com/ll0301/BookmarkSE/tree/master/Server_php>     
->플레이 스토어 : 게시보류중    
+>플레이 스토어 : <https://play.google.com/store/apps/details?id=com.jroomstudio.smartbookmarkeditor>    
 >블로그 : <https://jroomstudio.tistory.com/>    
->Email : <wanted0301@gmail.com> 
+>Email : <jhhh171224@gmail.com> 
 >
 * * *
 ### SKILL
@@ -29,8 +27,7 @@
   >  * PHP 7.2.25
   >  * MariaDB 10.1.44
   >  * HTTP 통신 
-  >  * JWT 인증 
-  >  * 회원관리 
+  >  * JWT 인증  
   >  * JSON 데이터  
 * * *
 ### 클래스 및 기능 설명
