@@ -12,23 +12,14 @@
 >
 * * *
 ### SKILL
-  > #### Android    
-  >  * java    
-  >  * MVVM Pattern
-  >  * Livedata - Databinding
-  >  * Room database 
-  >  * Retrofit2
-  >  * Google, Facebook login
-  >  * Firebase fcm 
-  >  ***
-  > #### Linux Server
-  >  * IWinV - Ubuntu 18.04 LTS(64bit)
-  >  * Apache 2.4.29
-  >  * PHP 7.2.25
-  >  * MariaDB 10.1.44
-  >  * HTTP 통신 
-  >  * JWT 인증  
-  >  * JSON 데이터  
+  >  * Android : Java, MVVM Pattern, Retrofit2, Google/Facebook API, Firebase fcm, Room   
+  >  * Server : Ubuntu 18.04(IWinV), Apache 2.4.29, PHP 7.2.25, MariaDB 10.1.44, JWT  
+  >  * Retrofit2을 활용한 회원유저의 회원가입, 로그인, 북마크 CRUD
+  >  * Firebase FCM을 활용한 push notification (업데이트 안내) 
+  >  * Drag & Drop으로 북마크와 카테고리 순서 변경
+  >  * JWT 인증을 통한 회원가입, 로그인 
+  >  * MariaDB 를 활용한 회원 테이블 
+  >  * JSON + PHP + HTTP를 활용한 북마크 관리 REST API 
 * * *
 ### 클래스 및 기능 설명
   > #### 메인 페이지
